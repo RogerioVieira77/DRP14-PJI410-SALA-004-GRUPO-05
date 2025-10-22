@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação da Arquitetura</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content" style="justify-content: center;">
+                <a href="http://82.25.75.88/smartceu" class="logo" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-network-wired"></i>
+                    <span>IoT Gateway · Arquitetura</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Menu de Navegação</div>
+                <div class="nav-item" onclick="navigateTo('home')">
+                    <i class="fas fa-home"></i> Bem-vindo
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Documentação Técnica</div>
+                <div class="nav-item" onclick="navigateTo('architecture')">
+                    <i class="fas fa-sitemap"></i> Proposta Arquitetônica
+                </div>
+                <div class="nav-item" onclick="navigateTo('solution-model')">
+                    <i class="fas fa-cubes"></i> Modelo de Solução
+                </div>
+                <div class="nav-item" onclick="navigateTo('topology')">
+                    <i class="fas fa-project-diagram"></i> Modelo de Topologia
+                </div>
+                <div class="nav-item" onclick="navigateTo('integrations')">
+                    <i class="fas fa-plug"></i> Integrações
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Especificações</div>
+                <div class="nav-item" onclick="navigateTo('api-specs')">
+                    <i class="fas fa-code"></i> Especificações API
+                </div>
+                <div class="nav-item" onclick="navigateTo('data-model')">
+                    <i class="fas fa-database"></i> Modelo de Dados
+                </div>
+                <div class="nav-item" onclick="navigateTo('security')">
+                    <i class="fas fa-shield-alt"></i> Segurança
+                </div>
+                <div class="nav-item" onclick="navigateTo('operations')">
+                    <i class="fas fa-cogs"></i> Operações
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Gestão</div>
+                <div class="nav-item" onclick="navigateTo('checklist')">
+                    <i class="fas fa-tasks"></i> Checklist / Intake
+                </div>
+                <div class="nav-item" onclick="navigateTo('endpoints')">
+                    <i class="fas fa-exchange-alt"></i> Endpoints
+                </div>
+                <div class="nav-item" onclick="navigateTo('versioning')">
+                    <i class="fas fa-code-branch"></i> Política de Versionado
+                </div>
+                <div class="nav-item" onclick="navigateTo('adrs')">
+                    <i class="fas fa-file-alt"></i> ADRs
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Casos de Uso</div>
+                <div class="nav-item" onclick="navigateTo('use-case-pool')">
+                    <i class="fas fa-swimming-pool"></i> Monitoramento da Piscina
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Home Section -->
+            <section id="home" class="content-section active">
+                <div class="hero">
+                    <h1>CEU Três Pontes · Sistema IoT Completo</h1>
+                    <p class="hero-subtitle">Plataforma completa de monitoramento com API REST, banco de dados e autenticação JWT</p>
+                    <div class="version-badge">v2.0.0 - Fase 3 Completa + Refatoração</div>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card" onclick="navigateTo('architecture')">
+                        <div class="card-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <h3>Proposta Arquitetônica</h3>
+                        <p>Visão geral da arquitetura do sistema, componentes e fluxos de dados</p>
+                    </div>
+
+                    <div class="card" onclick="navigateTo('solution-model')">
+                        <div class="card-icon">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <h3>Modelo de Solução</h3>
+                        <p>Estrutura da solução, módulos e suas responsabilidades</p>
+                    </div>
+
+                    <div class="card" onclick="navigateTo('topology')">
+                        <div class="card-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h3>Modelo de Topologia</h3>
+                        <p>Topologia de rede, distribuição de componentes e infraestrutura</p>
+                    </div>
+
+                    <div class="card" onclick="navigateTo('integrations')">
+                        <div class="card-icon">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <h3>Integrações</h3>
+                        <p>Protocolos suportados: LoRa, Zigbee, Sigfox, RFID via MQTT</p>
+                    </div>
+
+                    <div class="card" onclick="navigateTo('use-case-pool')">
+                        <div class="card-icon">
+                            <i class="fas fa-swimming-pool"></i>
+                        </div>
+                        <h3>Monitoramento da Piscina</h3>
+                        <p>Sistema completo de monitoramento: temperatura da água, ambiente e qualidade</p>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h2>Sobre o Projeto</h2>
+                    <p>Sistema completo de controle de acesso e contagem de pessoas para o CEU Três Pontes. Integra múltiplos protocolos IoT (LoRa, Zigbee, Sigfox, RFID) com API REST completa, banco de dados MySQL, autenticação JWT e arquitetura refatorada seguindo boas práticas (Clean Architecture, SOLID).</p>
+                    
+                    <div class="tech-stack">
+                        <h3>Stack Tecnológico</h3>
+                        <div class="tech-badges">
+                            <span class="badge">Python 3.12</span>
+                            <span class="badge">Flask 3.0</span>
+                            <span class="badge">MySQL 8.4</span>
+                            <span class="badge">SQLAlchemy</span>
+                            <span class="badge">Marshmallow</span>
+                            <span class="badge">JWT</span>
+                            <span class="badge">MQTT / Mosquitto</span>
+                            <span class="badge">REST API</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Architecture Section -->
+            <section id="architecture" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Proposta Arquitetônica</span>
+                </div>
+                
+                <h1>Proposta Arquitetônica</h1>
+                <p class="section-intro">Arquitetura completa do Sistema de Monitoramento IoT do CEU Três Pontes</p>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-lightbulb"></i> Visão Geral</h2>
+                    <p>O Sistema SmartCEU é uma solução completa de monitoramento IoT para o CEU Três Pontes, integrando múltiplos protocolos de sensores (LoRa, Zigbee, Sigfox, RFID) para controle de acesso e monitoramento ambiental, com foco especial no monitoramento da piscina através de sensores de temperatura e qualidade da água.</p>
+                    
+                    <div class="info-box" style="margin-top: 1rem;">
+                        <h4>🎯 Objetivos do Sistema</h4>
+                        <ul>
+                            <li><strong>Controle de Acesso:</strong> Monitoramento de presença em salas e áreas comuns via sensores IoT</li>
+                            <li><strong>Monitoramento da Piscina:</strong> Temperatura da água, temperatura ambiente e qualidade da água</li>
+                            <li><strong>Centralização de Dados:</strong> API REST única para todos os sensores e aplicações</li>
+                            <li><strong>Visualização:</strong> Dashboards web interativos com gráficos e alertas em tempo real</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-layer-group"></i> Arquitetura em Camadas</h2>
+                    
+                    <div class="architecture-layer">
+                        <h3>1. Camada de Sensores (Física)</h3>
+                        <h4>Sensores de Controle de Acesso</h4>
+                        <ul>
+                            <li><strong>LoRa (2 sensores):</strong> Longo alcance, baixo consumo
+                                <ul>
+                                    <li>Entrada Principal - Sensor de presença</li>
+                                    <li>Biblioteca - Sensor de presença</li>
+                                </ul>
+                            </li>
+                            <li><strong>Zigbee (2 sensores):</strong> Redes mesh, automação
+                                <ul>
+                                    <li>Quadra Esportiva - Sensor de presença</li>
+                                    <li>Piscina (temperatura ambiente) - Sensor ambiental</li>
+                                </ul>
+                            </li>
+                            <li><strong>Sigfox (1 sensor):</strong> Comunicação global
+                                <ul>
+                                    <li>Refeitório - Sensor de presença</li>
+                                </ul>
+                            </li>
+                            <li><strong>RFID (1 sensor):</strong> Identificação por aproximação
+                                <ul>
+                                    <li>Sala 101 - Controle de acesso</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <h4>Sensores de Monitoramento da Piscina</h4>
+                        <ul>
+                            <li><strong>Temperatura da Água:</strong> Sensor submerso (20-35°C, precisão 0.1°C)</li>
+                            <li><strong>Temperatura Ambiente:</strong> Sensor área externa (15-40°C)</li>
+                            <li><strong>Qualidade da Água:</strong> Sensor multi-parâmetros (pH, turbidez, cloro)</li>
+                        </ul>
+                        
+                        <div class="info-box" style="margin-top: 1rem;">
+                            <strong>Volume de Dados (20 dias):</strong>
+                            <ul>
+                                <li>Sensores de acesso: ~22.000 leituras</li>
+                                <li>Temperatura da água: ~3.700 leituras</li>
+                                <li>Temperatura ambiente: ~3.100 leituras</li>
+                                <li>Qualidade da água: ~940 leituras</li>
+                                <li><strong>Total:</strong> ~29.740 leituras armazenadas</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="architecture-layer">
+                        <h3>2. Camada de Gateway (IoT)</h3>
+                        <ul>
+                            <li><strong>MQTT Client (Paho):</strong> Publicação em tópicos específicos
+                                <ul>
+                                    <li><code>sensores/{protocol}/dados</code> - Sensores de acesso</li>
+                                    <li><code>piscina/temperatura/agua</code> - Temperatura da água</li>
+                                    <li><code>piscina/temperatura/ambiente</code> - Temperatura ambiente</li>
+                                    <li><code>piscina/qualidade</code> - Qualidade da água</li>
+                                </ul>
+                            </li>
+                            <li><strong>Message Formatter:</strong> Padronização JSON com timestamp local (America/Sao_Paulo)</li>
+                            <li><strong>Config Loader:</strong> Configuração via mqtt_config.ini</li>
+                            <li><strong>Gateway Core:</strong> Orquestração de todos os sensores</li>
+                            <li><strong>Timezone Handler:</strong> Garantia de timestamps corretos (UTC-3)</li>
+                        </ul>
+                    </div>
+
+                    <div class="architecture-layer">
+                        <h3>3. Camada de Broker MQTT</h3>
+                        <ul>
+                            <li><strong>Eclipse Mosquitto 2.0.18:</strong> Broker MQTT (porta 1884)</li>
+                            <li><strong>Topics Hierárquicos:</strong> Organização por tipo e protocolo</li>
+                            <li><strong>QoS Level 1:</strong> At least once delivery</li>
+                            <li><strong>Retain Messages:</strong> Última leitura sempre disponível</li>
+                            <li><strong>Subscriber Pattern:</strong> Gateway consume e persiste dados</li>
+                        </ul>
+                    </div>
+
+                    <div class="architecture-layer">
+                        <h3>4. Camada de Backend (API REST)</h3>
+                        <ul>
+                            <li><strong>Flask 3.0:</strong> Framework web Python (porta 5000)</li>
+                            <li><strong>SQLAlchemy ORM:</strong> Mapeamento objeto-relacional</li>
+                            <li><strong>Marshmallow:</strong> Validação e serialização de dados</li>
+                            <li><strong>JWT Extended:</strong> Autenticação com tokens (24h de validade)</li>
+                            <li><strong>Blueprints:</strong> Organização modular de rotas
+                                <ul>
+                                    <li><code>/api/v1/auth</code> - Autenticação</li>
+                                    <li><code>/api/v1/sensors</code> - Gerenciamento de sensores</li>
+                                    <li><code>/api/v1/readings</code> - Leituras de sensores</li>
+                                    <li><code>/api/v1/statistics</code> - Estatísticas agregadas</li>
+                                    <li><code>/api/v1/pool</code> - Monitoramento da piscina</li>
+                                </ul>
+                            </li>
+                            <li><strong>Services Layer:</strong> Lógica de negócio isolada
+                                <ul>
+                                    <li>SensorService - Gerenciamento de sensores</li>
+                                    <li>ReadingService - Processamento de leituras</li>
+                                    <li>PoolService - Monitoramento da piscina</li>
+                                    <li>StatisticsService - Cálculos e agregações</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="architecture-layer">
+                        <h3>5. Camada de Apresentação (Web)</h3>
+                        <ul>
+                            <li><strong>NGINX:</strong> Reverse proxy e servidor de arquivos estáticos (porta 80)</li>
+                            <li><strong>Prefix Routing:</strong> <code>/smartceu</code> para todo o sistema</li>
+                            <li><strong>Dashboards HTML/JS:</strong>
+                                <ul>
+                                    <li>Smart CEU - Página principal com navegação</li>
+                                    <li>Monitoramento da Piscina - Dashboard interativo</li>
+                                    <li>API Test Page - Interface de testes da API</li>
+                                    <li>Documentação - Arquitetura e casos de uso</li>
+                                </ul>
+                            </li>
+                            <li><strong>Chart.js:</strong> Gráficos interativos de temperatura</li>
+                            <li><strong>Auto-refresh:</strong> Atualização automática a cada 30 segundos</li>
+                            <li><strong>Cache Control:</strong> Headers para evitar cache de dados dinâmicos</li>
+                        </ul>
+                    </div>
+
+                    <div class="architecture-layer">
+                        <h3>6. Camada de Dados (Persistência)</h3>
+                        <ul>
+                            <li><strong>MySQL 8.4:</strong> Banco de dados relacional (porta 3306)</li>
+                            <li><strong>Database:</strong> smartceu_db</li>
+                            <li><strong>Tabelas Principais:</strong>
+                                <ul>
+                                    <li><code>sensors</code> - Cadastro de sensores (6 ativos)</li>
+                                    <li><code>readings</code> - Leituras de sensores de acesso (~22.000 registros)</li>
+                                    <li><code>pool_readings</code> - Leituras da piscina (~7.740 registros)</li>
+                                    <li><code>users</code> - Usuários do sistema (1 admin)</li>
+                                    <li><code>statistics</code> - Estatísticas agregadas</li>
+                                </ul>
+                            </li>
+                            <li><strong>Índices:</strong> sensor_id, sensor_type, reading_date, timestamp</li>
+                            <li><strong>Timezone:</strong> Campos DATE/TIME armazenados em America/Sao_Paulo</li>
+                            <li><strong>Precisão:</strong> Temperaturas com DECIMAL(5,2)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-exchange-alt"></i> Fluxo de Dados Completo</h2>
+                    <div class="flow-diagram">
+                        <pre class="diagram">
+┌──────────────────────────────────────────────────────────────┐
+│                    CAMADA DE SENSORES                         │
+├──────────────────────────────────────────────────────────────┤
+│  Acesso: LoRa(2) + Zigbee(2) + Sigfox(1) + RFID(1)          │
+│  Piscina: Temp.Água + Temp.Ambiente + Qualidade             │
+└────────────────────────┬─────────────────────────────────────┘
+                         │ Dados físicos coletados
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                   GATEWAY IoT (Python)                        │
+├──────────────────────────────────────────────────────────────┤
+│  • Message Formatter (JSON padronizado)                      │
+│  • Timezone Handler (America/Sao_Paulo)                      │
+│  • MQTT Publisher (Paho Client)                              │
+└────────────────────────┬─────────────────────────────────────┘
+                         │ Publica via MQTT
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│              MQTT BROKER (Mosquitto:1884)                     │
+├──────────────────────────────────────────────────────────────┤
+│  Topics:                                                      │
+│    • sensores/{protocol}/dados                               │
+│    • piscina/temperatura/agua                                │
+│    • piscina/temperatura/ambiente                            │
+│    • piscina/qualidade                                       │
+│  QoS: 1 (at least once)                                      │
+└────────────────────────┬─────────────────────────────────────┘
+                         │ Subscriber consome
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                  BACKEND API (Flask:5000)                     │
+├──────────────────────────────────────────────────────────────┤
+│  Blueprints:                                                  │
+│    /api/v1/auth         → JWT Authentication                 │
+│    /api/v1/sensors      → Sensor Management                  │
+│    /api/v1/readings     → Access Readings                    │
+│    /api/v1/pool         → Pool Monitoring                    │
+│    /api/v1/statistics   → Analytics                          │
+│                                                               │
+│  Services:                                                    │
+│    • SensorService      → CRUD + Validação                   │
+│    • ReadingService     → Persistência                       │
+│    • PoolService        → Média diária + Alertas             │
+│    • StatisticsService  → Agregações                         │
+└────────────────────────┬─────────────────────────────────────┘
+                         │ SQL via SQLAlchemy ORM
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                  MYSQL DATABASE (smartceu_db)                 │
+├──────────────────────────────────────────────────────────────┤
+│  Tabelas:                                                     │
+│    • sensors (6)        • pool_readings (7,740)              │
+│    • readings (22,000)  • users (1)                          │
+│    • statistics         • alerts                             │
+└────────────────────────┬─────────────────────────────────────┘
+                         │ Dados consultados via API
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│              NGINX REVERSE PROXY (:80/smartceu)               │
+├──────────────────────────────────────────────────────────────┤
+│  • Proxy para Flask API (porta 5000)                         │
+│  • Serve arquivos estáticos (HTML/CSS/JS)                    │
+│  • Cache Control headers                                     │
+│  • CORS habilitado                                           │
+└────────────────────────┬─────────────────────────────────────┘
+                         │ HTTP/HTTPS
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                   WEB DASHBOARDS                              │
+├──────────────────────────────────────────────────────────────┤
+│  Smart CEU             → Página principal                     │
+│  Pool Dashboard        → Gráficos Chart.js (média diária)    │
+│  Test Page             → Interface de testes da API          │
+│  Documentation         → Arquitetura + Casos de uso          │
+│                                                               │
+│  Features:                                                    │
+│    • Auto-refresh (30s)  • Alertas em tempo real            │
+│    • Gráficos interativos • Formatação BR (DD/MM/YYYY)      │
+└──────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-check-circle"></i> Características da Solução</h2>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i> <strong>Multi-protocolo IoT:</strong> Suporte a LoRa, Zigbee, Sigfox e RFID</li>
+                        <li><i class="fas fa-check"></i> <strong>Monitoramento em Tempo Real:</strong> Dashboard da piscina com atualização automática</li>
+                        <li><i class="fas fa-check"></i> <strong>Média Diária Inteligente:</strong> Agregação de leituras para análise de tendências</li>
+                        <li><i class="fas fa-check"></i> <strong>Sistema de Alertas:</strong> Notificação quando qualidade da água está inadequada</li>
+                        <li><i class="fas fa-check"></i> <strong>API REST Completa:</strong> 35+ endpoints organizados em 5 categorias</li>
+                        <li><i class="fas fa-check"></i> <strong>Autenticação JWT:</strong> Tokens seguros com validade de 24h</li>
+                        <li><i class="fas fa-check"></i> <strong>Timezone Correto:</strong> America/Sao_Paulo (UTC-3) em todo o sistema</li>
+                        <li><i class="fas fa-check"></i> <strong>Formatação Precisa:</strong> Temperaturas com 2 casas decimais</li>
+                        <li><i class="fas fa-check"></i> <strong>Arquitetura Limpa:</strong> Services + Schemas + Utils (Clean Architecture)</li>
+                        <li><i class="fas fa-check"></i> <strong>Alta Performance:</strong> ~30.000 leituras processadas e armazenadas</li>
+                        <li><i class="fas fa-check"></i> <strong>Gráficos Interativos:</strong> Chart.js com histórico de 10 dias</li>
+                        <li><i class="fas fa-check"></i> <strong>Validação Rigorosa:</strong> Marshmallow schemas em todas as entradas</li>
+                        <li><i class="fas fa-check"></i> <strong>Documentação Completa:</strong> Casos de uso, API specs e decisões arquiteturais</li>
+                        <li><i class="fas fa-check"></i> <strong>Deploy Automatizado:</strong> Scripts de instalação e configuração</li>
+                        <li><i class="fas fa-check"></i> <strong>Monitoramento de Saúde:</strong> Endpoint /health e estatísticas do sistema</li>
+                    </ul>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-server"></i> Infraestrutura de Produção</h2>
+                    <div class="info-box">
+                        <h4>Servidor: 82.25.75.88 (Ubuntu 24.04 LTS)</h4>
+                        <ul>
+                            <li><strong>CPU:</strong> 2 vCPUs</li>
+                            <li><strong>RAM:</strong> 7.8 GB</li>
+                            <li><strong>Storage:</strong> 100 GB SSD</li>
+                            <li><strong>Timezone:</strong> America/Sao_Paulo (UTC-3)</li>
+                        </ul>
+                        
+                        <h4>Serviços Ativos:</h4>
+                        <ul>
+                            <li><strong>NGINX:</strong> Porta 80 (HTTP) - Reverse proxy</li>
+                            <li><strong>Flask API:</strong> Porta 5000 (interno) - smartceu-api.service</li>
+                            <li><strong>MySQL:</strong> Porta 3306 (interno) - smartceu_db</li>
+                            <li><strong>Mosquitto:</strong> Porta 1884 (interno) - MQTT broker</li>
+                        </ul>
+                        
+                        <h4>URLs de Acesso:</h4>
+                        <ul>
+                            <li><code>http://82.25.75.88/smartceu</code> - Página principal</li>
+                            <li><code>http://82.25.75.88/smartceu/pool</code> - Dashboard da piscina</li>
+                            <li><code>http://82.25.75.88/smartceu/test_page.html</code> - Testes da API</li>
+                            <li><code>http://82.25.75.88/smartceu/doc_arq.html</code> - Documentação</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-award"></i> Decisões Arquiteturais Importantes</h2>
+                    
+                    <div class="info-box" style="margin-bottom: 1rem;">
+                        <h4>1. Separação de Tabelas de Leituras</h4>
+                        <p><strong>Decisão:</strong> Criar tabela separada <code>pool_readings</code> ao invés de usar <code>readings</code></p>
+                        <p><strong>Justificativa:</strong></p>
+                        <ul>
+                            <li>Campos específicos (temperature, water_quality) não aplicáveis a sensores de acesso</li>
+                            <li>Queries otimizadas para cada tipo de dado</li>
+                            <li>Escalabilidade independente</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box" style="margin-bottom: 1rem;">
+                        <h4>2. Campos DATE e TIME Separados</h4>
+                        <p><strong>Decisão:</strong> Usar <code>reading_date (DATE)</code> + <code>reading_time (TIME)</code></p>
+                        <p><strong>Justificativa:</strong></p>
+                        <ul>
+                            <li>Facilita agregação por dia (média diária)</li>
+                            <li>Evita complexidades de timezone em DATETIME do MySQL</li>
+                            <li>Queries mais simples para estatísticas</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box" style="margin-bottom: 1rem;">
+                        <h4>3. Média Diária vs. Leituras Individuais</h4>
+                        <p><strong>Decisão:</strong> Criar endpoint dedicado <code>/temperature/daily-average</code></p>
+                        <p><strong>Justificativa:</strong></p>
+                        <ul>
+                            <li>Gráficos hora-a-hora eram poluídos e difíceis de interpretar</li>
+                            <li>Médias diárias revelam tendências mais claramente</li>
+                            <li>Reduz volume de dados transferidos (10 pontos vs. 2000+)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>4. Timezone America/Sao_Paulo</h4>
+                        <p><strong>Decisão:</strong> Usar <code>zoneinfo.ZoneInfo('America/Sao_Paulo')</code> em todo o sistema</p>
+                        <p><strong>Justificativa:</strong></p>
+                        <ul>
+                            <li>Timestamps locais corretos sem conversão no frontend</li>
+                            <li>Evita diferenças de 3 horas entre servidor e dados</li>
+                            <li>Consistência em scripts de população e API</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Solution Model Section -->
+            <section id="solution-model" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Modelo de Solução</span>
+                </div>
+                
+                <h1>Modelo de Solução</h1>
+                <p class="section-intro">Estrutura modular e componentes do sistema</p>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-folder-tree"></i> Estrutura de Módulos</h2>
+                    
+                    <div class="module-card">
+                        <h3>📦 Backend</h3>
+                        <p><strong>Responsabilidade:</strong> Lógica de negócio e gerenciamento do gateway</p>
+                        <ul>
+                            <li><code>gateway.py</code> - Orquestrador principal do sistema</li>
+                            <li><code>mqtt_client.py</code> - Cliente MQTT para comunicação</li>
+                            <li><code>mqtt_subscriber.py</code> - Subscrição e processamento de mensagens</li>
+                            <li><code>message_formatter.py</code> - Formatação de dados JSON</li>
+                            <li><code>config_loader.py</code> - Carregamento de configurações</li>
+                        </ul>
+                    </div>
+
+                    <div class="module-card">
+                        <h3>📡 Sensores</h3>
+                        <p><strong>Responsabilidade:</strong> Simulação e interface com sensores físicos</p>
+                        <ul>
+                            <li><code>base_sensor.py</code> - Classe abstrata base para todos os sensores</li>
+                            <li><code>lora_sensor.py</code> - Implementação LoRa</li>
+                            <li><code>zigbee_sensor.py</code> - Implementação Zigbee</li>
+                            <li><code>sigfox_sensor.py</code> - Implementação Sigfox</li>
+                            <li><code>rfid_sensor.py</code> - Implementação RFID</li>
+                        </ul>
+                    </div>
+
+                    <div class="module-card">
+                        <h3>⚙️ Configuração</h3>
+                        <p><strong>Responsabilidade:</strong> Parâmetros e configurações do sistema</p>
+                        <ul>
+                            <li><code>mqtt_config.ini</code> - Configurações do broker MQTT</li>
+                            <li><code>config.ini</code> - Configurações gerais do sistema</li>
+                        </ul>
+                    </div>
+
+                    <div class="module-card">
+                        <h3>🧪 Testes</h3>
+                        <p><strong>Responsabilidade:</strong> Validação e testes do sistema</p>
+                        <ul>
+                            <li><code>test_mqtt_integration.py</code> - Testes de integração MQTT</li>
+                            <li><code>test_simuladores.py</code> - Testes dos simuladores de sensores</li>
+                            <li><code>exemplo_uso.py</code> - Exemplos de utilização</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-puzzle-piece"></i> Padrões de Design</h2>
+                    <ul>
+                        <li><strong>Factory Pattern:</strong> Criação de sensores específicos</li>
+                        <li><strong>Observer Pattern:</strong> MQTT pub/sub para eventos</li>
+                        <li><strong>Singleton Pattern:</strong> Instância única do gateway</li>
+                        <li><strong>Strategy Pattern:</strong> Diferentes estratégias de formatação</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Topology Section -->
+            <section id="topology" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Modelo de Topologia</span>
+                </div>
+                
+                <h1>Modelo de Topologia</h1>
+                <p class="section-intro">Infraestrutura e distribuição de componentes</p>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-network-wired"></i> Topologia de Rede</h2>
+                    <div class="topology-diagram">
+                        <pre>
+┌─────────────────────────────────────────────────────────┐
+│                    MQTT Broker                          │
+│              (Eclipse Mosquitto)                        │
+│                  localhost:1883                         │
+└────────────┬────────────────────────────┬───────────────┘
+             │                            │
+    ┌────────▼────────┐          ┌───────▼────────┐
+    │   Publishers    │          │  Subscribers   │
+    │   (Gateway)     │          │  (Listeners)   │
+    └────────┬────────┘          └────────────────┘
+             │
+    ┌────────▼────────────────────────────┐
+    │         Sensor Layer                │
+    │  ┌──────┬──────┬──────┬──────┐    │
+    │  │ LoRa │Zigbee│Sigfox│ RFID │    │
+    │  └──────┴──────┴──────┴──────┘    │
+    └─────────────────────────────────────┘
+                        </pre>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-server"></i> Componentes de Infraestrutura</h2>
+                    
+                    <table class="info-table">
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Tecnologia</th>
+                                <th>Porta/Protocolo</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>MQTT Broker</td>
+                                <td>Eclipse Mosquitto 2.x</td>
+                                <td>1883 (TCP)</td>
+                                <td><span class="status-badge active">Ativo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Gateway Python</td>
+                                <td>Python 3.x</td>
+                                <td>-</td>
+                                <td><span class="status-badge active">Ativo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Simuladores</td>
+                                <td>Python Threads</td>
+                                <td>-</td>
+                                <td><span class="status-badge active">Ativo</span></td>
+                            </tr>
+                            <tr>
+                                <td>API REST</td>
+                                <td>Flask 3.0 + SQLAlchemy</td>
+                                <td>5000 (HTTP)</td>
+                                <td><span class="status-badge active">Ativo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Banco de Dados</td>
+                                <td>MySQL 8.4</td>
+                                <td>3306 (TCP)</td>
+                                <td><span class="status-badge active">Ativo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Interface Web</td>
+                                <td>HTML/JS/CSS (Test Page)</td>
+                                <td>5000 (HTTP)</td>
+                                <td><span class="status-badge active">Ativo</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Integrations Section -->
+            <section id="integrations" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Integrações</span>
+                </div>
+                
+                <h1>Integrações</h1>
+                <p class="section-intro">Protocolos suportados e suas características</p>
+
+                <div class="integration-grid">
+                    <div class="integration-card lora">
+                        <div class="integration-header">
+                            <i class="fas fa-broadcast-tower"></i>
+                            <h3>LoRa (Long Range)</h3>
+                        </div>
+                        <div class="integration-body">
+                            <p><strong>Características:</strong></p>
+                            <ul>
+                                <li>Alcance: até 15 km (rural)</li>
+                                <li>Frequência: 868 MHz (EU) / 915 MHz (US)</li>
+                                <li>Taxa: 0.3 - 50 kbps</li>
+                                <li>Consumo: Muito baixo</li>
+                            </ul>
+                            <p><strong>Uso:</strong> Sensores remotos, agricultura, smart cities</p>
+                            <p><strong>Topic MQTT:</strong> <code>sensores/lora/dados</code></p>
+                        </div>
+                    </div>
+
+                    <div class="integration-card zigbee">
+                        <div class="integration-header">
+                            <i class="fas fa-home"></i>
+                            <h3>Zigbee</h3>
+                        </div>
+                        <div class="integration-body">
+                            <p><strong>Características:</strong></p>
+                            <ul>
+                                <li>Alcance: 10-100 metros</li>
+                                <li>Frequência: 2.4 GHz</li>
+                                <li>Taxa: 250 kbps</li>
+                                <li>Topologia: Mesh</li>
+                            </ul>
+                            <p><strong>Uso:</strong> Automação residencial, iluminação inteligente</p>
+                            <p><strong>Topic MQTT:</strong> <code>sensores/zigbee/dados</code></p>
+                        </div>
+                    </div>
+
+                    <div class="integration-card sigfox">
+                        <div class="integration-header">
+                            <i class="fas fa-globe"></i>
+                            <h3>Sigfox</h3>
+                        </div>
+                        <div class="integration-body">
+                            <p><strong>Características:</strong></p>
+                            <ul>
+                                <li>Alcance: até 50 km</li>
+                                <li>Frequência: 868 MHz</li>
+                                <li>Taxa: 100 bps</li>
+                                <li>Mensagens: 140 msg/dia</li>
+                            </ul>
+                            <p><strong>Uso:</strong> Rastreamento, medição, alarmes</p>
+                            <p><strong>Topic MQTT:</strong> <code>sensores/sigfox/dados</code></p>
+                        </div>
+                    </div>
+
+                    <div class="integration-card rfid">
+                        <div class="integration-header">
+                            <i class="fas fa-id-card"></i>
+                            <h3>RFID</h3>
+                        </div>
+                        <div class="integration-body">
+                            <p><strong>Características:</strong></p>
+                            <ul>
+                                <li>Alcance: 0.1 - 10 metros</li>
+                                <li>Frequência: 125 kHz - 2.4 GHz</li>
+                                <li>Taxa: Instantânea</li>
+                                <li>Sem bateria (passivo)</li>
+                            </ul>
+                            <p><strong>Uso:</strong> Controle de acesso, inventário, logística</p>
+                            <p><strong>Topic MQTT:</strong> <code>sensores/rfid/dados</code></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-code"></i> Formato de Mensagem Padrão</h2>
+                    <pre class="code-block"><code>{
+  "tipo_sensor": "lora|zigbee|sigfox|rfid",
+  "sensor_id": "unique_sensor_identifier",
+  "timestamp": "2025-10-15T14:30:00Z",
+  "dados": {
+    "temperatura": 23.5,
+    "umidade": 65.2,
+    "bateria": 87
+  },
+  "metadata": {
+    "localizacao": "Sala A",
+    "versao": "1.0.0"
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- API Specs Section -->
+            <section id="api-specs" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Especificações API</span>
+                </div>
+                
+                <h1>Especificações API REST</h1>
+                <p class="section-intro">29 Endpoints ativos - API completa com autenticação JWT</p>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-check-circle"></i> Status</h2>
+                    <div class="alert alert-success" style="background-color: #d4edda; border-color: #c3e6cb; color: #155724; padding: 1rem; border-radius: 0.25rem;">
+                        <i class="fas fa-check-circle"></i>
+                        <p><strong>API REST totalmente implementada e funcional!</strong> Fase 3 concluída com sucesso.</p>
+                        <ul style="margin-top: 0.5rem;">
+                            <li>✅ 29 endpoints ativos</li>
+                            <li>✅ Autenticação JWT</li>
+                            <li>✅ Validação Marshmallow</li>
+                            <li>✅ MySQL + SQLAlchemy</li>
+                            <li>✅ Arquitetura refatorada</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-route"></i> Endpoints de Autenticação</h2>
+                    
+                    <div class="endpoint">
+                        <div class="endpoint-method post">POST</div>
+                        <div class="endpoint-path">/api/v1/auth/login</div>
+                        <p>Autenticar usuário e obter token JWT</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method post">POST</div>
+                        <div class="endpoint-path">/api/v1/auth/register</div>
+                        <p>Registrar novo usuário no sistema</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/api/v1/auth/me</div>
+                        <p>Obter informações do usuário autenticado</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method post">POST</div>
+                        <div class="endpoint-path">/api/v1/auth/change-password</div>
+                        <p>Alterar senha do usuário</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/api/v1/auth/users</div>
+                        <p>Listar todos os usuários (admin only)</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-broadcast-tower"></i> Endpoints de Sensores</h2>
+                    
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/api/v1/sensors</div>
+                        <p>Listar todos os sensores (com filtros)</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/api/v1/sensors/{id}</div>
+                        <p>Obter detalhes de um sensor específico</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method post">POST</div>
+                        <div class="endpoint-path">/api/v1/sensors</div>
+                        <p>Criar novo sensor (requer autenticação)</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method put">PUT</div>
+                        <div class="endpoint-path">/api/v1/sensors/{id}</div>
+                        <p>Atualizar sensor existente</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method delete">DELETE</div>
+                        <div class="endpoint-path">/api/v1/sensors/{id}</div>
+                        <p>Deletar sensor (admin only)</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-chart-line"></i> Endpoints de Leituras</h2>
+                    
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/api/v1/readings</div>
+                        <p>Listar leituras com filtros (sensor, data, limit)</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method post">POST</div>
+                        <div class="endpoint-path">/api/v1/readings</div>
+                        <p>Criar nova leitura de sensor</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method post">POST</div>
+                        <div class="endpoint-path">/api/v1/readings/bulk</div>
+                        <p>Criar múltiplas leituras em lote</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/api/v1/readings/{id}</div>
+                        <p>Obter detalhes de uma leitura específica</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-chart-bar"></i> Endpoints de Estatísticas</h2>
+                    
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/api/v1/statistics/overview</div>
+                        <p>Visão geral do sistema (6 sensores, 6.000+ leituras)</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/api/v1/statistics/activity</div>
+                        <p>Estatísticas de atividade por período</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/api/v1/statistics/sensors</div>
+                        <p>Estatísticas individuais por sensor</p>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/api/v1/statistics/capacity</div>
+                        <p>Estatísticas de capacidade e ocupação</p>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-heartbeat"></i> Endpoint de Saúde</h2>
+                    
+                    <div class="endpoint">
+                        <div class="endpoint-method get">GET</div>
+                        <div class="endpoint-path">/health</div>
+                        <p>Verificar status de saúde do sistema</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Model Section -->
+            <section id="data-model" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Modelo de Dados</span>
+                </div>
+                
+                <h1>Modelo de Dados MySQL</h1>
+                <p class="section-intro">5 Tabelas relacionais com 6.000+ registros de leituras</p>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-database"></i> Banco de Dados: ceu_tres_pontes_db</h2>
+                    <p><strong>MySQL 8.4.6</strong> - Banco relacional com suporte a JSON</p>
+                    
+                    <table class="info-table">
+                        <thead>
+                            <tr>
+                                <th>Tabela</th>
+                                <th>Registros</th>
+                                <th>Descrição</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>sensors</td>
+                                <td>6</td>
+                                <td>Sensores IoT cadastrados</td>
+                            </tr>
+                            <tr>
+                                <td>readings</td>
+                                <td>6.026</td>
+                                <td>Leituras dos sensores</td>
+                            </tr>
+                            <tr>
+                                <td>users</td>
+                                <td>1</td>
+                                <td>Usuários do sistema</td>
+                            </tr>
+                            <tr>
+                                <td>alerts</td>
+                                <td>0</td>
+                                <td>Alertas do sistema</td>
+                            </tr>
+                            <tr>
+                                <td>statistics</td>
+                                <td>0</td>
+                                <td>Estatísticas agregadas</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-table"></i> Tabela: sensors</h2>
+                    <pre class="code-block"><code>CREATE TABLE sensors (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  serial_number VARCHAR(50) UNIQUE NOT NULL,
+  protocol ENUM('LoRa', 'ZigBee', 'Sigfox', 'RFID') NOT NULL,
+  location VARCHAR(200) NOT NULL,
+  description TEXT,
+  status ENUM('active', 'inactive', 'maintenance', 'error') DEFAULT 'active',
+  protocol_config JSON,
+  firmware_version VARCHAR(20),
+  battery_level INT,
+  signal_strength INT,
+  total_readings INT DEFAULT 0,
+  last_reading_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Exemplo de registro:
+{
+  "id": 1,
+  "serial_number": "LORA-ENTRADA-01",
+  "protocol": "LoRa",
+  "location": "Entrada Principal",
+  "status": "active",
+  "battery_level": 87,
+  "signal_strength": -75,
+  "total_readings": 826
+}</code></pre>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-table"></i> Tabela: readings</h2>
+                    <pre class="code-block"><code>CREATE TABLE readings (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  sensor_id INT NOT NULL,
+  activity SMALLINT NOT NULL,  -- 0 = nenhuma, 1 = detecção
+  timestamp DATETIME NOT NULL,
+  sensor_metadata JSON,        -- battery_level, signal_strength, etc
+  message_id VARCHAR(100),
+  gateway_id VARCHAR(50),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (sensor_id) REFERENCES sensors(id) ON DELETE CASCADE,
+  INDEX idx_sensor_timestamp (sensor_id, timestamp),
+  INDEX idx_timestamp_activity (timestamp, activity)
+);
+
+-- Exemplo de registro:
+{
+  "id": 1,
+  "sensor_id": 1,
+  "activity": 1,
+  "timestamp": "2025-10-15T14:30:00",
+  "sensor_metadata": {
+    "battery_level": 85,
+    "signal_strength": -72,
+    "temperature": 23.5
+  }
+}</code></pre>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-table"></i> Tabela: users</h2>
+                    <pre class="code-block"><code>CREATE TABLE users (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  full_name VARCHAR(100),
+  phone VARCHAR(20),
+  role ENUM('admin', 'operator', 'viewer') DEFAULT 'operator',
+  is_active BOOLEAN DEFAULT TRUE,
+  is_verified BOOLEAN DEFAULT FALSE,
+  last_login DATETIME,
+  login_count INT DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Usuário padrão:
+{
+  "username": "admin",
+  "email": "admin@ceutrespontes.com",
+  "role": "admin",
+  "login_count": 14
+}</code></pre>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-code-branch"></i> Relacionamentos</h2>
+                    <ul>
+                        <li><strong>sensors → readings:</strong> Um sensor tem muitas leituras (1:N)</li>
+                        <li><strong>sensors → alerts:</strong> Um sensor pode ter muitos alertas (1:N)</li>
+                        <li><strong>Cascade Delete:</strong> Ao deletar sensor, deleta leituras e alertas</li>
+                        <li><strong>JSON Fields:</strong> protocol_config e sensor_metadata para dados flexíveis</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Security Section -->
+            <section id="security" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Segurança</span>
+                </div>
+                
+                <h1>Segurança</h1>
+                <p class="section-intro">Sistema completo com autenticação JWT e validação em múltiplas camadas</p>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-lock"></i> Autenticação e Autorização</h2>
+                    <ul class="security-list">
+                        <li><i class="fas fa-check-circle"></i> <strong>JWT (JSON Web Tokens):</strong> Tokens com validade de 24 horas</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Bcrypt Password Hashing:</strong> Senhas criptografadas com salt</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Role-Based Access:</strong> 3 níveis (admin, operator, viewer)</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Protected Endpoints:</strong> @token_required decorator em rotas sensíveis</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Session Management:</strong> Controle de login_count e last_login</li>
+                    </ul>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-shield-alt"></i> Validação de Dados</h2>
+                    <ul class="security-list">
+                        <li><i class="fas fa-check-circle"></i> <strong>Marshmallow Schemas:</strong> Validação estrita de entrada (4 schemas)</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Input Sanitization:</strong> @validate_request decorator personalizado</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>SQL Injection Prevention:</strong> SQLAlchemy ORM com prepared statements</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>JSON Validation:</strong> Formato de mensagens MQTT e API</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Email Validation:</strong> Formato RFC-compliant</li>
+                    </ul>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-network-wired"></i> Segurança de Infraestrutura</h2>
+                    <ul class="security-list">
+                        <li><i class="fas fa-check-circle"></i> <strong>MQTT Local Network:</strong> Comunicação broker em rede local</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Database Security:</strong> Conexões autenticadas, usuário dedicado</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Error Handling:</strong> Mensagens genéricas, logs detalhados</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>CORS Configuration:</strong> Controle de origens permitidas</li>
+                    </ul>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-clock"></i> Melhorias Futuras</h2>
+                    <ul class="security-list">
+                        <li><i class="fas fa-hourglass-half"></i> TLS/SSL para MQTT (criptografia de transporte)</li>
+                        <li><i class="fas fa-hourglass-half"></i> Rate Limiting (prevenção de abuso de API)</li>
+                        <li><i class="fas fa-hourglass-half"></i> Audit Logs (rastreamento completo de ações)</li>
+                        <li><i class="fas fa-hourglass-half"></i> Two-Factor Authentication (2FA)</li>
+                        <li><i class="fas fa-hourglass-half"></i> API Key Management (autenticação adicional)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Operations Section -->
+            <section id="operations" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Operações</span>
+                </div>
+                
+                <h1>Operações</h1>
+                <p class="section-intro">Sistema completo rodando - API Flask + MySQL + MQTT Gateway</p>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-play-circle"></i> Inicialização do Sistema Completo</h2>
+                    <ol>
+                        <li><strong>Ativar ambiente virtual:</strong> 
+                            <pre class="code-block"><code>venv\Scripts\activate</code></pre>
+                        </li>
+                        <li><strong>Iniciar broker Mosquitto:</strong> 
+                            <pre class="code-block"><code>mosquitto -v</code></pre>
+                        </li>
+                        <li><strong>Iniciar Gateway MQTT:</strong> 
+                            <pre class="code-block"><code>python backend/gateway/gateway.py</code></pre>
+                        </li>
+                        <li><strong>Iniciar API Flask:</strong> 
+                            <pre class="code-block"><code>cd backend
+python app.py</code></pre>
+                            <p><small>API disponível em: <code>http://localhost:5000</code></small></p>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-database"></i> Gerenciamento do Banco de Dados</h2>
+                    <ol>
+                        <li><strong>Criar banco e usuário MySQL:</strong>
+                            <pre class="code-block"><code>CREATE DATABASE ceu_tres_pontes_db;
+CREATE USER 'ceu_user'@'localhost' IDENTIFIED BY 'sua_senha';
+GRANT ALL PRIVILEGES ON ceu_tres_pontes_db.* TO 'ceu_user'@'localhost';</code></pre>
+                        </li>
+                        <li><strong>Configurar credenciais:</strong> 
+                            <p>Editar <code>backend/config.py</code> com suas credenciais MySQL</p>
+                        </li>
+                        <li><strong>Criar tabelas:</strong> 
+                            <p>As tabelas são criadas automaticamente no primeiro run com <code>db.create_all()</code></p>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-vial"></i> Testes e Simulação</h2>
+                    <pre class="code-block"><code># Executar testes unitários
+python -m pytest tests/ -v
+
+# Simular sensores enviando dados via MQTT
+python tests/test_simuladores.py
+
+# Testar integração MQTT completa
+python tests/test_mqtt_integration.py</code></pre>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-tools"></i> Monitoramento em Produção</h2>
+                    <ul>
+                        <li><strong>Health Check:</strong> <code>GET /health</code> - Verifica status API e banco</li>
+                        <li><strong>Logs Flask:</strong> Saída padrão do app.py (INFO, WARNING, ERROR)</li>
+                        <li><strong>Logs Mosquitto:</strong> Console do broker com flag <code>-v</code></li>
+                        <li><strong>Logs Gateway:</strong> Saída padrão do gateway.py</li>
+                        <li><strong>Estatísticas:</strong> <code>GET /api/v1/statistics/overview</code> - Visão geral do sistema</li>
+                        <li><strong>MySQL Monitoring:</strong> 
+                            <pre class="code-block"><code>SELECT COUNT(*) FROM readings;  -- Total de leituras
+SELECT * FROM sensors WHERE status='active';  -- Sensores ativos</code></pre>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="content-card">
+                    <h2><i class="fas fa-user-shield"></i> Primeiro Login</h2>
+                    <ol>
+                        <li><strong>Registrar usuário admin:</strong>
+                            <pre class="code-block"><code>POST /api/v1/auth/register
+{
+  "username": "admin",
+  "email": "admin@ceutrespontes.com",
+  "password": "SenhaSegura123!",
+  "full_name": "Administrador",
+  "role": "admin"
+}</code></pre>
+                        </li>
+                        <li><strong>Fazer login:</strong>
+                            <pre class="code-block"><code>POST /api/v1/auth/login
+{
+  "username": "admin",
+  "password": "SenhaSegura123!"
+}
+
+# Retorna:
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "token_type": "Bearer"
+}</code></pre>
+                        </li>
+                        <li><strong>Usar token nas requisições:</strong>
+                            <pre class="code-block"><code>Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...</code></pre>
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Other sections placeholders -->
+            <section id="checklist" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Checklist</span>
+                </div>
+                <h1>Checklist / Intake</h1>
+                <p>Checklists de implementação e validação do projeto.</p>
+            </section>
+
+            <section id="endpoints" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Endpoints</span>
+                </div>
+                <h1>Endpoints</h1>
+                <p>Documentação detalhada de todos os endpoints da API.</p>
+            </section>
+
+            <section id="versioning" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>Política de Versionado</span>
+                </div>
+                <h1>Política de Versionado</h1>
+                <p>Estratégia de versionamento do sistema (Semantic Versioning).</p>
+            </section>
+
+            <section id="adrs" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / <span>ADRs</span>
+                </div>
+                <h1>Architecture Decision Records</h1>
+                <p>Registro de decisões arquiteturais importantes.</p>
+            </section>
+
+            <!-- Caso de Uso: Monitoramento da Piscina -->
+            <section id="use-case-pool" class="content-section">
+                <div class="breadcrumb">
+                    <a href="#home">Início</a> / Casos de Uso / <span>Monitoramento da Piscina</span>
+                </div>
+                <h1><i class="fas fa-swimming-pool"></i> Monitoramento da Piscina</h1>
+                
+                <div class="info-box">
+                    <h3>Visão Geral</h3>
+                    <p>Sistema completo de monitoramento da piscina do CEU Três Pontes, com coleta de dados de temperatura e qualidade da água em tempo real, armazenamento em banco de dados, e visualização através de dashboard interativo.</p>
+                </div>
+
+                <h2>1. Objetivos</h2>
+                <ul>
+                    <li>Monitorar continuamente a temperatura da água da piscina</li>
+                    <li>Monitorar a temperatura ambiente ao redor da piscina</li>
+                    <li>Avaliar e registrar a qualidade da água (Ótima, Boa, Regular, Imprópria)</li>
+                    <li>Gerar alertas quando a qualidade da água não estiver adequada</li>
+                    <li>Fornecer histórico de médias diárias de temperatura</li>
+                    <li>Apresentar estatísticas agregadas do período</li>
+                </ul>
+
+                <h2>2. Atores</h2>
+                <ul>
+                    <li><strong>Administrador do Sistema:</strong> Gerencia usuários e configurações</li>
+                    <li><strong>Operador do CEU:</strong> Monitora os dados da piscina e responde a alertas</li>
+                    <li><strong>Sensores IoT:</strong> Coletam dados de temperatura e qualidade da água</li>
+                    <li><strong>Sistema de Alertas:</strong> Notifica sobre condições inadequadas da água</li>
+                </ul>
+
+                <h2>3. Arquitetura do Sistema</h2>
+                
+                <h3>3.1 Componentes</h3>
+                <div class="code-block">
+<pre>┌─────────────────┐
+│   Sensores IoT  │ (Temperatura da Água, Temperatura Ambiente, Qualidade)
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│  MQTT Broker    │ (Mosquitto - Porta 1884)
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│  Gateway IoT    │ (Python - Processa mensagens MQTT)
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│   Backend API   │ (Flask + SQLAlchemy - Porta 5000)
+└────────┬────────┘
+         │
+         ├─────→ MySQL Database (smartceu_db)
+         │
+         ↓
+┌─────────────────┐
+│  NGINX Reverse  │ (Porta 80 - /smartceu)
+│     Proxy       │
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│   Dashboard     │ (HTML/JS - Chart.js)
+│   Web Frontend  │
+└─────────────────┘</pre>
+                </div>
+
+                <h3>3.2 Fluxo de Dados</h3>
+                <ol>
+                    <li><strong>Coleta:</strong> Sensores coletam dados a cada intervalo programado</li>
+                    <li><strong>Transmissão:</strong> Dados enviados via MQTT para tópicos específicos</li>
+                    <li><strong>Processamento:</strong> Gateway recebe, formata e envia para API</li>
+                    <li><strong>Armazenamento:</strong> API valida e persiste dados no MySQL</li>
+                    <li><strong>Disponibilização:</strong> API expõe endpoints REST autenticados (JWT)</li>
+                    <li><strong>Visualização:</strong> Dashboard consulta API e renderiza gráficos</li>
+                    <li><strong>Alertas:</strong> Sistema verifica qualidade e gera alertas quando necessário</li>
+                </ol>
+
+                <h2>4. Modelo de Dados</h2>
+                
+                <h3>4.1 Tabela: pool_readings</h3>
+                <div class="code-block">
+<pre>CREATE TABLE pool_readings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sensor_type VARCHAR(20) NOT NULL,           -- 'water_temp', 'ambient_temp', 'water_quality'
+    reading_date DATE NOT NULL,                 -- Data da leitura
+    reading_time TIME NOT NULL,                 -- Hora da leitura (timezone local)
+    temperature DECIMAL(5,2),                   -- Temperatura em °C (2 decimais)
+    water_quality VARCHAR(20),                  -- 'Ótima', 'Boa', 'Regular', 'Imprópria'
+    created_at DATETIME NOT NULL,               -- Timestamp de criação do registro
+    updated_at DATETIME NOT NULL,               -- Timestamp de atualização
+    INDEX idx_sensor_type (sensor_type),
+    INDEX idx_reading_date (reading_date)
+);</pre>
+                </div>
+
+                <h3>4.2 Tipos de Sensores</h3>
+                <ul>
+                    <li><strong>water_temp:</strong> Temperatura da água da piscina (20-35°C)</li>
+                    <li><strong>ambient_temp:</strong> Temperatura ambiente (15-40°C)</li>
+                    <li><strong>water_quality:</strong> Qualidade da água (sem temperatura)</li>
+                </ul>
+
+                <h2>5. API Endpoints</h2>
+
+                <h3>5.1 Autenticação</h3>
+                <div class="code-block">
+<pre>POST /api/v1/auth/login
+{
+    "username": "admin",
+    "password": "admin123"
+}
+
+Response:
+{
+    "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+    "user": {
+        "id": 1,
+        "username": "admin",
+        "role": "admin"
+    }
+}</pre>
+                </div>
+
+                <h3>5.2 Últimas Leituras</h3>
+                <div class="code-block">
+<pre>GET /api/v1/pool/readings/latest
+Headers: Authorization: Bearer {token}
+
+Response:
+{
+    "data": {
+        "water_temp": {
+            "id": 12345,
+            "sensor_type": "water_temp",
+            "reading_date": "2025-10-22",
+            "reading_time": "16:02:53",
+            "temperature": 25.46
+        },
+        "ambient_temp": { ... },
+        "water_quality": {
+            "water_quality": "Ótima"
+        }
+    }
+}</pre>
+                </div>
+
+                <h3>5.3 Média Diária de Temperatura</h3>
+                <div class="code-block">
+<pre>GET /api/v1/pool/temperature/daily-average?sensor_type=water_temp&days=10
+Headers: Authorization: Bearer {token}
+
+Response:
+{
+    "data": [
+        {
+            "date": "2025-10-13",
+            "avg_temperature": 26.26,
+            "reading_count": 183
+        },
+        {
+            "date": "2025-10-14",
+            "avg_temperature": 26.26,
+            "reading_count": 240
+        },
+        ...
+    ],
+    "sensor_type": "water_temp",
+    "period_days": 10
+}</pre>
+                </div>
+
+                <h3>5.4 Estatísticas</h3>
+                <div class="code-block">
+<pre>GET /api/v1/pool/statistics?days=7
+Headers: Authorization: Bearer {token}
+
+Response:
+{
+    "data": {
+        "water_temp": {
+            "avg": 26.25,
+            "min": 24.50,
+            "max": 28.00,
+            "count": 1234
+        },
+        "ambient_temp": { ... },
+        "water_quality": {
+            "distribution": {
+                "Ótima": 850,
+                "Boa": 100,
+                "Regular": 40,
+                "Imprópria": 10
+            }
+        }
+    }
+}</pre>
+                </div>
+
+                <h3>5.5 Alertas de Qualidade</h3>
+                <div class="code-block">
+<pre>GET /api/v1/pool/alerts
+Headers: Authorization: Bearer {token}
+
+Response:
+{
+    "data": [
+        {
+            "id": 456,
+            "sensor_type": "water_quality",
+            "reading_date": "2025-10-22",
+            "reading_time": "14:30:00",
+            "water_quality": "Imprópria",
+            "alert_level": "high"
+        }
+    ]
+}</pre>
+                </div>
+
+                <h2>6. Dashboard Web</h2>
+
+                <h3>6.1 Funcionalidades</h3>
+                <ul>
+                    <li><strong>Cards de Status:</strong> Exibem última leitura de cada sensor em tempo real</li>
+                    <li><strong>Gráficos de Histórico:</strong> Média diária dos últimos 10 dias (Chart.js)</li>
+                    <li><strong>Estatísticas do Período:</strong> Médias, mínimas e máximas</li>
+                    <li><strong>Lista de Alertas:</strong> Histórico de alertas de qualidade inadequada</li>
+                    <li><strong>Atualização Automática:</strong> Dados atualizados a cada 30 segundos</li>
+                </ul>
+
+                <h3>6.2 Componentes Visuais</h3>
+                <ul>
+                    <li><strong>Card Temperatura da Água:</strong> Valor atual + timestamp formatado (DD/MM/YYYY HH:MM)</li>
+                    <li><strong>Card Temperatura Ambiente:</strong> Valor atual + timestamp</li>
+                    <li><strong>Card Qualidade da Água:</strong> Status com código de cores (verde/amarelo/laranja/vermelho)</li>
+                    <li><strong>Gráfico Temperatura da Água:</strong> Linha azul com médias diárias</li>
+                    <li><strong>Gráfico Temperatura Ambiente:</strong> Linha laranja com médias diárias</li>
+                    <li><strong>Tabela de Alertas:</strong> Lista filtrada das últimas 24h</li>
+                </ul>
+
+                <h3>6.3 Formatação de Dados</h3>
+                <ul>
+                    <li>Temperaturas: 2 casas decimais (ex: 25.46°C)</li>
+                    <li>Datas: Formato brasileiro DD/MM/YYYY</li>
+                    <li>Horários: HH:MM (24h)</li>
+                    <li>Timezone: America/Sao_Paulo (UTC-3)</li>
+                </ul>
+
+                <h2>7. Decisões Técnicas</h2>
+
+                <h3>7.1 Timezone</h3>
+                <div class="info-box">
+                    <p><strong>Problema:</strong> Inicialmente, as leituras eram geradas em UTC, causando diferença de 3 horas com o horário local do servidor.</p>
+                    <p><strong>Solução:</strong> Implementação do uso de <code>zoneinfo.ZoneInfo('America/Sao_Paulo')</code> em todos os scripts de geração de dados.</p>
+                    <p><strong>Resultado:</strong> Dados armazenados com timestamp local correto, sem necessidade de conversão no frontend.</p>
+                </div>
+
+                <h3>7.2 Média Diária vs. Leituras Horárias</h3>
+                <div class="info-box">
+                    <p><strong>Problema:</strong> Gráficos com leituras individuais (hora a hora) ficavam poluídos e difíceis de interpretar.</p>
+                    <p><strong>Solução:</strong> Criação de endpoint dedicado (<code>/temperature/daily-average</code>) que calcula média de todas as leituras de cada dia.</p>
+                    <p><strong>Resultado:</strong> Gráficos limpos e informativos mostrando tendências ao longo de 10 dias.</p>
+                </div>
+
+                <h3>7.3 Separação de Date e Time</h3>
+                <div class="info-box">
+                    <p><strong>Decisão:</strong> Usar campos separados <code>reading_date (DATE)</code> e <code>reading_time (TIME)</code> ao invés de um único DATETIME.</p>
+                    <p><strong>Justificativa:</strong> Facilita queries de agregação por dia e evita complexidades de timezone em campos DATETIME do MySQL.</p>
+                    <p><strong>Trade-off:</strong> Necessário combinar os dois campos para exibição, mas queries de média diária ficam mais simples.</p>
+                </div>
+
+                <h2>8. Melhorias Implementadas</h2>
+
+                <h3>8.1 Correção de Horários Futuros</h3>
+                <p>Script de população ajustado para não gerar leituras com timestamp futuro no dia atual:</p>
+                <ul>
+                    <li>Dias passados: Leituras entre 6h e 22h (horário de funcionamento da piscina)</li>
+                    <li>Dia atual: Leituras apenas até a hora atual do servidor</li>
+                    <li>Quantidade proporcional: Número de leituras de hoje ajustado conforme horas decorridas</li>
+                </ul>
+
+                <h3>8.2 Formatação de Temperatura</h3>
+                <p>Padronização de todas as temperaturas para exatamente 2 casas decimais:</p>
+                <ul>
+                    <li>Banco de dados: <code>DECIMAL(5,2)</code></li>
+                    <li>API: Conversão para float com arredondamento</li>
+                    <li>Frontend: <code>parseFloat(value).toFixed(2)</code></li>
+                </ul>
+
+                <h3>8.3 Cache Control</h3>
+                <p>Configuração do NGINX para evitar cache de páginas HTML:</p>
+                <div class="code-block">
+<pre>add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0";
+add_header Pragma "no-cache";</pre>
+                </div>
+
+                <h2>9. Métricas e Performance</h2>
+
+                <h3>9.1 Volume de Dados (20 dias)</h3>
+                <ul>
+                    <li>Leituras de temperatura da água: ~3.700 registros</li>
+                    <li>Leituras de temperatura ambiente: ~3.100 registros</li>
+                    <li>Leituras de qualidade da água: ~940 registros</li>
+                    <li><strong>Total:</strong> ~7.740 registros de piscina</li>
+                </ul>
+
+                <h3>9.2 Distribuição de Qualidade</h3>
+                <ul>
+                    <li>Ótima: ~85%</li>
+                    <li>Boa: ~10%</li>
+                    <li>Regular: ~4%</li>
+                    <li>Imprópria: ~1%</li>
+                </ul>
+
+                <h3>9.3 Médias de Temperatura (Últimos 10 dias)</h3>
+                <ul>
+                    <li><strong>Água:</strong> 26.06°C - 26.47°C</li>
+                    <li><strong>Ambiente:</strong> 26.32°C - 28.20°C</li>
+                </ul>
+
+                <h2>10. Próximos Passos</h2>
+                <ul>
+                    <li>Implementar notificações push para alertas críticos</li>
+                    <li>Adicionar exportação de relatórios em PDF</li>
+                    <li>Criar dashboard mobile responsivo</li>
+                    <li>Integrar com sistema de gestão de manutenção</li>
+                    <li>Adicionar previsão de necessidade de manutenção baseada em tendências</li>
+                    <li>Implementar monitoramento de níveis de cloro e pH</li>
+                </ul>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <h3>🔗 Links Relacionados</h3>
+                    <ul>
+                        <li><a href="http://82.25.75.88/smartceu/pool" target="_blank">Dashboard de Monitoramento</a></li>
+                        <li><a href="#api-specs">Especificações Completas da API</a></li>
+                        <li><a href="#data-model">Modelo de Dados Completo</a></li>
+                        <li><a href="#architecture">Arquitetura Geral do Sistema</a></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 IoT Gateway Project · Documentação Arquitetônica v1.0.0</p>
+            <p>Última atualização: 20 de Outubro de 2025</p>
+        </div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

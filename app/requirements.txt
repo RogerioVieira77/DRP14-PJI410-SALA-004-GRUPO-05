@@ -1,0 +1,124 @@
+# Requisitos do Sistema - CEU Tres Pontes
+
+## Fase 1: Simuladores (ATUAL) ✅
+
+### Python
+- Python >= 3.12.3
+
+### Bibliotecas Python (Fase 1)
+Nenhuma dependência externa necessária. Usa apenas bibliotecas padrão:
+- `abc` - Classes abstratas
+- `datetime` - Manipulação de timestamps
+- `uuid` - Geração de IDs únicos
+- `random` - Simulação de dados
+- `json` - Serialização de dados
+
+---
+
+## Fase 2: Backend e Comunicação (PLANEJADO)
+
+### Infraestrutura
+```
+ubuntu==25.04
+docker==27.5.1
+nginx==1.29.1
+```
+
+### Python Packages
+```
+flask==3.0.0
+flask-cors==4.0.0
+paho-mqtt==1.6.1
+pika==1.3.2
+mysql-connector-python==8.2.0
+pandas==2.1.4
+numpy==1.26.2
+pyspark==3.5.0
+python-dotenv==1.0.0
+```
+
+### Containers Docker
+```
+mosquitto:latest         # MQTT Broker
+rabbitmq:3.13-management # Message Queue
+mysql:8.0.43            # Database
+nginx:1.29.1            # Web Server
+```
+
+---
+
+## Fase 3: Frontend (PLANEJADO)
+
+### Tecnologias
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- Chart.js ou D3.js (visualizações)
+
+---
+
+## Fase 4: Analytics (PLANEJADO)
+
+### Ferramentas
+- PowerBI Desktop
+- MySQL Connector para PowerBI
+
+---
+
+## Instalação
+
+### Fase 1 (Atual)
+```bash
+# Clone o repositório
+git clone <repository-url>
+cd "PI - IV - V1"
+
+# Execute os testes
+python tests/test_simuladores.py
+```
+
+### Fases Futuras
+```bash
+# Instalar dependências Python
+pip install -r requirements.txt
+
+# Iniciar containers Docker
+docker-compose up -d
+
+# Configurar banco de dados
+python scripts/setup_database.py
+```
+
+---
+
+## Requisitos de Sistema
+
+### Desenvolvimento
+- **OS:** Windows 10/11, Linux (Ubuntu 25.04 recomendado), macOS
+- **RAM:** 4GB mínimo (8GB recomendado)
+- **Disco:** 2GB livre
+- **Python:** 3.12.3 ou superior
+
+### Produção (Planejado)
+- **OS:** Ubuntu Server 25.04
+- **RAM:** 8GB mínimo (16GB recomendado)
+- **Disco:** 50GB SSD
+- **CPU:** 4 cores mínimo
+- **Rede:** 100 Mbps mínimo
+
+---
+
+## Versões Específicas
+
+| Componente | Versão  | Status |
+|------------|---------|--------|
+| Python     | 3.12.3  | ✅ Atual |
+| Ubuntu     | 25.04   | 📅 Planejado |
+| Docker     | 27.5.1  | 📅 Planejado |
+| NGINX      | 1.29.1  | 📅 Planejado |
+| RabbitMQ   | 3.13    | 📅 Planejado |
+| MySQL      | 8.0.43  | 📅 Planejado |
+
+---
+
+Última atualização: Outubro 2025

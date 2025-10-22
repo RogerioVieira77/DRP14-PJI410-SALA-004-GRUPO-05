@@ -1,0 +1,24 @@
+{
+  "export_time": "2025-10-20T20:22:09.995073",
+  "stats": {
+    "client_id": "test_integration_subscriber",
+    "uptime_seconds": 32,
+    "messages_received": 0,
+    "sensor_readings": 0,
+    "status_updates": 2,
+    "alerts_received": 0,
+    "errors": 0,
+    "cache_size": 0,
+    "mqtt_stats": {
+      "client_id": "test_integration_subscriber",
+      "connected": true,
+      "broker": "localhost:1883",
+      "subscribed_topics": 3,
+      "messages_published": 0,
+      "messages_received": 98,
+      "connection_attempts": 1,
+      "connection_failures": 0
+    }
+  },
+  "readings": []
+}

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEU Tres Pontes - Teste da API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #10b981;
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .doc-btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-left: 15px;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .doc-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.5);
+        }
+
+        .header-actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-content {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .endpoint {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .endpoint:hover {
+            background: #e5e7eb;
+        }
+
+        .endpoint .method {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 0.85em;
+        }
+
+        .get { background: #10b981; color: white; }
+        .post { background: #3b82f6; color: white; }
+        .put { background: #f59e0b; color: white; }
+        .delete { background: #ef4444; color: white; }
+
+        .credentials {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .credentials h3 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .credentials code {
+            background: #fbbf24;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #78350f;
+        }
+
+        .test-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+
+        .test-btn:hover {
+            background: #5568d3;
+        }
+
+        .result {
+            background: #1f2937;
+            color: #10b981;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 10px;
+            min-width: 150px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 CEU Tres Pontes - API REST</h1>
+            <p>Sistema de Monitoramento do CEU via IOT</p>
+            <div class="header-actions">
+                <a href="/smartceu" class="doc-btn" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                    🏠 Smart CEU
+                </a>
+                <span class="status" id="serverStatus">🔄 Verificando...</span>
+            </div>
+        </div>
+
+        <div class="credentials">
+            <h3>🔑 Credenciais de Acesso</h3>
+            <p><strong>Username:</strong> <code>admin</code></p>
+            <p><strong>Password:</strong> <code>admin123</code></p>
+            <p><strong>Role:</strong> <code>admin</code></p>
+        </div>
+
+        <div class="grid">
+            <!-- Card: Health Check -->
+            <div class="card">
+                <h2><span class="icon">💚</span> Health Check</h2>
+                <div class="card-content">
+                    <p>Verifica se o servidor está funcionando</p>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span>/health</span>
+                    </div>
+                    <button class="test-btn" onclick="testHealthCheck()">🧪 Testar</button>
+                    <div class="result" id="result-health"></div>
+                </div>
+            </div>
+
+            <!-- Card: Login -->
+            <div class="card">
+                <h2><span class="icon">🔐</span> Autenticação</h2>
+                <div class="card-content">
+                    <p>Login para obter token JWT</p>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span>/api/v1/auth/login</span>
+                    </div>
+                    <button class="test-btn" onclick="testLogin()">🔑 Fazer Login</button>
+                    <div class="result" id="result-login"></div>
+                </div>
+            </div>
+
+            <!-- Card: Sensores -->
+            <div class="card">
+                <h2><span class="icon">📡</span> Sensores</h2>
+                <div class="card-content">
+                    <p>Lista todos os sensores cadastrados</p>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span>/api/v1/sensors</span>
+                    </div>
+                    <button class="test-btn" onclick="testSensors()">📋 Listar Sensores</button>
+                    <div class="result" id="result-sensors"></div>
+                </div>
+            </div>
+
+            <!-- Card: Leituras -->
+            <div class="card">
+                <h2><span class="icon">📊</span> Leituras</h2>
+                <div class="card-content">
+                    <p>Criar uma nova leitura de sensor</p>
+                    <div class="endpoint">
+                        <span class="method post">POST</span>
+                        <span>/api/v1/readings</span>
+                    </div>
+                    <button class="test-btn" onclick="testCreateReading()">➕ Criar Leitura</button>
+                    <div class="result" id="result-readings"></div>
+                </div>
+            </div>
+
+            <!-- Card: Estatísticas -->
+            <div class="card">
+                <h2><span class="icon">📈</span> Estatísticas</h2>
+                <div class="card-content">
+                    <p>Visão geral do sistema</p>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span>/api/v1/statistics/overview</span>
+                    </div>
+                    <button class="test-btn" onclick="testStats()">📊 Ver Estatísticas</button>
+                    <div class="result" id="result-stats"></div>
+                </div>
+            </div>
+
+            <!-- Card: Usuário Atual -->
+            <div class="card">
+                <h2><span class="icon">👤</span> Perfil</h2>
+                <div class="card-content">
+                    <p>Informações do usuário logado</p>
+                    <div class="endpoint">
+                        <span class="method get">GET</span>
+                        <span>/api/v1/auth/me</span>
+                    </div>
+                    <button class="test-btn" onclick="testProfile()">👁️ Ver Perfil</button>
+                    <div class="result" id="result-profile"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="card">
+            <h2><span class="icon">📊</span> Dashboard</h2>
+            <div class="stats" id="dashboard">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-sensors">-</div>
+                    <div class="stat-label">Sensores</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-readings">-</div>
+                    <div class="stat-label">Leituras</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-detections">-</div>
+                    <div class="stat-label">Detecções</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-users">1</div>
+                    <div class="stat-label">Usuários</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = window.location.origin;
+        const API_URL = `${BASE_URL}/smartceu/api/v1`;
+        let authToken = null;
+
+        // Verificar servidor ao carregar
+        window.onload = async () => {
+            await checkServer();
+            await loadDashboard();
+        };
+
+        async function checkServer() {
+            try {
+                const response = await fetch(`${BASE_URL}/smartceu/health`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('serverStatus').textContent = '✅ Servidor Online';
+                    document.getElementById('serverStatus').style.background = '#10b981';
+                    console.log('Servidor online:', data);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Erro ao verificar servidor:', error);
+                document.getElementById('serverStatus').textContent = '❌ Servidor Offline';
+                document.getElementById('serverStatus').style.background = '#ef4444';
+            }
+        }
+
+        function showResult(elementId, data, success = true) {
+            const element = document.getElementById(elementId);
+            element.textContent = JSON.stringify(data, null, 2);
+            element.classList.add('show');
+            element.style.color = success ? '#10b981' : '#ef4444';
+        }
+
+        async function testHealthCheck() {
+            try {
+                const response = await fetch(`${BASE_URL}/smartceu/health`);
+                const data = await response.json();
+                showResult('result-health', data);
+            } catch (error) {
+                showResult('result-health', { error: error.message }, false);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin123'
+                    })
+                });
+                
+                // Pegar o texto bruto primeiro para debug
+                const responseText = await response.text();
+                console.log('Response status:', response.status);
+                console.log('Response text:', responseText);
+                
+                // Tentar fazer parse do JSON
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    showResult('result-login', { 
+                        error: 'Resposta não é JSON válido',
+                        status: response.status,
+                        response_preview: responseText.substring(0, 200)
+                    }, false);
+                    return;
+                }
+                
+                if (data.access_token) {
+                    authToken = data.access_token;
+                    showResult('result-login', { 
+                        success: true,
+                        message: 'Login realizado com sucesso!',
+                        user: data.user,
+                        token_preview: authToken.substring(0, 50) + '...'
+                    });
+                } else {
+                    showResult('result-login', data, false);
+                }
+            } catch (error) {
+                showResult('result-login', { error: error.message }, false);
+            }
+        }
+
+        async function testSensors() {
+            if (!authToken) {
+                alert('Faça login primeiro!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/sensors`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                showResult('result-sensors', data);
+            } catch (error) {
+                showResult('result-sensors', { error: error.message }, false);
+            }
+        }
+
+        async function testCreateReading() {
+            if (!authToken) {
+                alert('Faça login primeiro!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/readings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        sensor_id: 1,
+                        activity: 1,
+                        timestamp: new Date().toISOString(),
+                        sensor_metadata: {
+                            battery_level: 85,
+                            rssi_dbm: -65,
+                            temperature: 25.5
+                        }
+                    })
+                });
+                const data = await response.json();
+                showResult('result-readings', data);
+                await loadDashboard(); // Atualizar estatísticas
+            } catch (error) {
+                showResult('result-readings', { error: error.message }, false);
+            }
+        }
+
+        async function testStats() {
+            if (!authToken) {
+                alert('Faça login primeiro!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/statistics/overview`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                showResult('result-stats', data);
+            } catch (error) {
+                showResult('result-stats', { error: error.message }, false);
+            }
+        }
+
+        async function testProfile() {
+            if (!authToken) {
+                alert('Faça login primeiro!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await response.json();
+                showResult('result-profile', data);
+            } catch (error) {
+                showResult('result-profile', { error: error.message }, false);
+            }
+        }
+
+        async function loadDashboard() {
+            // Auto-login para carregar estatísticas
+            try {
+                const loginResponse = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: 'admin123' })
+                });
+                const loginData = await loginResponse.json();
+                authToken = loginData.access_token;
+
+                // Carregar estatísticas
+                const statsResponse = await fetch(`${API_URL}/statistics/overview`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const stats = await statsResponse.json();
+
+                // Atualizar dashboard com estrutura correta
+                document.getElementById('stat-sensors').textContent = stats.sensors?.total || 0;
+                document.getElementById('stat-readings').textContent = stats.readings?.total || 0;
+                document.getElementById('stat-detections').textContent = stats.readings?.activity_24h || 0;
+            } catch (error) {
+                console.error('Erro ao carregar dashboard:', error);
+                document.getElementById('stat-sensors').textContent = '❌';
+                document.getElementById('stat-readings').textContent = '❌';
+                document.getElementById('stat-detections').textContent = '❌';
+            }
+        }
+    </script>
+</body>
+</html>

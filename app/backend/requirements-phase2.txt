@@ -1,0 +1,17 @@
+# Dependências Python - Fase 2: Gateway e MQTT
+# Sistema de Controle de Acesso - CEU Tres Pontes
+
+# === MQTT Communication ===
+paho-mqtt>=1.6.1
+
+# === Logging e Monitoramento ===
+python-dateutil>=2.8.2
+
+# === Configuração ===
+python-dotenv>=1.0.0
+
+# === JSON e Data Handling ===
+# (Bibliotecas padrão Python são suficientes)
+
+# === Para Desenvolvimento ===
+# pytest>=7.4.0  # (Descomentar para testes)
