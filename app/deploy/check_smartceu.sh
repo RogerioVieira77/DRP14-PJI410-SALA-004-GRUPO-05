@@ -32,8 +32,8 @@ HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' http://localhost/smartceu)
 echo '     Status: '$HTTP_CODE
 echo ''
 echo '4. ESTRUTURA DE ARQUIVOS:'
-echo '  - HTML Principal: '$(test -f /var/www/smartceu/app/smart_ceu.html && echo 'OK' || echo 'FALTA')
-echo '  - Pool Monitoring: '$(test -f /var/www/smartceu/app/monitoramento_piscina.html && echo 'OK' || echo 'FALTA')
+echo '  - HTML Principal: '$(test -f /var/www/smartceu/app/frontend/smart_ceu.html && echo 'OK' || echo 'FALTA')
+echo '  - Pool Monitoring: '$(test -f /var/www/smartceu/app/frontend/monitoramento_piscina.html && echo 'OK' || echo 'FALTA')
 echo '  - Backend app.py: '$(test -f /var/www/smartceu/app/backend/app.py && echo 'OK' || echo 'FALTA')
 echo '  - Assets docs-web: '$(test -d /var/www/smartceu/app/docs-web/assets && echo 'OK' || echo 'FALTA')
 echo ''

@@ -20,7 +20,7 @@ server {
 
     # SmartCEU - Página Principal
     location = /smartceu {
-        alias /var/www/smartceu/app/smart_ceu.html;
+        alias /var/www/smartceu/app/frontend/smart_ceu.html;
         default_type text/html;
         add_header Content-Type "text/html; charset=UTF-8";
         add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0";
@@ -30,7 +30,7 @@ server {
 
     # SmartCEU - Monitoramento Piscina
     location = /smartceu/pool {
-        alias /var/www/smartceu/app/monitoramento_piscina.html;
+        alias /var/www/smartceu/app/frontend/monitoramento_piscina.html;
         default_type text/html;
         add_header Content-Type "text/html; charset=UTF-8";
         add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0";
@@ -40,7 +40,7 @@ server {
 
     # Página de Teste da API
     location = /smartceu/test_page.html {
-        alias /var/www/smartceu/app/test_page.html;
+        alias /var/www/smartceu/app/frontend/test_page.html;
         default_type text/html;
         add_header Content-Type "text/html; charset=UTF-8";
         add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0";

@@ -24,7 +24,7 @@ server {
 
     # Dashboard principal SmartCEU
     location = /smartceu {
-        alias /var/www/smartceu/app/smart_ceu.html;
+        alias /var/www/smartceu/app/frontend/smart_ceu.html;
         default_type text/html;
         add_header Content-Type "text/html; charset=UTF-8";
         access_log /var/log/nginx/smartceu_access.log;
@@ -32,7 +32,7 @@ server {
 
     # Página Pool Monitoring
     location = /smartceu/pool {
-        alias /var/www/smartceu/app/monitoramento_piscina.html;
+        alias /var/www/smartceu/app/frontend/monitoramento_piscina.html;
         default_type text/html;
         add_header Content-Type "text/html; charset=UTF-8";
         access_log /var/log/nginx/smartceu_access.log;

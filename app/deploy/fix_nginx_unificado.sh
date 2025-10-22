@@ -24,13 +24,13 @@ server {
 
     # Dashboard principal SmartCEU
     location = /smartceu {
-        alias /var/www/smartceu/app/smart_ceu.html;
+        alias /var/www/smartceu/app/frontend/smart_ceu.html;
         access_log /var/log/nginx/smartceu_access.log;
     }
 
     # Página Pool Monitoring
     location = /smartceu/pool {
-        alias /var/www/smartceu/app/monitoramento_piscina.html;
+        alias /var/www/smartceu/app/frontend/monitoramento_piscina.html;
         access_log /var/log/nginx/smartceu_access.log;
     }
 

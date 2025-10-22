@@ -53,12 +53,12 @@ server {
 
     # Dashboard principal SmartCEU
     location = /smartceu {
-        alias /var/www/smartceu/app/smart_ceu.html;
+        alias /var/www/smartceu/app/frontend/smart_ceu.html;
     }
 
     # Página específica - Pool Monitoring
     location = /smartceu/pool {
-        alias /var/www/smartceu/app/monitoramento_piscina.html;
+        alias /var/www/smartceu/app/frontend/monitoramento_piscina.html;
     }
 
     # Assets do docs-web

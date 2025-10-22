@@ -130,7 +130,7 @@ def register_blueprints(app):
     def index():
         """Serve a página de teste"""
         project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        return send_from_directory(project_root, 'test_page.html')
+        return send_from_directory(os.path.join(project_root, 'frontend'), 'test_page.html')
     
     # Prefixo da API
     api_prefix = app.config.get('API_PREFIX', '/api/v1')
