@@ -187,8 +187,9 @@ check_command "MySQL está ativo"
 
 # Flask/Gunicorn (serviço SmartCEU)
 if systemctl list-units --full -all | grep -q smartceu.service; then
+    # Flask rodando como serviço systemd
     systemctl restart smartceu.service 2>/dev/null
-    if check_command "SmartCEU (Flask/Gunicorn) reiniciado"; then
+    if check_command "SmartCEU (Flask/Gunicorn) reiniciado via systemd"; then
         ((SERVICES_RESTARTED++))
     fi
     
@@ -196,7 +197,31 @@ if systemctl list-units --full -all | grep -q smartceu.service; then
     systemctl is-active --quiet smartceu.service
     check_command "SmartCEU está ativo"
 else
-    print_error "Serviço smartceu.service não encontrado"
+    # Flask rodando como processo (não é serviço)
+    FLASK_PID=$(ps aux | grep 'python.*app.py' | grep '/var/www/smartceu' | grep -v grep | awk '{print $2}' | head -1)
+    
+    if [ -n "$FLASK_PID" ]; then
+        # Matar processo Flask existente
+        pkill -f '/var/www/smartceu.*app.py' 2>/dev/null
+        sleep 2
+        
+        # Reiniciar Flask
+        cd /var/www/smartceu/app/backend
+        nohup /var/www/smartceu/venv/bin/python3 app.py > /var/log/smartceu_flask.log 2>&1 &
+        sleep 3
+        
+        # Verificar se iniciou
+        NEW_PID=$(ps aux | grep 'python.*app.py' | grep '/var/www/smartceu' | grep -v grep | awk '{print $2}' | head -1)
+        if [ -n "$NEW_PID" ]; then
+            if check_command "SmartCEU (Flask) reiniciado como processo (PID: $NEW_PID)"; then
+                ((SERVICES_RESTARTED++))
+            fi
+        else
+            print_error "Falha ao reiniciar SmartCEU (Flask)"
+        fi
+    else
+        print_error "SmartCEU (Flask) não está rodando e não é um serviço systemd"
+    fi
 fi
 
 # Nginx
