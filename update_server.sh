@@ -143,19 +143,30 @@ else
 fi
 
 #==============================================================================
-# 4. Ajustar permissões
+# 4. Ajustar permissões (Modo Seguro)
 #==============================================================================
 
 print_step "4. Ajustando permissões dos arquivos..."
 
+# 1. Proprietário (necessário para Nginx/Flask acessar os arquivos)
 chown -R www-data:www-data "$APP_DIR" 2>/dev/null
 check_command "Proprietário ajustado para www-data"
 
-chmod -R 755 "$APP_DIR" 2>/dev/null
-check_command "Permissões de diretórios ajustadas"
+# 2. Permissões de diretórios (755 - permite navegação)
+find "$APP_DIR" -type d -exec chmod 755 {} \; 2>/dev/null
+check_command "Permissões de diretórios ajustadas (755)"
 
-find "$APP_DIR" -type f -name "*.sh" -exec chmod +x {} \; 2>/dev/null
-check_command "Scripts shell tornados executáveis"
+# 3. Permissões de arquivos regulares (644 - leitura apenas)
+find "$APP_DIR" -type f -exec chmod 644 {} \; 2>/dev/null
+check_command "Permissões de arquivos ajustadas (644)"
+
+# 4. Tornar scripts executáveis (somente .sh)
+find "$APP_DIR" -type f -name "*.sh" -exec chmod 755 {} \; 2>/dev/null
+check_command "Scripts shell tornados executáveis (755)"
+
+# 5. Proteger arquivos sensíveis (640 - apenas owner e group)
+find "$APP_DIR" -type f \( -name ".env" -o -name "*.ini" -o -name "*.conf" \) -exec chmod 640 {} \; 2>/dev/null
+check_command "Arquivos de configuração protegidos (640)"
 
 #==============================================================================
 # 5. Reiniciar serviços
