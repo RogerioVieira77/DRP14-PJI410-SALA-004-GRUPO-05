@@ -1,200 +1,170 @@
-#!/usr/bin/env python3
 """
-Script para popular o banco de dados com leituras simuladas
-Cria leituras dos últimos 20 dias para todos os sensores
-Média de 87 a 253 leituras diárias por sensor
+Script para popular o banco de dados com leituras de teste
+Gera 5 dias de dados para todos os sensores
 """
 
-from app import create_app, db
-from app.models.sensor import Sensor
-from app.models.reading import Reading
+import pymysql
 from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
 import random
-import json
+import os
+from dotenv import load_dotenv
 
-# Timezone do servidor
-TIMEZONE = ZoneInfo('America/Sao_Paulo')
+# Carregar variáveis de ambiente
+load_dotenv()
+load_dotenv('backend/.env')
+
+# Configuração do banco
+DB_CONFIG = {
+    'host': os.getenv('DB_HOST', 'localhost'),
+    'port': int(os.getenv('DB_PORT', 3306)),
+    'user': os.getenv('DB_USER', 'ceu_tres_pontes'),
+    'password': os.getenv('DB_PASSWORD', 'CeuTresPontes2025!'),
+    'database': os.getenv('DB_NAME', 'ceu_tres_pontes_db'),
+    'charset': 'utf8mb4'
+}
+
+print(f"📡 Tentando conectar ao banco: {DB_CONFIG['user']}@{DB_CONFIG['host']}/{DB_CONFIG['database']}")
+print(f"🔑 Senha configurada: {'✅ Sim' if DB_CONFIG['password'] else '❌ Não'}\n")
 
 def generate_readings():
-    """Gera leituras simuladas para todos os sensores"""
+    """Gera leituras de teste para 5 dias"""
     
-    app = create_app()
-    with app.app_context():
+    connection = pymysql.connect(**DB_CONFIG)
+    cursor = connection.cursor()
+    
+    try:
         # Buscar todos os sensores
-        sensors = Sensor.query.all()
+        cursor.execute("SELECT id, serial_number, location FROM sensors")
+        sensors = cursor.fetchall()
         
-        if not sensors:
-            print('❌ Nenhum sensor encontrado no banco!')
-            print('   Execute primeiro: create_sensors.py')
-            return
+        print(f"📡 Encontrados {len(sensors)} sensores")
+        print("=" * 60)
         
-        print('='*70)
-        print(f'Gerando leituras simuladas para {len(sensors)} sensores')
-        print('Período: Últimos 20 dias')
-        print('='*70)
-        print()
+        # Data inicial: 5 dias atrás
+        start_date = datetime.now() - timedelta(days=5)
         
-        # Verificar leituras existentes
-        existing_count = Reading.query.count()
-        if existing_count > 0:
-            print(f'⚠️  Já existem {existing_count} leituras no banco!')
-            response = input('Deseja adicionar mais leituras? (s/N): ')
-            if response.lower() != 's':
-                print('Operação cancelada.')
-                return
+        total_readings = 0
         
-        # Configurações
-        days_back = 20
-        min_readings_per_day = 87
-        max_readings_per_day = 253
-        
-        total_readings_created = 0
-        
-        # Para cada sensor
-        for sensor in sensors:
-            sensor_readings = []
-            print(f'📡 {sensor.description}')
-            print(f'   Serial: {sensor.serial_number}')
+        for sensor_id, serial_number, location in sensors:
+            sensor_readings = 0
+            print(f"\n🔄 Processando: {serial_number} ({location})")
             
-            # Gerar leituras para cada dia
-            for day_offset in range(days_back, -1, -1):
-                # Data base do dia com timezone correto
-                day_date = datetime.now(TIMEZONE) - timedelta(days=day_offset)
-                day_start = day_date.replace(hour=6, minute=0, second=0, microsecond=0)
-                day_end = day_date.replace(hour=22, minute=0, second=0, microsecond=0)
+            # Para cada dia
+            for day in range(5):
+                # Número de leituras para este dia (entre 100 e 300)
+                daily_readings = random.randint(100, 300)
                 
-                # Número aleatório de leituras para este dia
-                num_readings = random.randint(min_readings_per_day, max_readings_per_day)
+                day_start = start_date + timedelta(days=day)
                 
                 # Gerar leituras distribuídas ao longo do dia
-                for _ in range(num_readings):
-                    # Timestamp aleatório entre 6h e 22h
-                    random_seconds = random.randint(0, int((day_end - day_start).total_seconds()))
+                for i in range(daily_readings):
+                    # Timestamp aleatório dentro do dia
+                    random_seconds = random.randint(0, 86399)  # segundos em 24h
                     timestamp = day_start + timedelta(seconds=random_seconds)
                     
-                    # Gerar dados baseados no tipo de sensor
-                    reading_data = generate_sensor_data(sensor, timestamp)
+                    # Atividade: sensores de entrada/saída têm mais atividade
+                    if 'entrada' in location.lower() or 'saida' in location.lower():
+                        activity = random.choices([0, 1], weights=[60, 40])[0]  # 40% atividade
+                    elif 'portaria' in location.lower():
+                        activity = random.choices([0, 1], weights=[70, 30])[0]  # 30% atividade
+                    elif 'banheiro' in location.lower():
+                        activity = random.choices([0, 1], weights=[80, 20])[0]  # 20% atividade
+                    else:
+                        activity = random.choices([0, 1], weights=[85, 15])[0]  # 15% atividade
                     
-                    # Extrair activity (obrigatório)
-                    activity = reading_data.pop('activity', 0)
+                    # Metadados do sensor (simulação realista)
+                    battery_level = random.randint(65, 100)
+                    signal_strength = random.randint(-90, -50)
                     
-                    # Criar reading
-                    reading = Reading(
-                        sensor_id=sensor.id,
-                        timestamp=timestamp,
-                        activity=activity,
-                        sensor_metadata=reading_data
-                    )
+                    # Ocasionalmente adicionar temperatura e umidade
+                    sensor_metadata = {
+                        'battery_level': battery_level,
+                        'signal_strength': signal_strength
+                    }
                     
-                    sensor_readings.append(reading)
+                    if random.random() > 0.7:  # 30% das leituras têm temperatura
+                        sensor_metadata['temperature'] = round(random.uniform(18.0, 28.0), 1)
+                    
+                    if random.random() > 0.7:  # 30% das leituras têm umidade
+                        sensor_metadata['humidity'] = round(random.uniform(40.0, 70.0), 1)
+                    
+                    # Inserir leitura
+                    cursor.execute("""
+                        INSERT INTO readings 
+                        (sensor_id, activity, timestamp, sensor_metadata, created_at)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (
+                        sensor_id,
+                        activity,
+                        timestamp,
+                        str(sensor_metadata).replace("'", '"'),
+                        datetime.now()
+                    ))
+                    
+                    sensor_readings += 1
+                    total_readings += 1
+                
+                # Atualizar sensor após cada dia
+                cursor.execute("""
+                    UPDATE sensors 
+                    SET 
+                        total_readings = %s,
+                        last_reading_at = %s,
+                        battery_level = %s,
+                        signal_strength = %s
+                    WHERE id = %s
+                """, (
+                    sensor_readings,
+                    timestamp,
+                    battery_level,
+                    signal_strength,
+                    sensor_id
+                ))
+                
+                connection.commit()
+                print(f"  ✅ Dia {day + 1}: {daily_readings} leituras criadas")
             
-            # Adicionar todas as leituras do sensor
-            db.session.bulk_save_objects(sensor_readings)
-            db.session.commit()
-            
-            total_readings_created += len(sensor_readings)
-            print(f'   ✅ {len(sensor_readings)} leituras criadas')
-            print()
-            
-            # Atualizar estatísticas do sensor
-            sensor.total_readings = len(sensor_readings)
-            sensor.last_reading_at = max(r.timestamp for r in sensor_readings)
-            db.session.commit()
+            print(f"  📊 Total para {serial_number}: {sensor_readings} leituras")
         
-        print('='*70)
-        print(f'✅ Total de {total_readings_created} leituras criadas!')
-        print('='*70)
-        print()
-        print('📊 Estatísticas:')
-        print(f'   Sensores: {len(sensors)}')
-        print(f'   Período: {days_back} dias')
-        print(f'   Média por sensor: {total_readings_created // len(sensors)} leituras')
-        print(f'   Média diária: {total_readings_created // (len(sensors) * days_back)} leituras/sensor/dia')
-        print()
-        print('🌐 Teste na API:')
-        print('   GET http://82.25.75.88/smartceu/api/v1/readings/latest')
-        print('   GET http://82.25.75.88/smartceu/api/v1/statistics/overview')
-        print()
+        print("\n" + "=" * 60)
+        print(f"✅ CONCLUÍDO!")
+        print(f"📊 Total de leituras criadas: {total_readings}")
+        print(f"📅 Período: {start_date.strftime('%d/%m/%Y')} até {datetime.now().strftime('%d/%m/%Y')}")
+        
+        # Mostrar estatísticas finais
+        cursor.execute("SELECT COUNT(*) FROM readings")
+        total_db = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM readings WHERE activity = 1")
+        total_activity = cursor.fetchone()[0]
+        
+        print(f"\n📈 Estatísticas do Banco:")
+        print(f"  • Total de leituras: {total_db}")
+        print(f"  • Detecções (activity=1): {total_activity}")
+        print(f"  • Taxa de detecção: {round((total_activity/total_db)*100, 2)}%")
+        
+    except Exception as e:
+        connection.rollback()
+        print(f"\n❌ Erro: {e}")
+        raise
+    
+    finally:
+        cursor.close()
+        connection.close()
 
-def generate_sensor_data(sensor, timestamp):
-    """
-    Gera dados de leitura baseados no tipo de sensor
+if __name__ == "__main__":
+    print("=" * 60)
+    print("🚀 POPULANDO BANCO DE DADOS COM LEITURAS DE TESTE")
+    print("=" * 60)
+    print(f"📅 Gerando dados para 5 dias")
+    print(f"📊 Média: 100-300 leituras por sensor/dia")
+    print("=" * 60)
     
-    Args:
-        sensor: Instância do sensor
-        timestamp: Data/hora da leitura
+    confirm = input("\n⚠️  Deseja continuar? (s/n): ")
+    if confirm.lower() != 's':
+        print("❌ Operação cancelada")
+        exit()
     
-    Returns:
-        dict: Dados da leitura
-    """
-    # Hora do dia (para variações)
-    hour = timestamp.hour
-    
-    # Dados base
-    data = {
-        'timestamp': timestamp.isoformat(),
-        'protocol': sensor.protocol
-    }
-    
-    # Dados específicos por protocolo
-    if sensor.protocol == 'LoRa':
-        # Sensor da piscina tem dados especiais
-        if 'Piscina' in sensor.location:
-            data.update({
-                'water_temperature': round(random.uniform(24.0, 28.0), 1),
-                'ambient_temperature': round(random.uniform(18.0, 32.0), 1),
-                'ph': round(random.uniform(7.0, 7.6), 2),
-                'activity': random.randint(0, 1)
-            })
-        else:
-            # Sensor de presença normal
-            # Mais atividade entre 8h-20h
-            activity_prob = 0.4 if 8 <= hour <= 20 else 0.1
-            data.update({
-                'activity': 1 if random.random() < activity_prob else 0,
-                'rssi': round(random.uniform(-75, -50), 1),
-                'snr': round(random.uniform(5, 15), 2),
-                'battery': round(random.uniform(85, 100), 1)
-            })
-    
-    elif sensor.protocol == 'Zigbee':
-        # Mais atividade durante horário comercial
-        activity_prob = 0.45 if 8 <= hour <= 20 else 0.12
-        data.update({
-            'activity': 1 if random.random() < activity_prob else 0,
-            'link_quality': random.randint(150, 255),
-            'rssi': round(random.uniform(-65, -45), 1),
-            'battery': round(random.uniform(80, 98), 1)
-        })
-    
-    elif sensor.protocol == 'Sigfox':
-        # Sigfox tem menor taxa de transmissão
-        activity_prob = 0.35 if 9 <= hour <= 19 else 0.08
-        data.update({
-            'activity': 1 if random.random() < activity_prob else 0,
-            'rssi': round(random.uniform(-80, -60), 1),
-            'battery': round(random.uniform(75, 95), 1),
-            'messages_sent': random.randint(1, 3)
-        })
-    
-    elif sensor.protocol == 'RFID':
-        # RFID só registra quando há leitura de tag
-        # Simula presença de pessoas
-        activity_prob = 0.5 if 8 <= hour <= 20 else 0.05
-        if random.random() < activity_prob:
-            data.update({
-                'tag_id': f'TAG-{random.randint(1000, 9999)}',
-                'tag_type': random.choice(['student', 'staff', 'visitor']),
-                'access_granted': True,
-                'activity': 1
-            })
-        else:
-            data.update({
-                'activity': 0
-            })
-    
-    return data
-
-if __name__ == '__main__':
+    print("\n🔄 Iniciando população do banco...\n")
     generate_readings()
+    print("\n✅ Script finalizado com sucesso!")
