@@ -338,7 +338,7 @@ echo ""
 
 log_message "Atualização concluída. Sucesso: $SUCCESS_COUNT | Erros: $ERROR_COUNT"
 
-# Retornar código de saída apropriado
+# Retornar código de saída apropriado final
 if [ $ERROR_COUNT -gt 0 ]; then
     exit 1
 else
