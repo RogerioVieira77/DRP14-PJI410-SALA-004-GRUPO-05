@@ -22,7 +22,7 @@ DB_SOURCE="smartceu_db"
 # Configurações - Banco de Relatórios
 DB_REPORT="smartceu_report_db"
 DB_ROOT_USER="root"
-DB_ROOT_PASS="SmartCEUrep@)@%1"
+DB_ROOT_PASS="SmartCEU2025)!"
 
 BACKUP_DIR="/var/www/smartceu/backups/report_sync"
 LOG_FILE="/var/log/smartceu_report_sync.log"
