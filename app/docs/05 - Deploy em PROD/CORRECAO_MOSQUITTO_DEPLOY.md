@@ -187,7 +187,8 @@ systemctl status smartceu-api
 **Causa:** Credenciais incorretas
 **Verificar:**
 ```bash
-mysql -u smartceu_user -p'SmartCEU2025!Secure' smartceu_db -e "SELECT 1;"
+# Testar MySQL
+mysql -u smartceu_user -p'SmartCEU2025)!' smartceu_db -e "SELECT 1;"
 cat /var/www/smartceu/app/backend/.env
 ```
 

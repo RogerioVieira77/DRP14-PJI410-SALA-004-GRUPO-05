@@ -55,7 +55,7 @@ Todas as informações necessárias foram coletadas:
 ### Credenciais MySQL
 - **Database:** smartceu_db
 - **User:** smartceu_user
-- **Password:** SmartCEU2025!Secure
+- **Password:** SmartCEU2025)!
 
 ### Credenciais MQTT
 - **User:** smartceu_mqtt
@@ -272,7 +272,7 @@ tail -f /var/log/nginx/smartceu_error.log
 systemctl status mysql
 
 # 2. Testar credenciais
-mysql -u smartceu_user -p'SmartCEU2025!Secure' smartceu_db -e "SELECT 1;"
+mysql -u smartceu_user -p'SmartCEU2025)!' smartceu_db -e "SELECT 1;"
 
 # 3. Ver logs
 tail -f /var/log/mysql/error.log

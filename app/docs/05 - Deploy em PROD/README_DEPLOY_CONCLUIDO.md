@@ -100,7 +100,7 @@ O sistema SmartCEU foi **implantado com sucesso** no servidor de produção, com
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=smartceu_user
-DB_PASSWORD=SmartCEU2025!Secure
+DB_PASSWORD=SmartCEU2025)!
 DB_NAME=smartceu_db
 ```
 
@@ -353,7 +353,7 @@ systemctl reload nginx
 
 ```bash
 # 1. Testar credenciais
-mysql -u smartceu_user -p'SmartCEU2025!Secure' smartceu_db -e "SELECT 1;"
+mysql -u smartceu_user -p'SmartCEU2025)!' smartceu_db -e "SELECT 1;"
 
 # 2. Verificar .env
 cat /var/www/smartceu/app/backend/.env

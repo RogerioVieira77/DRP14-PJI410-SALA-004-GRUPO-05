@@ -12,6 +12,6 @@ mkdir -p ${BACKUP_DIR}
 find ${BACKUP_DIR} -name "smartceu_*.sql.gz" -mtime +7 -delete
 
 # Fazer backup (sem tablespaces para evitar warning)
-mysqldump -u smartceu_user -p'SmartCEU2025!Secure' --no-tablespaces smartceu_db | gzip > ${BACKUP_FILE}
+mysqldump -u smartceu_user -p'SmartCEU2025)!' --no-tablespaces smartceu_db | gzip > ${BACKUP_FILE}
 
 echo "Backup criado: ${BACKUP_FILE}"

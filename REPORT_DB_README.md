@@ -173,7 +173,7 @@ smartceu_report_db
 ### Credenciais (hardcoded nos scripts)
 ```bash
 DB_USER="smartceu_user"
-DB_PASS="SmartCEU2025!Secure"
+DB_PASS="SmartCEU2025)!"
 DB_SOURCE="smartceu_db"
 DB_REPORT="smartceu_report_db"
 # Credenciais para o banco de relatórios (separadas)
@@ -246,7 +246,7 @@ bash sync_report_db.sh
 
 ### Verificar Tamanho dos Bancos
 ```bash
-mysql -u smartceu_user -p'SmartCEU2025!Secure' -e "
+mysql -u smartceu_user -p'SmartCEU2025)!' -e "
 SELECT 
     table_schema AS 'Banco',
     ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS 'Tamanho (MB)'
@@ -258,7 +258,7 @@ GROUP BY table_schema;
 
 ### Comparar Registros entre Bancos
 ```bash
-mysql -u smartceu_user -p'SmartCEU2025!Secure' -e "
+mysql -u smartceu_user -p'SmartCEU2025)!' -e "
 SELECT 'users' AS tabela,
     (SELECT COUNT(*) FROM smartceu_db.users) AS producao,
     (SELECT COUNT(*) FROM smartceu_report_db.users) AS relatorio
@@ -355,7 +355,7 @@ find /var/www/smartceu/backups/report_sync -name "*.sql.gz" -mtime +7 -delete
 ### Problema: Sincronização muito lenta
 ```bash
 # Verificar tamanho do banco
-mysql -u smartceu_user -p'SmartCEU2025!Secure' -e "
+mysql -u smartceu_user -p'SmartCEU2025)!' -e "
 SELECT table_name, 
        ROUND((data_length + index_length) / 1024 / 1024, 2) AS 'Tamanho (MB)'
 FROM information_schema.tables

@@ -33,7 +33,7 @@ MQTT_PORT="1884"
 MYSQL_ROOT_PASS="Ceu@)@%01"
 DB_NAME="smartceu_db"
 DB_USER="smartceu_user"
-DB_PASS="SmartCEU2025!Secure"
+DB_PASS="SmartCEU2025)!"
 
 # MQTT
 MQTT_USER="smartceu_mqtt"
@@ -538,7 +538,7 @@ BACKUP_FILE="${BACKUP_DIR}/smartceu_${DATE}.sql.gz"
 find ${BACKUP_DIR} -name "smartceu_*.sql.gz" -mtime +7 -delete
 
 # Fazer backup
-mysqldump -u smartceu_user -p'SmartCEU2025!Secure' smartceu_db | gzip > ${BACKUP_FILE}
+mysqldump -u smartceu_user -p'SmartCEU2025)!' smartceu_db | gzip > ${BACKUP_FILE}
 
 echo "Backup criado: ${BACKUP_FILE}"
 BACKUPSCRIPT

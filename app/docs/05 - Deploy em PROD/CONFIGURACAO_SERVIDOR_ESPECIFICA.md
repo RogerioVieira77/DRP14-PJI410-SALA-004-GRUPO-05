@@ -197,7 +197,7 @@ sudo -u www-data python3 -m venv venv
 # Criar database e usuário
 sudo mysql -u root -p << 'EOF'
 CREATE DATABASE smartceu_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'smartceu_user'@'localhost' IDENTIFIED BY 'SmartCEU2025!Secure';
+CREATE USER 'smartceu_user'@'localhost' IDENTIFIED BY 'SmartCEU2025)!';
 GRANT ALL PRIVILEGES ON smartceu_db.* TO 'smartceu_user'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
@@ -260,7 +260,7 @@ sudo -u www-data nano .env
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=smartceu_user
-DB_PASSWORD=SmartCEU2025!Secure
+DB_PASSWORD=SmartCEU2025)!
 DB_NAME=smartceu_db
 
 API_HOST=0.0.0.0

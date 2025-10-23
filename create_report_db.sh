@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 
 # Configurações - Banco de Origem
 DB_USER="smartceu_user"
-DB_PASS="SmartCEU2025!Secure"
+DB_PASS="SmartCEU2025)!"
 DB_SOURCE="smartceu_db"
 
 # Configurações - Banco de Relatórios
