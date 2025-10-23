@@ -82,6 +82,33 @@ fi
 
 echo -e "${YELLOW}▶ 3. Criando banco de dados de relatórios...${NC}"
 
+# Garantir que a senha root do MySQL esteja definida para o valor desejado.
+# Tentamos primeiro via socket (sudo mysql) — funciona em instalações padrão Ubuntu/MySQL.
+echo -e "${YELLOW}▶ Ajustando senha do usuário root do MySQL para uso do script...${NC}"
+if sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASS}'; FLUSH PRIVILEGES;" 2>/dev/null; then
+    echo -e "${GREEN}✓ Senha root atualizada via sudo mysql${NC}"
+else
+    echo -e "${YELLOW}⚠ Não foi possível alterar via sudo mysql. Tentando usar senha atual do root...${NC}"
+    read -s -p "Senha atual do MySQL root (deixe vazio para cancelar): " CURRENT_ROOT_PASS
+    echo ""
+    if [ -n "$CURRENT_ROOT_PASS" ]; then
+        if mysql -u root -p"$CURRENT_ROOT_PASS" -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASS}'; FLUSH PRIVILEGES;" 2>/dev/null; then
+            echo -e "${GREEN}✓ Senha root atualizada com a senha fornecida${NC}"
+        else
+            echo -e "${RED}✗ Falha ao alterar senha root com a senha fornecida${NC}"
+            echo -e "${YELLOW}→ Por favor, configure a senha manualmente e execute o script novamente:${NC}"
+            echo -e "   sudo mysql -e \"ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASS}'; FLUSH PRIVILEGES;\""
+            exit 1
+        fi
+    else
+        echo -e "${RED}✗ Operação cancelada pelo usuário. Não foi possível definir senha root.${NC}"
+        echo -e "${YELLOW}→ Para configurar manualmente execute:${NC}"
+        echo -e "   sudo mysql -e \"ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASS}'; FLUSH PRIVILEGES;\""
+        exit 1
+    fi
+fi
+
+# Agora podemos usar root com a nova senha para criar o banco
 mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" -e "CREATE DATABASE $DB_REPORT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 2>/dev/null
 
 if [ $? -eq 0 ]; then
