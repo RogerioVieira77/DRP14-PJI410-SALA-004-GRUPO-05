@@ -13,11 +13,18 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configurações
+# Configurações - Banco de Origem
 DB_USER="smartceu_user"
 DB_PASS="SmartCEU2025!Secure"
 DB_SOURCE="smartceu_db"
+
+# Configurações - Banco de Relatórios
 DB_REPORT="smartceu_report_db"
+DB_REPORT_USER="smart_ceu_report"
+DB_REPORT_PASS="SmartCEUrep@)@%1"
+DB_ROOT_USER="root"
+DB_ROOT_PASS="SmartCEUrep@)@%1"
+
 BACKUP_DIR="/var/www/smartceu/backups"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
@@ -75,7 +82,7 @@ fi
 
 echo -e "${YELLOW}▶ 3. Criando banco de dados de relatórios...${NC}"
 
-mysql -u "$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE $DB_REPORT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" -e "CREATE DATABASE $DB_REPORT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 2>/dev/null
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Banco '$DB_REPORT' criado com sucesso${NC}"
@@ -85,21 +92,55 @@ else
 fi
 
 #==============================================================================
-# 4. Copiar estrutura e dados do banco de origem
+# 4. Criar usuário de relatórios com permissões somente leitura
 #==============================================================================
 
-echo -e "${YELLOW}▶ 4. Copiando estrutura e dados...${NC}"
+echo -e "${YELLOW}▶ 4. Configurando usuário de relatórios...${NC}"
+
+# Criar usuário (ou atualizar senha se já existir)
+mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" <<EOF 2>/dev/null
+-- Remover usuário se já existir
+DROP USER IF EXISTS '${DB_REPORT_USER}'@'localhost';
+DROP USER IF EXISTS '${DB_REPORT_USER}'@'%';
+
+-- Criar novo usuário
+CREATE USER '${DB_REPORT_USER}'@'localhost' IDENTIFIED BY '${DB_REPORT_PASS}';
+CREATE USER '${DB_REPORT_USER}'@'%' IDENTIFIED BY '${DB_REPORT_PASS}';
+
+-- Conceder apenas permissões de leitura (SELECT)
+GRANT SELECT ON ${DB_REPORT}.* TO '${DB_REPORT_USER}'@'localhost';
+GRANT SELECT ON ${DB_REPORT}.* TO '${DB_REPORT_USER}'@'%';
+
+-- Aplicar mudanças
+FLUSH PRIVILEGES;
+EOF
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Usuário '$DB_REPORT_USER' criado com permissões SELECT${NC}"
+    echo -e "   ${BLUE}→ Usuário: ${DB_REPORT_USER}${NC}"
+    echo -e "   ${BLUE}→ Permissões: SELECT (somente leitura)${NC}"
+    echo -e "   ${BLUE}→ Bancos: ${DB_REPORT}${NC}"
+else
+    echo -e "${RED}✗ Erro ao criar usuário de relatórios${NC}"
+    exit 1
+fi
+
+#==============================================================================
+# 5. Copiar estrutura e dados do banco de origem
+#==============================================================================
+
+echo -e "${YELLOW}▶ 5. Copiando estrutura e dados...${NC}"
 
 # Criar arquivo temporário com dump
 TEMP_DUMP="/tmp/smartceu_temp_dump_${TIMESTAMP}.sql"
 
-mysqldump -u "$DB_USER" -p"$DB_PASS" --no-tablespaces "$DB_SOURCE" > "$TEMP_DUMP"
+mysqldump -u "$DB_USER" -p"$DB_PASS" --no-tablespaces "$DB_SOURCE" > "$TEMP_DUMP" 2>/dev/null
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Estrutura e dados exportados${NC}"
     
-    # Importar para banco de relatórios
-    mysql -u "$DB_USER" -p"$DB_PASS" "$DB_REPORT" < "$TEMP_DUMP"
+    # Importar para banco de relatórios usando usuário root
+    mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" "$DB_REPORT" < "$TEMP_DUMP" 2>/dev/null
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓ Dados importados para '$DB_REPORT'${NC}"
@@ -117,31 +158,31 @@ else
 fi
 
 #==============================================================================
-# 5. Verificar tabelas criadas
+# 6. Verificar tabelas criadas
 #==============================================================================
 
-echo -e "${YELLOW}▶ 5. Verificando tabelas criadas...${NC}"
+echo -e "${YELLOW}▶ 6. Verificando tabelas criadas...${NC}"
 
-TABLE_COUNT=$(mysql -u "$DB_USER" -p"$DB_PASS" -e "USE $DB_REPORT; SHOW TABLES;" | wc -l)
+TABLE_COUNT=$(mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" -e "USE $DB_REPORT; SHOW TABLES;" 2>/dev/null | wc -l)
 TABLE_COUNT=$((TABLE_COUNT - 1)) # Remover linha de cabeçalho
 
 echo -e "${GREEN}✓ Total de tabelas criadas: $TABLE_COUNT${NC}"
 
 # Listar tabelas
 echo -e "${BLUE}Tabelas no banco '$DB_REPORT':${NC}"
-mysql -u "$DB_USER" -p"$DB_PASS" -e "USE $DB_REPORT; SHOW TABLES;"
+mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" -e "USE $DB_REPORT; SHOW TABLES;" 2>/dev/null
 
 #==============================================================================
-# 6. Verificar registros
+# 7. Verificar registros
 #==============================================================================
 
-echo -e "${YELLOW}▶ 6. Verificando registros...${NC}"
+echo -e "${YELLOW}▶ 7. Verificando registros...${NC}"
 
 # Contar registros nas principais tabelas
 echo -e "${BLUE}Contagem de registros:${NC}"
 
 for table in users sensors sensor_readings pool_readings alerts statistics; do
-    COUNT=$(mysql -u "$DB_USER" -p"$DB_PASS" -e "USE $DB_REPORT; SELECT COUNT(*) FROM $table;" 2>/dev/null | tail -1)
+    COUNT=$(mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" -e "USE $DB_REPORT; SELECT COUNT(*) FROM $table;" 2>/dev/null | tail -1)
     if [ -n "$COUNT" ]; then
         echo -e "  • ${table}: ${GREEN}${COUNT}${NC} registros"
     fi
@@ -165,14 +206,26 @@ echo -e "  • Charset: ${GREEN}utf8mb4${NC}"
 echo -e "  • Collation: ${GREEN}utf8mb4_unicode_ci${NC}"
 echo ""
 
+echo -e "${BLUE}Credenciais de Acesso:${NC}"
+echo -e "  • Usuário: ${GREEN}${DB_REPORT_USER}${NC}"
+echo -e "  • Senha: ${GREEN}${DB_REPORT_PASS}${NC}"
+echo -e "  • Permissões: ${YELLOW}SELECT (somente leitura)${NC}"
+echo -e "  • Host: ${GREEN}localhost ou % (qualquer)${NC}"
+echo ""
+
+echo -e "${BLUE}Exemplo de Conexão:${NC}"
+echo -e "  ${GREEN}mysql -u ${DB_REPORT_USER} -p'${DB_REPORT_PASS}' -h localhost ${DB_REPORT}${NC}"
+echo ""
+
 echo -e "${BLUE}Próximos Passos:${NC}"
-echo -e "  1. Configure a replicação automática com: ${GREEN}bash setup_replication.sh${NC}"
-echo -e "  2. Execute sincronização manual com: ${GREEN}bash sync_report_db.sh${NC}"
-echo -e "  3. Configure cron para sincronização diária"
+echo -e "  1. Configure a sincronização automática: ${GREEN}bash setup_report_cron.sh${NC}"
+echo -e "  2. Execute sincronização manual: ${GREEN}bash sync_report_db.sh${NC}"
+echo -e "  3. Configure ferramentas de BI com usuário '${DB_REPORT_USER}'"
 echo ""
 
 echo -e "${YELLOW}⚠ Importante:${NC}"
 echo -e "  • Este banco é SOMENTE LEITURA para relatórios"
 echo -e "  • Não faça alterações diretas neste banco"
 echo -e "  • Use sempre o banco '${DB_SOURCE}' para gravações"
+echo -e "  • Usuário '${DB_REPORT_USER}' tem apenas permissão SELECT"
 echo ""

@@ -14,11 +14,16 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configurações
+# Configurações - Banco de Origem
 DB_USER="smartceu_user"
 DB_PASS="SmartCEU2025!Secure"
 DB_SOURCE="smartceu_db"
+
+# Configurações - Banco de Relatórios
 DB_REPORT="smartceu_report_db"
+DB_ROOT_USER="root"
+DB_ROOT_PASS="SmartCEUrep@)@%1"
+
 BACKUP_DIR="/var/www/smartceu/backups/report_sync"
 LOG_FILE="/var/log/smartceu_report_sync.log"
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
@@ -93,7 +98,7 @@ print_success "Banco de relatórios verificado"
 echo -e "${YELLOW}▶ 2. Criando backup de segurança...${NC}"
 
 BACKUP_FILE="${BACKUP_DIR}/${DB_REPORT}_presync_${TIMESTAMP_FILE}.sql.gz"
-mysqldump -u "$DB_USER" -p"$DB_PASS" --no-tablespaces "$DB_REPORT" 2>/dev/null | gzip > "$BACKUP_FILE"
+mysqldump -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" --no-tablespaces "$DB_REPORT" 2>/dev/null | gzip > "$BACKUP_FILE"
 
 if [ $? -eq 0 ]; then
     BACKUP_SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
@@ -113,7 +118,7 @@ echo -e "${YELLOW}▶ 3. Coletando estatísticas...${NC}"
 count_records() {
     local db=$1
     local table=$2
-    mysql -u "$DB_USER" -p"$DB_PASS" -e "USE $db; SELECT COUNT(*) FROM $table;" 2>/dev/null | tail -1
+    mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" -e "USE $db; SELECT COUNT(*) FROM $table;" 2>/dev/null | tail -1
 }
 
 # Tabelas para sincronizar
@@ -150,17 +155,17 @@ fi
 
 # Remover banco de relatórios
 echo -e "${YELLOW}   Removendo banco de relatórios antigo...${NC}"
-mysql -u "$DB_USER" -p"$DB_PASS" -e "DROP DATABASE IF EXISTS $DB_REPORT;" 2>/dev/null
+mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" -e "DROP DATABASE IF EXISTS $DB_REPORT;" 2>/dev/null
 print_success "Banco antigo removido"
 
 # Recriar banco
 echo -e "${YELLOW}   Recriando banco de relatórios...${NC}"
-mysql -u "$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE $DB_REPORT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 2>/dev/null
+mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" -e "CREATE DATABASE $DB_REPORT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 2>/dev/null
 print_success "Banco recriado"
 
 # Importar dados
 echo -e "${YELLOW}   Importando dados atualizados...${NC}"
-mysql -u "$DB_USER" -p"$DB_PASS" "$DB_REPORT" < "$TEMP_DUMP" 2>/dev/null
+mysql -u "$DB_ROOT_USER" -p"$DB_ROOT_PASS" "$DB_REPORT" < "$TEMP_DUMP" 2>/dev/null
 
 if [ $? -eq 0 ]; then
     print_success "Dados importados com sucesso"

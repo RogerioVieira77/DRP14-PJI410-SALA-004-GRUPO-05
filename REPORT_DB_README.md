@@ -176,6 +176,13 @@ DB_USER="smartceu_user"
 DB_PASS="SmartCEU2025!Secure"
 DB_SOURCE="smartceu_db"
 DB_REPORT="smartceu_report_db"
+# Credenciais para o banco de relatórios (separadas)
+DB_REPORT_USER="smart_ceu_report"
+DB_REPORT_PASS="SmartCEUrep@)@%1"
+# Nota: O script usa as credenciais root temporariamente para criar/importar o banco.
+# Root do MySQL no ambiente de relatório foi definido como:
+DB_ROOT_USER="root"
+DB_ROOT_PASS="SmartCEUrep@)@%1"
 ```
 
 ### Diretórios e Arquivos
