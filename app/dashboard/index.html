@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEU Monitor - Controle de Acesso</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Menu Lateral -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>Painel</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="active"><a href="#">Painel Principal</a></li>
+                <li><a href="areas.html">Áreas</a></li>
+                <li><a href="alertas.html">Alertas</a></li>
+                <li><a href="piscina.html">Piscina</a></li>
+            </ul>
+        </div>
+
+        <!-- Corpo -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Controle de Acesso</h2>
+                <div class="user-info">
+                    <span>Administrador</span>
+                </div>
+            </div>
+
+            <!-- Metricas -->
+            <div class="metrics-grid">
+                <!-- Pessoas no CEU -->
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Pessoas no CEU</div>
+                    </div>
+                    <div class="metric-value" id="current-people">142</div>
+                    <div class="metric-subvalue">Capacidade: 35%</div>
+                    <span class="metric-status status-normal">Dentro do limite</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrow-up trend-up"></i>
+                        <span>+12% em relação à hora anterior</span>
+                    </div>
+                </div>
+
+                <!-- Entradas Hoje -->
+                <div class="metric-card info">
+                    <div class="metric-header">
+                        <div class="metric-title">Entradas Hoje</div>
+                    </div>
+                    <div class="metric-value" id="entries-today">387</div>
+                    <div class="metric-subvalue">Média: 420/dia</div>
+                    <span class="metric-status status-normal">Normal</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrow-down trend-down"></i>
+                        <span>-8% em relação ao mesmo dia na semana passada</span>
+                    </div>
+                </div>
+
+                <!-- Horário de Pico -->
+                <div class="metric-card warning">
+                    <div class="metric-header">
+                        <div class="metric-title">Possivel Horário de Pico</div>
+                    </div>
+                    <div class="metric-value" id="next-peak">16:30</div>
+                    <div class="metric-subvalue">Previsão: 85% de capacidade</div>
+                    <span class="metric-status status-warning">Alerta moderado</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Preparar equipe de apoio</span>
+                    </div>
+                </div>
+
+                <!-- Alertas Ativos -->
+                <div class="metric-card danger">
+                    <div class="metric-header">
+                        <div class="metric-title">Alertas Ativos</div>
+                    </div>
+                    <div class="metric-value" id="active-alerts">3</div>
+                    <div class="metric-subvalue">2 críticos, 1 aviso</div>
+                    <span class="metric-status status-danger">Atenção necessária</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrow-up trend-up"></i>
+                        <span>+1 desde a última hora</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Fluxo de Pessoas - Últimas 24h</div>
+                        <div class="chart-actions">
+                            <select id="time-range">
+                                <option>Últimas 24h</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder">
+                        Gráfico de Fluxo de Pessoas
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="peopleFlowChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Alertas -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Alertas do Sistema</div>
+                    </div>
+                    <div class="alerts-container">
+                        <div class="alert-item">
+                            <div class="alert-content">
+                                <h4>Sensor RFID 03 com falha</h4>
+                                <p>Portão principal - necessidade de verificação urgente</p>
+                                <div class="alert-time">Há 25 minutos</div>
+                            </div>
+                        </div>
+                        <div class="alert-item">
+                            <div class="alert-content">
+                                <h4>Queda de conexão IoT</h4>
+                                <p>Setor Oeste - 5 sensores offline</p>
+                                <div class="alert-time">Há 40 minutos</div>
+                            </div>
+                        </div>
+                        <div class="alert-item">
+                            <div class="alert-content">
+                                <h4>Pico previsto para 16:30</h4>
+                                <p>Previsão de 85% de ocupação</p>
+                                <div class="alert-time">Há 1 hora</div>
+                            </div>
+                        </div>
+                        <div class="alert-item">
+                            <div class="alert-content">
+                                <h4>Manutenção preventiva concluída</h4>
+                                <p>Todos os sensores operando normalmente</p>
+                                <div class="alert-time">Hoje às 08:15</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

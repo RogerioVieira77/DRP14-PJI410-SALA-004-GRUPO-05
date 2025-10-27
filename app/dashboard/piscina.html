@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEU Monitor - Piscina</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Menu Lateral -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>Painel</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Painel Principal</a></li>
+                <li><a href="areas.html">Áreas</a></li>
+                <li><a href="alertas.html">Alertas</a></li>
+                <li class="active"><a href="piscina.html">Piscina</a></li>
+            </ul>
+        </div>
+
+        <!-- Corpo -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Monitoramento da Piscina</h2>
+                <div class="user-info">
+                    <span>Administrador</span>
+                </div>
+            </div>
+
+            <!-- Métricas Principais -->
+            <div class="metrics-grid">
+                <!-- Ocupação Atual -->
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Ocupação Atual</div>
+                    </div>
+                    <div class="metric-value" id="pool-occupancy">68%</div>
+                    <div class="metric-subvalue">42 pessoas | Capacidade: 60</div>
+                    <span class="metric-status status-warning">Quase na capacidade</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrow-up trend-up"></i>
+                        <span>+5% na última hora</span>
+                    </div>
+                </div>
+
+                <!-- Entradas Hoje -->
+                <div class="metric-card info">
+                    <div class="metric-header">
+                        <div class="metric-title">Entradas na Piscina - Hoje</div>
+                    </div>
+                    <div class="metric-value" id="pool-entries-today">128</div>
+                    <div class="metric-subvalue">Média: 150/dia</div>
+                    <span class="metric-status status-normal">Normal</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrow-up trend-up"></i>
+                        <span>+12% em relação à semana passada</span>
+                    </div>
+                </div>
+
+                <!-- Temperatura Local -->
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Temperatura Local</div>
+                    </div>
+                    <div class="metric-value" id="local-temperature">26°C</div>
+                    <div class="metric-subvalue">Sensação térmica: 28°C</div>
+                    <span class="metric-status status-normal">Agradável</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrow-down trend-down"></i>
+                        <span>-2°C desde ontem</span>
+                    </div>
+                </div>
+
+                <!-- Temperatura da Água -->
+                <div class="metric-card info">
+                    <div class="metric-header">
+                        <div class="metric-title">Temperatura da Água</div>
+                    </div>
+                    <div class="metric-value" id="water-temperature">28°C</div>
+                    <div class="metric-subvalue">Ideal: 26°C a 30°C</div>
+                    <span class="metric-status status-normal">Dentro do ideal</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrow-up trend-up"></i>
+                        <span>+1°C na última hora</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Qualidade da Água -->
+            <div class="metrics-grid">
+                <!-- pH -->
+                <div class="metric-card" id="pool-ph-card">
+                    <div class="metric-header">
+                        <div class="metric-title">pH da Água</div>
+                    </div>
+                    <div class="metric-value" id="pool-ph">7.4</div>
+                    <div class="metric-subvalue">Adequado: 7,2 a 7,6</div>
+                    <span class="metric-status status-normal">Dentro do ideal</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrows-alt-h"></i>
+                        <span>Estável</span>
+                    </div>
+                </div>
+
+                <!-- Cloro Livre -->
+                <div class="metric-card" id="pool-chlorine-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Cloro Livre</div>
+                    </div>
+                    <div class="metric-value" id="pool-chlorine">2.1 ppm</div>
+                    <div class="metric-subvalue">Adequado: 1,0 a 3,0 ppm</div>
+                    <span class="metric-status status-normal">Dentro do ideal</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrow-down trend-down"></i>
+                        <span>-0.2 ppm desde a última medição</span>
+                    </div>
+                </div>
+
+                <!-- Alcalinidade -->
+                <div class="metric-card" id="pool-alkalinity-card">
+                    <div class="metric-header">
+                        <div class="metric-title">Alcalinidade Total</div>
+                    </div>
+                    <div class="metric-value" id="pool-alkalinity">100 ppm</div>
+                    <div class="metric-subvalue">Adequado: 80 a 120 ppm</div>
+                    <span class="metric-status status-normal">Dentro do ideal</span>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrows-alt-h"></i>
+                        <span>Estável</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Evolução da Ocupação - Últimas 24h</div>
+                        <div class="chart-actions">
+                            <select id="time-range">
+                                <option>Últimas 24h</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder">
+                        Gráfico de Ocupação da Piscina
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="poolOccupationChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Qualidade da Água -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Qualidade da Água - Últimas 24h</div>
+                    </div>
+                    <div class="chart-placeholder">
+                        Gráfico de Qualidade da Água
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="waterQualityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alertas Específicos da Piscina -->
+            <div class="alerts-container">
+                <div class="alerts-header">
+                    <div class="alerts-title">Alertas da Piscina</div>
+                </div>
+
+                <div class="alert-list" id="pool-alerts-list">
+                    <div class="alert-item">
+                        <div class="alert-content">
+                            <h4>Ocupação acima de 70%</h4>
+                            <p class="alert-desc">Piscina principal com 68% de ocupação - próximo do limite</p>
+                            <div class="alert-meta">
+                                <span class="alert-time">Há 15 minutos</span>
+                                <span class="alert-area">Piscina</span>
+                                <span class="alert-priority">Aviso</span>
+                            </div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="btn btn-resolve">Resolver</button>
+                            <button class="btn btn-ignore">Ignorar</button>
+                        </div>
+                    </div>
+
+                    <div class="alert-item">
+                        <div class="alert-content">
+                            <h4>Manutenção preventiva programada</h4>
+                            <p class="alert-desc">Manutenção das bombas e filtros agendada para amanhã às 06:00</p>
+                            <div class="alert-meta">
+                                <span class="alert-time">Há 2 horas</span>
+                                <span class="alert-area">Piscina</span>
+                                <span class="alert-priority">Informativo</span>
+                            </div>
+                        </div>
+                        <div class="alert-actions">
+                            <button class="btn btn-resolve">Resolver</button>
+                            <button class="btn btn-ignore">Ignorar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
