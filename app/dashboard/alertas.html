@@ -11,13 +11,13 @@
         <!-- Menu Lateral -->
         <div class="sidebar">
             <div class="logo">
-                <i class="fas fa-users"></i>
                 <h1>Painel</h1>
             </div>
             <ul class="nav-menu">
-                <li><a href="index.html"><i class="fas fa-home"></i> Painel Principal</a></li>
-                <li><a href="areas.html"><i class="fas fa-map-marker-alt"></i> Áreas</a></li>
-                <li class="active"><a href="alertas.html"><i class="fas fa-bell"></i> Alertas</a></li>
+                <li><a href="index.html">Painel Principal</a></li>
+                <li><a href="areas.html">Áreas</a></li>
+                <li class="active"><a href="alertas.html">Alertas</a></li>
+                <li><a href="piscina.html">Piscina</a></li>
             </ul>
         </div>
 
@@ -36,9 +36,6 @@
                 <div class="metric-card danger">
                     <div class="metric-header">
                         <div class="metric-title">Alertas Ativos</div>
-                        <div class="metric-icon danger">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
                     </div>
                     <div class="metric-value" id="active-alerts">5</div>
                     <div class="metric-subvalue">3 críticos, 2 avisos</div>
@@ -53,9 +50,6 @@
                 <div class="metric-card danger">
                     <div class="metric-header">
                         <div class="metric-title">Alertas Críticos</div>
-                        <div class="metric-icon danger">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
                     </div>
                     <div class="metric-value" id="critical-alerts">3</div>
                     <div class="metric-subvalue">Requer ação imediata</div>
@@ -70,9 +64,6 @@
                 <div class="metric-card">
                     <div class="metric-header">
                         <div class="metric-title">Alertas Resolvidos</div>
-                        <div class="metric-icon secondary">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
                     </div>
                     <div class="metric-value" id="resolved-alerts">12</div>
                     <div class="metric-subvalue">Hoje</div>
@@ -108,9 +99,6 @@
                 <!-- Lista de Alertas Ativos -->
                 <div class="alert-list" id="active-alerts-list">
                     <div class="alert-item" data-id="1" data-type="critical" data-area="sensors">
-                        <div class="alert-icon danger">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
                         <div class="alert-content">
                             <h4>Sensor RFID 03 com falha crítica</h4>
                             <p class="alert-desc">Portão principal - sem comunicação há 45 minutos</p>
@@ -127,9 +115,6 @@
                     </div>
 
                     <div class="alert-item" data-id="2" data-type="critical" data-area="piscina">
-                        <div class="alert-icon danger">
-                            <i class="fas fa-swimming-pool"></i>
-                        </div>
                         <div class="alert-content">
                             <h4>Capacidade da piscina excedida</h4>
                             <p class="alert-desc">Piscina principal com 95% de ocupação</p>
@@ -146,9 +131,6 @@
                     </div>
 
                     <div class="alert-item" data-id="3" data-type="warning" data-area="sensors">
-                        <div class="alert-icon warning">
-                            <i class="fas fa-server"></i>
-                        </div>
                         <div class="alert-content">
                             <h4>Queda de conexão IoT</h4>
                             <p class="alert-desc">Setor Oeste - 3 sensores offline</p>
@@ -165,9 +147,6 @@
                     </div>
 
                     <div class="alert-item" data-id="4" data-type="warning" data-area="auditorio">
-                        <div class="alert-icon warning">
-                            <i class="fas fa-theater-masks"></i>
-                        </div>
                         <div class="alert-content">
                             <h4>Evento com lotação prevista</h4>
                             <p class="alert-desc">Auditório principal - 85% de ocupação às 16h</p>
@@ -184,9 +163,6 @@
                     </div>
 
                     <div class="alert-item" data-id="5" data-type="info" data-area="system">
-                        <div class="alert-icon info">
-                            <i class="fas fa-database"></i>
-                        </div>
                         <div class="alert-content">
                             <h4>Backup pendente</h4>
                             <p class="alert-desc">Backup do sistema não realizado nas últimas 24h</p>
@@ -220,9 +196,6 @@
                 <!-- Lista de Alertas Históricos -->
                 <div class="alert-list" id="history-alerts-list">
                     <div class="alert-item resolved" data-id="6">
-                        <div class="alert-icon success">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
                         <div class="alert-content">
                             <h4>Sensor RFID 02 restaurado</h4>
                             <p class="alert-desc">Portão lateral - comunicação reestabelecida</p>
@@ -238,9 +211,6 @@
                     </div>
 
                     <div class="alert-item resolved" data-id="7">
-                        <div class="alert-icon success">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
                         <div class="alert-content">
                             <h4>Manutenção preventiva concluída</h4>
                             <p class="alert-desc">Todos os sensores verificados e calibrados</p>
@@ -256,9 +226,6 @@
                     </div>
 
                     <div class="alert-item resolved" data-id="8">
-                        <div class="alert-icon success">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
                         <div class="alert-content">
                             <h4>Ocupação da quadra normalizada</h4>
                             <p class="alert-desc">Quadra esportiva com ocupação abaixo de 60%</p>
@@ -278,5 +245,6 @@
     </div>
 
         <script src="script.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

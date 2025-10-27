@@ -11,13 +11,13 @@
         <!-- Menu Lateral -->
         <div class="sidebar">
             <div class="logo">
-                <i class="fas fa-users"></i>
                 <h1>Painel</h1>
             </div>
             <ul class="nav-menu">
-                <li class="active"><a href="#"><i class="fas fa-home"></i> Painel Principal</a></li>
-                <li><a href="areas.html"><i class="fas fa-map-marker-alt"></i> Áreas</a></li>
-                <li><a href="alertas.html"><i class="fas fa-bell"></i> Alertas</a></li>
+                <li class="active"><a href="#">Painel Principal</a></li>
+                <li><a href="areas.html">Áreas</a></li>
+                <li><a href="alertas.html">Alertas</a></li>
+                <li><a href="piscina.html">Piscina</a></li>
             </ul>
         </div>
 
@@ -36,9 +36,6 @@
                 <div class="metric-card">
                     <div class="metric-header">
                         <div class="metric-title">Pessoas no CEU</div>
-                        <div class="metric-icon secondary">
-                            <i class="fas fa-users"></i>
-                        </div>
                     </div>
                     <div class="metric-value" id="current-people">142</div>
                     <div class="metric-subvalue">Capacidade: 35%</div>
@@ -53,9 +50,6 @@
                 <div class="metric-card info">
                     <div class="metric-header">
                         <div class="metric-title">Entradas Hoje</div>
-                        <div class="metric-icon">
-                            <i class="fas fa-sign-in-alt"></i>
-                        </div>
                     </div>
                     <div class="metric-value" id="entries-today">387</div>
                     <div class="metric-subvalue">Média: 420/dia</div>
@@ -70,9 +64,6 @@
                 <div class="metric-card warning">
                     <div class="metric-header">
                         <div class="metric-title">Possivel Horário de Pico</div>
-                        <div class="metric-icon warning">
-                            <i class="fas fa-clock"></i>
-                        </div>
                     </div>
                     <div class="metric-value" id="next-peak">16:30</div>
                     <div class="metric-subvalue">Previsão: 85% de capacidade</div>
@@ -87,9 +78,6 @@
                 <div class="metric-card danger">
                     <div class="metric-header">
                         <div class="metric-title">Alertas Ativos</div>
-                        <div class="metric-icon danger">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
                     </div>
                     <div class="metric-value" id="active-alerts">3</div>
                     <div class="metric-subvalue">2 críticos, 1 aviso</div>
@@ -109,13 +97,14 @@
                         <div class="chart-actions">
                             <select id="time-range">
                                 <option>Últimas 24h</option>
-                                <option>Última semana</option>
-                                <option>Último mês</option>
                             </select>
                         </div>
                     </div>
                     <div class="chart-placeholder">
                         Gráfico de Fluxo de Pessoas
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="peopleFlowChart"></canvas>
                     </div>
                 </div>
 
@@ -126,9 +115,6 @@
                     </div>
                     <div class="alerts-container">
                         <div class="alert-item">
-                            <div class="alert-icon danger">
-                                <i class="fas fa-exclamation-circle"></i>
-                            </div>
                             <div class="alert-content">
                                 <h4>Sensor RFID 03 com falha</h4>
                                 <p>Portão principal - necessidade de verificação urgente</p>
@@ -136,9 +122,6 @@
                             </div>
                         </div>
                         <div class="alert-item">
-                            <div class="alert-icon danger">
-                                <i class="fas fa-server"></i>
-                            </div>
                             <div class="alert-content">
                                 <h4>Queda de conexão IoT</h4>
                                 <p>Setor Oeste - 5 sensores offline</p>
@@ -146,9 +129,6 @@
                             </div>
                         </div>
                         <div class="alert-item">
-                            <div class="alert-icon warning">
-                                <i class="fas fa-clock"></i>
-                            </div>
                             <div class="alert-content">
                                 <h4>Pico previsto para 16:30</h4>
                                 <p>Previsão de 85% de ocupação</p>
@@ -156,9 +136,6 @@
                             </div>
                         </div>
                         <div class="alert-item">
-                            <div class="alert-icon info">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
                             <div class="alert-content">
                                 <h4>Manutenção preventiva concluída</h4>
                                 <p>Todos os sensores operando normalmente</p>
@@ -172,5 +149,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
