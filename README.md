@@ -58,7 +58,39 @@ PI - IV - V1/
 - MySQL 8.0.43
 - Docker 27.5.1
 - RabbitMQ 3.13
+- Grafana (Dashboards)
 - PowerBI
+
+## 📊 Dashboards e Visualização
+
+O projeto inclui dashboards interativos com Grafana para monitoramento em tempo real:
+
+- **Monitoramento de Sensores** - Leituras por tipo, local e período
+- **Análise de Piscinas** - Ocupação, temperatura, pH e qualidade da água
+- **Estatísticas Gerais** - Padrões de acesso, média de visitantes, tendências
+- **Alertas e Segurança** - Monitoramento de eventos críticos
+
+### 🚀 Instalação Rápida do Grafana
+
+```bash
+# Instalar Grafana
+sudo bash install_grafana.sh
+
+# Configurar banco de dados
+sudo bash configure_grafana_datasource.sh
+
+# Configurar acesso via web
+sudo bash configure_grafana_nginx.sh
+
+# Verificar instalação
+bash check_grafana.sh
+```
+
+### 📚 Documentação Grafana
+
+- [Guia Completo de Instalação](docs/GRAFANA_SETUP_GUIDE.md)
+- [Queries SQL Prontas](docs/GRAFANA_QUERIES.md)
+- [Início Rápido](docs/GRAFANA_QUICKSTART.md)
 
 ---
 **Desenvolvido: UNIVESP - DRP14-PJI410-SALA-004GRUPO-005**
