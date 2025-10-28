@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste CSS Inline</title>
+    <style>
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .test-box {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>Teste de Estilo INLINE</h1>
+        <p>Se você vê este box azul com texto branco, os estilos CSS estão funcionando!</p>
+    </div>
+    <div>
+        <h2>Teste com CSS Externo</h2>
+        <p>Agora vamos testar o CSS externo abaixo:</p>
+    </div>
+    <link rel="stylesheet" href="/smartceu/dashboard/styles.css?v=3">
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="logo">
+                <h1>Painel Teste</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="active"><a href="#">Menu Item</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <h2>Conteúdo Principal</h2>
+            <p>Se você vê o menu lateral azul, o CSS externo está funcionando!</p>
+        </div>
+    </div>
+</body>
+</html>

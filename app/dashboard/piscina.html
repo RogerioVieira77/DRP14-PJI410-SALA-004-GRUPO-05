@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CEU Monitor - Piscina</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/smartceu/dashboard/styles.css?v=2">
 </head>
 <body>
     <div class="dashboard">
@@ -14,10 +14,13 @@
                 <h1>Painel</h1>
             </div>
             <ul class="nav-menu">
-                <li><a href="index.html">Painel Principal</a></li>
-                <li><a href="areas.html">Áreas</a></li>
-                <li><a href="alertas.html">Alertas</a></li>
-                <li class="active"><a href="piscina.html">Piscina</a></li>
+                <li><a href="/smartceu/dashboard">Painel Principal</a></li>
+                <li><a href="/smartceu/dashboard/areas.html">Áreas</a></li>
+                <li><a href="/smartceu/dashboard/alertas.html">Alertas</a></li>
+                <li class="active"><a href="/smartceu/dashboard/piscina.html">Piscina</a></li>
+                <li style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
+                    <a href="/smartceu">← Voltar ao SmartCEU</a>
+                </li>
             </ul>
         </div>
 
@@ -210,7 +213,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="/smartceu/dashboard/script.js"></script>
 </body>
 </html>

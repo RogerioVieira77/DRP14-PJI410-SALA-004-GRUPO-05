@@ -154,7 +154,7 @@ def create_admin():
 
 if __name__ == '__main__':
     app.run(
-        host='0.0.0.0',
-        port=5000,
-        debug=True
+        host=os.getenv('API_HOST', '0.0.0.0'),
+        port=int(os.getenv('API_PORT', 5001)),
+        debug=os.getenv('FLASK_DEBUG', '0') == '1'
     )
