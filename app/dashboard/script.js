@@ -350,8 +350,11 @@ async function initMainPage() {
         const stats = await fetchCurrentStats();
         const alerts = await fetchActiveAlerts();
         
+        console.log('📊 Stats recebidos da API:', stats);
+        
         if (stats) {
             // Atualizar métricas com dados reais
+            console.log('✅ Atualizando current_people para:', stats.current_people);
             $('#current-people').textContent = stats.current_people;
             $('#entries-today').textContent = stats.entries_today;
             
@@ -562,11 +565,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========== PÁGINA DA PISCINA ==========
-function initPoolPage() {
+async function initPoolPage() {
     if (!$('#pool-occupancy')) return;
 
-    const updatePoolMetrics = () => {
-        // Atualizar ocupação
     const updatePoolMetrics = async () => {
         // Buscar dados reais da API
         const poolData = await fetchPoolCurrent();
