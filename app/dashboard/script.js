@@ -1,4 +1,74 @@
-// script.js - CEU Monitor (Versão Otimizada)
+// script.js - CEU Monitor (Versão com API Real)
+
+// ========== CONFIGURAÇÃO DA API ==========
+const API_BASE = '/smartceu/api/v1/dashboard';
+
+// ========== FUNÇÕES DE API ==========
+async function fetchCurrentStats() {
+    try {
+        const response = await fetch(`${API_BASE}/current-stats`);
+        if (!response.ok) throw new Error('Erro ao buscar estatísticas');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro em fetchCurrentStats:', error);
+        return null;
+    }
+}
+
+async function fetchPeopleFlow() {
+    try {
+        const response = await fetch(`${API_BASE}/people-flow`);
+        if (!response.ok) throw new Error('Erro ao buscar fluxo de pessoas');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro em fetchPeopleFlow:', error);
+        return null;
+    }
+}
+
+async function fetchAreasOccupation() {
+    try {
+        const response = await fetch(`${API_BASE}/areas-occupation`);
+        if (!response.ok) throw new Error('Erro ao buscar ocupação por área');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro em fetchAreasOccupation:', error);
+        return null;
+    }
+}
+
+async function fetchPoolCurrent() {
+    try {
+        const response = await fetch(`${API_BASE}/pool/current`);
+        if (!response.ok) throw new Error('Erro ao buscar status da piscina');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro em fetchPoolCurrent:', error);
+        return null;
+    }
+}
+
+async function fetchPoolQuality() {
+    try {
+        const response = await fetch(`${API_BASE}/pool/quality`);
+        if (!response.ok) throw new Error('Erro ao buscar qualidade da água');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro em fetchPoolQuality:', error);
+        return null;
+    }
+}
+
+async function fetchActiveAlerts() {
+    try {
+        const response = await fetch(`${API_BASE}/alerts/active`);
+        if (!response.ok) throw new Error('Erro ao buscar alertas');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro em fetchActiveAlerts:', error);
+        return null;
+    }
+}
 
 // ========== FUNÇÕES DE GRÁFICOS ==========
 function initCharts() {
@@ -9,15 +79,22 @@ function initCharts() {
     if ($('#alertsByTypeChart')) initAlertsByTypeChart();
 }
 
-function initPeopleFlowChart() {
+async function initPeopleFlowChart() {
     const ctx = document.getElementById('peopleFlowChart').getContext('2d');
+    
+    // Buscar dados reais da API
+    const flowData = await fetchPeopleFlow();
+    
+    const labels = flowData ? flowData.labels : ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
+    const data = flowData ? flowData.data : [25, 18, 85, 120, 180, 95];
+    
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'],
+            labels: labels,
             datasets: [{
                 label: 'Pessoas no CEU',
-                data: [25, 18, 85, 120, 180, 95, 45],
+                data: data,
                 borderColor: '#3498db',
                 backgroundColor: 'rgba(52, 152, 219, 0.1)',
                 tension: 0.4,
@@ -45,30 +122,41 @@ function initPeopleFlowChart() {
     });
 }
 
-function initOccupationByAreaChart() {
+async function initOccupationByAreaChart() {
     const ctx = document.getElementById('occupationByAreaChart').getContext('2d');
+    
+    // Buscar dados reais da API
+    const areasData = await fetchAreasOccupation();
+    
+    let labels, data;
+    if (areasData && areasData.areas) {
+        labels = areasData.areas.map(area => area.name);
+        data = areasData.areas.map(area => area.percentage);
+    } else {
+        labels = ['Entrada Principal', 'Lateral Norte', 'Lateral Sul', 'Banheiros', 'Portaria'];
+        data = [48, 52, 54, 65, 45];
+    }
+    
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Piscinas', 'Auditórios', 'Salas Multiuso', 'Quadras', 'Biblioteca', 'Convivência'],
+            labels: labels,
             datasets: [{
                 label: 'Ocupação (%)',
-                data: [68, 35, 55, 45, 22, 38],
+                data: data,
                 backgroundColor: [
                     'rgba(52, 152, 219, 0.8)',
                     'rgba(155, 89, 182, 0.8)',
                     'rgba(52, 152, 219, 0.8)',
                     'rgba(46, 204, 113, 0.8)',
-                    'rgba(241, 196, 15, 0.8)',
-                    'rgba(230, 126, 34, 0.8)'
+                    'rgba(241, 196, 15, 0.8)'
                 ],
                 borderColor: [
                     'rgb(52, 152, 219)',
                     'rgb(155, 89, 182)',
                     'rgb(52, 152, 219)',
                     'rgb(46, 204, 113)',
-                    'rgb(241, 196, 15)',
-                    'rgb(230, 126, 34)'
+                    'rgb(241, 196, 15)'
                 ],
                 borderWidth: 1
             }]
@@ -95,7 +183,7 @@ function initOccupationByAreaChart() {
     });
 }
 
-function initPoolOccupationChart() {
+async function initPoolOccupationChart() {
     const ctx = document.getElementById('poolOccupationChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
@@ -254,66 +342,96 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 
 // ========== PÁGINA PRINCIPAL ==========
-function initMainPage() {
+async function initMainPage() {
     if (!$('#current-people')) return;
     
-    const updateMetrics = () => {
-        const metrics = {
-            'current-people': { min: 80, max: 200, calc: val => Math.round((val / 400) * 100) },
-            'entries-today': { min: 300, max: 500 },
-            'active-alerts': { min: 1, max: 5 }
-        };
-
-        Object.entries(metrics).forEach(([id, config]) => {
-            const value = randomBetween(config.min, config.max);
-            $(`#${id}`).textContent = config.calc ? config.calc(value) : value;
-        });
-
-        // Status da capacidade
-        const capacity = +$('#current-people').textContent;
-        updateStatus('.metric-card:nth-child(1)', capacity, 60, 80, 'Dentro do limite', 'Alerta moderado', 'Capacidade crítica');
+    const updateMetrics = async () => {
+        // Buscar dados reais da API
+        const stats = await fetchCurrentStats();
+        const alerts = await fetchActiveAlerts();
         
-        // Status dos alertas
-        const alerts = +$('#active-alerts').textContent;
-        const critical = Math.min(alerts - 1, 2);
-        const warning = alerts - critical;
-        $('.metric-card:nth-child(4) .metric-subvalue').textContent = `${critical} críticos, ${warning} ${warning === 1 ? 'aviso' : 'avisos'}`;
-        updateStatus('.metric-card:nth-child(4)', alerts, 1, 3, 'Sistema estável', 'Monitorar', 'Atenção necessária');
+        if (stats) {
+            // Atualizar métricas com dados reais
+            $('#current-people').textContent = stats.current_people;
+            $('#entries-today').textContent = stats.entries_today;
+            
+            // Atualizar capacidade
+            const capacityPercent = stats.capacity_percentage;
+            updateStatus('.metric-card:nth-child(1)', capacityPercent, 60, 80, 'Dentro do limite', 'Alerta moderado', 'Capacidade crítica');
+        }
+        
+        if (alerts) {
+            // Atualizar alertas
+            $('#active-alerts').textContent = alerts.total;
+            
+            // Contar alertas por severidade
+            const critical = alerts.alerts.filter(a => a.severity === 'critical').length;
+            const warning = alerts.alerts.filter(a => a.severity === 'warning').length;
+            
+            if (alerts.total > 0) {
+                $('.metric-card:nth-child(4) .metric-subvalue').textContent = 
+                    `${critical} críticos, ${warning} ${warning === 1 ? 'aviso' : 'avisos'}`;
+                updateStatus('.metric-card:nth-child(4)', alerts.total, 1, 3, 'Sistema estável', 'Monitorar', 'Atenção necessária');
+            } else {
+                $('.metric-card:nth-child(4) .metric-subvalue').textContent = 'Nenhum alerta ativo';
+                updateStatus('.metric-card:nth-child(4)', 0, 1, 3, 'Sistema estável', 'Monitorar', 'Atenção necessária');
+            }
+        }
     };
 
-    setInterval(updateMetrics, 10000);
-    updateMetrics();
+    // Atualizar a cada 30 segundos
+    setInterval(updateMetrics, 30000);
+    await updateMetrics();
 }
 
 // ========== PÁGINA DE ÁREAS ==========
-function initAreasPage() {
+async function initAreasPage() {
     if (!$('.areas-grid')) return;
     
-    const updateAreaMetrics = () => {
-        const areas = [
-            { min: 50, max: 80 }, { min: 20, max: 60 }, { min: 30, max: 60 },
-            { min: 15, max: 50 }, { min: 5, max: 25 }, { min: 20, max: 40 }
-        ];
-
-        $$('.area-card .metric-value').forEach((el, i) => {
-            const value = randomBetween(areas[i].min, areas[i].max);
-            el.textContent = `${value}%`;
-            
-            const card = el.closest('.area-card');
-            const status = card.querySelector('.metric-status');
-            
-            if (value > 70) updateElement(status, card, 'Capacidade crítica', 'danger');
-            else if (value > 50) updateElement(status, card, 'Quase na capacidade', 'warning');
-            else updateElement(status, card, value > 25 ? 'Dentro do normal' : 'Baixa ocupação', 'normal');
-        });
+    const updateAreaMetrics = async () => {
+        // Buscar dados reais da API
+        const areasData = await fetchAreasOccupation();
+        
+        if (areasData && areasData.areas) {
+            // Atualizar cada card de área com dados reais
+            $$('.area-card .metric-value').forEach((el, i) => {
+                if (areasData.areas[i]) {
+                    const area = areasData.areas[i];
+                    el.textContent = `${area.percentage}%`;
+                    
+                    // Atualizar informações adicionais
+                    const card = el.closest('.area-card');
+                    const subvalue = card.querySelector('.metric-subvalue');
+                    if (subvalue) {
+                        subvalue.textContent = `${area.current}/${area.capacity} pessoas`;
+                    }
+                    
+                    // Atualizar status
+                    const statusEl = card.querySelector('.metric-status');
+                    if (statusEl) {
+                        if (area.status === 'critical') {
+                            statusEl.textContent = 'Capacidade crítica';
+                            statusEl.className = 'metric-status danger';
+                        } else if (area.status === 'warning') {
+                            statusEl.textContent = 'Alerta moderado';
+                            statusEl.className = 'metric-status warning';
+                        } else {
+                            statusEl.textContent = 'Dentro do limite';
+                            statusEl.className = 'metric-status normal';
+                        }
+                    }
+                }
+            });
+        }
     };
 
-    setInterval(updateAreaMetrics, 10000);
-    updateAreaMetrics();
+    // Atualizar a cada 30 segundos
+    setInterval(updateAreaMetrics, 30000);
+    await updateAreaMetrics();
 }
 
 // ========== PÁGINA DE ALERTAS ==========
-function initAlertsPage() {
+async function initAlertsPage() {
     if (!$('#active-alerts-list')) return;
     
     let state = { active: 5, critical: 3, resolved: 12 };
@@ -449,48 +567,52 @@ function initPoolPage() {
 
     const updatePoolMetrics = () => {
         // Atualizar ocupação
-        const occupancy = randomBetween(50, 80);
-        $('#pool-occupancy').textContent = `${occupancy}%`;
-        const people = Math.round((occupancy / 100) * 60);
-        $('#pool-occupancy').nextElementSibling.textContent = `${people} pessoas | Capacidade: 60`;
+    const updatePoolMetrics = async () => {
+        // Buscar dados reais da API
+        const poolData = await fetchPoolCurrent();
+        const qualityData = await fetchPoolQuality();
+        
+        if (poolData) {
+            // Atualizar ocupação
+            const occupancy = poolData.occupancy_percentage;
+            $('#pool-occupancy').textContent = `${occupancy}%`;
+            $('#pool-occupancy').nextElementSibling.textContent = 
+                `${poolData.current_people} pessoas | Capacidade: ${poolData.capacity}`;
 
-        // Atualizar status da ocupação
-        if (occupancy > 70) {
-            updateElement($('#pool-occupancy').closest('.metric-card').querySelector('.metric-status'), 
-                         $('#pool-occupancy').closest('.metric-card'), 
-                         'Capacidade crítica', 'danger');
-        } else if (occupancy > 60) {
-            updateElement($('#pool-occupancy').closest('.metric-card').querySelector('.metric-status'), 
-                         $('#pool-occupancy').closest('.metric-card'), 
-                         'Quase na capacidade', 'warning');
-        } else {
-            updateElement($('#pool-occupancy').closest('.metric-card').querySelector('.metric-status'), 
-                         $('#pool-occupancy').closest('.metric-card'), 
-                         'Dentro do limite', 'normal');
+            // Atualizar status da ocupação
+            const occupancyCard = $('#pool-occupancy').closest('.metric-card');
+            const occupancyStatus = occupancyCard.querySelector('.metric-status');
+            
+            if (occupancy > 70) {
+                updateElement(occupancyStatus, occupancyCard, 'Capacidade crítica', 'danger');
+            } else if (occupancy > 60) {
+                updateElement(occupancyStatus, occupancyCard, 'Quase na capacidade', 'warning');
+            } else {
+                updateElement(occupancyStatus, occupancyCard, 'Dentro do limite', 'normal');
+            }
+
+            // Atualizar entradas hoje
+            $('#pool-entries-today').textContent = poolData.entries_today;
+
+            // Atualizar temperaturas
+            $('#local-temperature').textContent = `${poolData.ambient_temperature}°C`;
+            $('#water-temperature').textContent = `${poolData.water_temperature}°C`;
         }
+        
+        if (qualityData) {
+            // Atualizar qualidade da água
+            $('#pool-ph').textContent = qualityData.ph.value;
+            updatePoolCardStatus('#pool-ph-card', qualityData.ph.value, 
+                qualityData.ph.min_safe, qualityData.ph.max_safe);
 
-        // Atualizar entradas hoje
-        const entries = randomBetween(100, 200);
-        $('#pool-entries-today').textContent = entries;
+            $('#pool-chlorine').textContent = `${qualityData.chlorine.value} ppm`;
+            updatePoolCardStatus('#pool-chlorine-card', qualityData.chlorine.value, 
+                qualityData.chlorine.min_safe, qualityData.chlorine.max_safe);
 
-        // Atualizar temperaturas
-        const localTemp = randomBetweenFloat(22, 30);
-        $('#local-temperature').textContent = `${localTemp}°C`;
-        const waterTemp = randomBetweenFloat(24, 32);
-        $('#water-temperature').textContent = `${waterTemp}°C`;
-
-        // Atualizar qualidade da água
-        const phValue = randomBetweenFloat(6.8, 8.0);
-        $('#pool-ph').textContent = phValue;
-        updatePoolCardStatus('#pool-ph-card', phValue, 7.2, 7.6);
-
-        const chlorine = randomBetweenFloat(0.5, 3.5);
-        $('#pool-chlorine').textContent = `${chlorine} ppm`;
-        updatePoolCardStatus('#pool-chlorine-card', chlorine, 1.0, 3.0);
-
-        const alkalinity = randomBetween(60, 140);
-        $('#pool-alkalinity').textContent = `${alkalinity} ppm`;
-        updatePoolCardStatus('#pool-alkalinity-card', alkalinity, 80, 120);
+            $('#pool-alkalinity').textContent = `${qualityData.alkalinity.value} ppm`;
+            updatePoolCardStatus('#pool-alkalinity-card', qualityData.alkalinity.value, 
+                qualityData.alkalinity.min_safe, qualityData.alkalinity.max_safe);
+        }
     };
 
     const updatePoolCardStatus = (selector, value, min, max) => {
@@ -514,21 +636,9 @@ function initPoolPage() {
         trend.textContent = trends[Math.floor(Math.random() * trends.length)];
     };
 
-    // Atualizar a cada 10 segundos (para demonstração)
-    setInterval(updatePoolMetrics, 10000);
-    updatePoolMetrics();
-
-    // Simular atualizações mais frequentes para temperaturas e pH (a cada 30 segundos)
-    setInterval(() => {
-        const localTemp = randomBetweenFloat(22, 30);
-        $('#local-temperature').textContent = `${localTemp}°C`;
-        const waterTemp = randomBetweenFloat(24, 32);
-        $('#water-temperature').textContent = `${waterTemp}°C`;
-        
-        const phValue = randomBetweenFloat(6.8, 8.0);
-        $('#pool-ph').textContent = phValue;
-        updatePoolCardStatus('#pool-ph-card', phValue, 7.2, 7.6);
-    }, 30000);
+    // Atualizar a cada 30 segundos
+    setInterval(updatePoolMetrics, 30000);
+    await updatePoolMetrics();
 }
 
 // ========== INICIALIZAÇÃO ==========
