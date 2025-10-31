@@ -411,6 +411,154 @@ def get_active_alerts():
         }), 500
 
 
+# ========== ENDPOINT 7: Previsão de Horário de Pico ==========
+@bp.route('/peak-prediction', methods=['GET'])
+def get_peak_prediction():
+    """
+    Calcula o horário de pico baseado em dados históricos dos últimos 7 dias
+    
+    Returns:
+        JSON com:
+        - peak_hour: Horário do pico (formato HH:MM)
+        - peak_count: Número médio de pessoas no pico
+        - capacity_prediction: Previsão de percentual de capacidade
+        - confidence: Nível de confiança da previsão (0-100)
+    """
+    try:
+        # Últimos 7 dias
+        week_ago = datetime.utcnow() - timedelta(days=7)
+        
+        # Buscar readings da última semana
+        readings = Reading.query.filter(
+            Reading.timestamp >= week_ago,
+            Reading.activity == 1  # Apenas entradas
+        ).all()
+        
+        if not readings:
+            return jsonify({
+                'peak_hour': '16:00',
+                'peak_count': 0,
+                'capacity_prediction': 0,
+                'confidence': 0,
+                'message': 'Dados insuficientes'
+            }), 200
+        
+        # Agrupar por hora do dia
+        hourly_counts = {}
+        for reading in readings:
+            hour = reading.timestamp.hour
+            hourly_counts[hour] = hourly_counts.get(hour, 0) + 1
+        
+        # Encontrar hora com mais entradas
+        if hourly_counts:
+            peak_hour = max(hourly_counts, key=hourly_counts.get)
+            peak_count = hourly_counts[peak_hour]
+            
+            # Calcular média de pessoas no pico (estimativa)
+            avg_peak_people = int(peak_count / 7)  # Média dos 7 dias
+            
+            # Previsão de capacidade
+            capacity_prediction = round((avg_peak_people / MAX_CAPACITY) * 100, 1)
+            
+            # Confiança baseada na quantidade de dados
+            confidence = min(100, int((len(readings) / 100) * 100))
+            
+            return jsonify({
+                'peak_hour': f'{peak_hour:02d}:00',
+                'peak_count': avg_peak_people,
+                'capacity_prediction': capacity_prediction,
+                'confidence': confidence,
+                'total_readings': len(readings),
+                'timestamp': datetime.utcnow().isoformat()
+            }), 200
+        else:
+            return jsonify({
+                'peak_hour': '16:00',
+                'peak_count': 0,
+                'capacity_prediction': 0,
+                'confidence': 0,
+                'message': 'Dados insuficientes'
+            }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'error': 'Erro ao calcular previsão de pico',
+            'details': str(e)
+        }), 500
+
+
+# ========== ENDPOINT 8: Estatísticas Avançadas ==========
+@bp.route('/advanced-stats', methods=['GET'])
+def get_advanced_stats():
+    """
+    Retorna estatísticas avançadas com médias, tendências e previsões
+    
+    Returns:
+        JSON com:
+        - daily_average: Média de pessoas por dia
+        - today_prediction: Previsão de entradas hoje
+        - trend_percentage: Tendência comparado com ontem (%)
+        - peak_info: Informações sobre horário de pico
+    """
+    try:
+        # Data de hoje
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterday_start = today_start - timedelta(days=1)
+        week_ago = today_start - timedelta(days=7)
+        
+        # Entradas de hoje
+        entries_today = Reading.query.filter(
+            Reading.timestamp >= today_start,
+            Reading.activity == 1
+        ).count()
+        
+        # Entradas de ontem
+        entries_yesterday = Reading.query.filter(
+            Reading.timestamp >= yesterday_start,
+            Reading.timestamp < today_start,
+            Reading.activity == 1
+        ).count()
+        
+        # Média dos últimos 7 dias
+        readings_week = Reading.query.filter(
+            Reading.timestamp >= week_ago,
+            Reading.activity == 1
+        ).count()
+        
+        daily_average = int(readings_week / 7) if readings_week > 0 else 0
+        
+        # Calcular tendência
+        if entries_yesterday > 0:
+            trend_percentage = round(((entries_today - entries_yesterday) / entries_yesterday) * 100, 1)
+        else:
+            trend_percentage = 0.0
+        
+        # Previsão para hoje (baseada na hora atual e média)
+        current_hour = datetime.utcnow().hour
+        hours_remaining = 24 - current_hour
+        if current_hour > 0:
+            hourly_rate = entries_today / current_hour
+            today_prediction = int(entries_today + (hourly_rate * hours_remaining))
+        else:
+            today_prediction = daily_average
+        
+        return jsonify({
+            'daily_average': daily_average,
+            'today_prediction': today_prediction,
+            'trend_percentage': trend_percentage,
+            'trend_direction': 'up' if trend_percentage > 0 else 'down' if trend_percentage < 0 else 'stable',
+            'entries_today': entries_today,
+            'entries_yesterday': entries_yesterday,
+            'timestamp': datetime.utcnow().isoformat()
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'error': 'Erro ao calcular estatísticas avançadas',
+            'details': str(e)
+        }), 500
+
+
 # ========== ENDPOINT DE HEALTH CHECK ==========
 @bp.route('/health', methods=['GET'])
 def health_check():

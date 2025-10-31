@@ -121,7 +121,7 @@ def setup_logging(app):
 
 def register_blueprints(app):
     """Registra blueprints da aplicação"""
-    from app.routes import sensors, readings, statistics, auth, health, pool
+    from app.routes import sensors, readings, statistics, auth, health, pool, dashboard
     from flask import send_from_directory
     import os
     
@@ -142,6 +142,7 @@ def register_blueprints(app):
     app.register_blueprint(readings.bp, url_prefix=f'{api_prefix}/readings')
     app.register_blueprint(statistics.bp, url_prefix=f'{api_prefix}/statistics')
     app.register_blueprint(pool.pool_bp)  # Pool já tem o prefix definido
+    app.register_blueprint(dashboard.bp, url_prefix=f'{api_prefix}/dashboard')  # Dashboard público
     
     app.logger.info(f"Blueprints registrados com prefixo: {api_prefix}")
 

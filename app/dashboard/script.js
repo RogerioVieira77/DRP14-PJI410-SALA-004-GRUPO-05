@@ -1,7 +1,7 @@
 // script.js - CEU Monitor (Versão com API Real)
 
 // ========== CONFIGURAÇÃO DA API ==========
-const API_BASE = '/smartceu/api/v1/dashboard';
+const API_BASE = '/api/v1/dashboard';
 
 // ========== FUNÇÕES DE API ==========
 async function fetchCurrentStats() {
@@ -66,6 +66,28 @@ async function fetchActiveAlerts() {
         return await response.json();
     } catch (error) {
         console.error('Erro em fetchActiveAlerts:', error);
+        return null;
+    }
+}
+
+async function fetchPeakPrediction() {
+    try {
+        const response = await fetch(`${API_BASE}/peak-prediction`);
+        if (!response.ok) throw new Error('Erro ao buscar previsão de pico');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro em fetchPeakPrediction:', error);
+        return null;
+    }
+}
+
+async function fetchAdvancedStats() {
+    try {
+        const response = await fetch(`${API_BASE}/advanced-stats`);
+        if (!response.ok) throw new Error('Erro ao buscar estatísticas avançadas');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro em fetchAdvancedStats:', error);
         return null;
     }
 }
@@ -397,38 +419,170 @@ async function initMainPage() {
         // Buscar dados reais da API
         const stats = await fetchCurrentStats();
         const alerts = await fetchActiveAlerts();
+        const peak = await fetchPeakPrediction();
+        const advanced = await fetchAdvancedStats();
         
         console.log('📊 Stats recebidos da API:', stats);
+        console.log('🔔 Alertas:', alerts);
+        console.log('📈 Previsão de pico:', peak);
+        console.log('📉 Stats avançadas:', advanced);
         
+        // ========== CARD 1: PESSOAS NO CEU ==========
         if (stats) {
-            // Atualizar métricas com dados reais
-            console.log('✅ Atualizando current_people para:', stats.current_people);
+            // Atualizar valor principal
             $('#current-people').textContent = stats.current_people;
-            $('#entries-today').textContent = stats.entries_today;
+            
+            // Atualizar capacidade
+            $('#capacity-info').textContent = `${stats.current_people}/${stats.max_capacity} pessoas`;
             
             // Atualizar indicador de última atualização
             updateLastUpdateIndicator(stats.last_reading);
             
-            // Atualizar capacidade
+            // Atualizar status baseado na capacidade
             const capacityPercent = stats.capacity_percentage;
-            updateStatus('.metric-card:nth-child(1)', capacityPercent, 60, 80, 'Dentro do limite', 'Alerta moderado', 'Capacidade crítica');
+            const statusEl = $('#capacity-status');
+            const card1 = $('.metric-card:nth-child(1)');
+            
+            if (capacityPercent >= 80) {
+                statusEl.textContent = 'Capacidade crítica';
+                statusEl.className = 'metric-status status-danger';
+                card1.classList.add('danger');
+            } else if (capacityPercent >= 60) {
+                statusEl.textContent = 'Alerta moderado';
+                statusEl.className = 'metric-status status-warning';
+                card1.classList.add('warning');
+            } else {
+                statusEl.textContent = 'Dentro do limite';
+                statusEl.className = 'metric-status status-normal';
+                card1.classList.remove('warning', 'danger');
+            }
         }
         
+        // ========== CARD 2: ENTRADAS HOJE ==========
+        if (stats) {
+            $('#entries-today').textContent = stats.entries_today;
+        }
+        
+        if (advanced) {
+            // Atualizar média diária
+            $('#daily-average').textContent = `Média: ${advanced.daily_average}/dia`;
+            
+            // Atualizar tendência
+            const trendEl = $('#entries-trend');
+            const trendPercent = advanced.trend_percentage;
+            const trendDirection = advanced.trend_direction;
+            
+            let trendIcon = 'fa-minus';
+            let trendClass = '';
+            let trendText = 'Estável em relação a ontem';
+            
+            if (trendDirection === 'up') {
+                trendIcon = 'fa-arrow-up';
+                trendClass = 'trend-up';
+                trendText = `+${Math.abs(trendPercent)}% em relação a ontem`;
+            } else if (trendDirection === 'down') {
+                trendIcon = 'fa-arrow-down';
+                trendClass = 'trend-down';
+                trendText = `${trendPercent}% em relação a ontem`;
+            }
+            
+            trendEl.innerHTML = `
+                <i class="fas ${trendIcon} ${trendClass}"></i>
+                <span>${trendText}</span>
+            `;
+            
+            // Atualizar status
+            const entriesStatusEl = $('#entries-status');
+            if (Math.abs(trendPercent) > 20) {
+                entriesStatusEl.textContent = 'Variação significativa';
+                entriesStatusEl.className = 'metric-status status-warning';
+            } else {
+                entriesStatusEl.textContent = 'Normal';
+                entriesStatusEl.className = 'metric-status status-normal';
+            }
+        }
+        
+        // ========== CARD 3: HORÁRIO DE PICO ==========
+        if (peak) {
+            // Atualizar horário do pico
+            $('#next-peak').textContent = peak.peak_hour;
+            
+            // Atualizar previsão
+            $('#peak-prediction').textContent = `Previsão: ${peak.capacity_prediction}% de capacidade`;
+            
+            // Atualizar status
+            const peakStatusEl = $('#peak-status');
+            const card3 = $('.metric-card:nth-child(3)');
+            
+            if (peak.capacity_prediction >= 80) {
+                peakStatusEl.textContent = 'Preparar equipe de apoio';
+                peakStatusEl.className = 'metric-status status-danger';
+                card3.classList.remove('warning');
+                card3.classList.add('danger');
+            } else if (peak.capacity_prediction >= 60) {
+                peakStatusEl.textContent = 'Monitorar ocupação';
+                peakStatusEl.className = 'metric-status status-warning';
+                card3.classList.remove('danger');
+                card3.classList.add('warning');
+            } else {
+                peakStatusEl.textContent = 'Fluxo normal esperado';
+                peakStatusEl.className = 'metric-status status-normal';
+                card3.classList.remove('warning', 'danger');
+            }
+            
+            // Atualizar tendência com confiança
+            const peakTrendEl = $('#peak-trend');
+            peakTrendEl.innerHTML = `
+                <i class="fas fa-chart-line"></i>
+                <span>Confiança: ${peak.confidence}% (${peak.total_readings} leituras)</span>
+            `;
+        }
+        
+        // ========== CARD 4: ALERTAS ATIVOS ==========
         if (alerts) {
-            // Atualizar alertas
+            // Atualizar número de alertas
             $('#active-alerts').textContent = alerts.total;
             
             // Contar alertas por severidade
             const critical = alerts.alerts.filter(a => a.severity === 'critical').length;
             const warning = alerts.alerts.filter(a => a.severity === 'warning').length;
+            const info = alerts.alerts.filter(a => a.severity === 'info').length;
             
-            if (alerts.total > 0) {
-                $('.metric-card:nth-child(4) .metric-subvalue').textContent = 
-                    `${critical} críticos, ${warning} ${warning === 1 ? 'aviso' : 'avisos'}`;
-                updateStatus('.metric-card:nth-child(4)', alerts.total, 1, 3, 'Sistema estável', 'Monitorar', 'Atenção necessária');
+            // Atualizar breakdown
+            $('#alerts-breakdown').textContent = `${critical} críticos, ${warning} avisos, ${info} informativos`;
+            
+            // Atualizar status
+            const alertsStatusEl = $('#alerts-status');
+            const card4 = $('.metric-card:nth-child(4)');
+            
+            if (critical > 0) {
+                alertsStatusEl.textContent = 'Atenção necessária';
+                alertsStatusEl.className = 'metric-status status-danger';
+                card4.classList.remove('warning');
+                card4.classList.add('danger');
+            } else if (warning > 0) {
+                alertsStatusEl.textContent = 'Monitorar';
+                alertsStatusEl.className = 'metric-status status-warning';
+                card4.classList.remove('danger');
+                card4.classList.add('warning');
             } else {
-                $('.metric-card:nth-child(4) .metric-subvalue').textContent = 'Nenhum alerta ativo';
-                updateStatus('.metric-card:nth-child(4)', 0, 1, 3, 'Sistema estável', 'Monitorar', 'Atenção necessária');
+                alertsStatusEl.textContent = 'Sistema estável';
+                alertsStatusEl.className = 'metric-status status-normal';
+                card4.classList.remove('warning', 'danger');
+            }
+            
+            // Atualizar tendência
+            const alertsTrendEl = $('#alerts-trend');
+            if (alerts.total === 0) {
+                alertsTrendEl.innerHTML = `
+                    <i class="fas fa-check-circle" style="color: #27ae60;"></i>
+                    <span>Nenhum alerta ativo</span>
+                `;
+            } else {
+                alertsTrendEl.innerHTML = `
+                    <i class="fas fa-bell"></i>
+                    <span>Total de ${alerts.total} alerta(s) requer(em) atenção</span>
+                `;
             }
         }
     };
@@ -488,7 +642,7 @@ async function initAreasPage() {
 async function initAlertsPage() {
     if (!$('#active-alerts-list')) return;
     
-    let state = { active: 5, critical: 3, resolved: 12 };
+    let state = { active: 0, critical: 0, resolved: 0 };
 
     window.resolveAlert = (id) => updateAlert(id, true);
     window.ignoreAlert = (id) => updateAlert(id, false);
@@ -519,7 +673,7 @@ async function initAlertsPage() {
     const addToHistory = (alert) => {
         const clone = alert.cloneNode(true);
         clone.querySelector('.alert-time').textContent = 'Resolvido agora';
-        $('#history-alerts-list').prepend(clone);
+        $('#history-alerts-list')?.prepend(clone);
     };
 
     const updateAlertsMetrics = () => {
@@ -528,10 +682,90 @@ async function initAlertsPage() {
         $('#resolved-alerts').textContent = state.resolved;
         
         const warning = state.active - state.critical;
-        $('.metric-card:nth-child(1) .metric-subvalue').textContent = 
-            `${state.critical} críticos, ${warning} ${warning === 1 ? 'aviso' : 'avisos'}`;
+        const subvalueEl = $('.metric-card:nth-child(1) .metric-subvalue');
+        if (subvalueEl) {
+            subvalueEl.textContent = `${state.critical} críticos, ${warning} ${warning === 1 ? 'aviso' : 'avisos'}`;
+        }
         
         updateStatus('.metric-card:nth-child(1)', state.active, 1, 3, 'Sistema estável', 'Monitorar', 'Atenção necessária');
+    };
+
+    // Carregar alertas reais da API
+    const loadAlerts = async () => {
+        const alertsData = await fetchActiveAlerts();
+        
+        if (alertsData && alertsData.alerts) {
+            // Limpar lista
+            const activeList = $('#active-alerts-list');
+            if (activeList) activeList.innerHTML = '';
+            
+            // Atualizar state
+            state.active = alertsData.total;
+            state.critical = alertsData.alerts.filter(a => a.severity === 'critical').length;
+            
+            // Adicionar cada alerta à lista
+            alertsData.alerts.forEach(alert => {
+                const iconMap = {
+                    'critical': 'exclamation-circle',
+                    'warning': 'exclamation-triangle',
+                    'info': 'info-circle'
+                };
+                
+                const priorityMap = {
+                    'critical': 'Crítico',
+                    'warning': 'Aviso',
+                    'info': 'Informativo'
+                };
+                
+                const alertTime = new Date(alert.timestamp);
+                const now = new Date();
+                const diffMinutes = Math.floor((now - alertTime) / 60000);
+                const timeText = diffMinutes < 1 ? 'Agora' : 
+                                diffMinutes < 60 ? `${diffMinutes} min atrás` : 
+                                `${Math.floor(diffMinutes / 60)}h atrás`;
+                
+                if (activeList) {
+                    activeList.insertAdjacentHTML('beforeend', `
+                        <div class="alert-item" data-id="${alert.id}" data-type="${alert.severity}" data-area="${alert.area}">
+                            <div class="alert-icon ${alert.severity}">
+                                <i class="fas fa-${iconMap[alert.severity] || 'bell'}"></i>
+                            </div>
+                            <div class="alert-content">
+                                <h4>${alert.type || 'Alerta do Sistema'}</h4>
+                                <p class="alert-desc">${alert.message}</p>
+                                <div class="alert-meta">
+                                    <span class="alert-time">${timeText}</span>
+                                    <span class="alert-area">${alert.area}</span>
+                                    <span class="alert-priority">${priorityMap[alert.severity]}</span>
+                                </div>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="btn btn-resolve" onclick="resolveAlert(${alert.id})">Resolver</button>
+                                <button class="btn btn-ignore" onclick="ignoreAlert(${alert.id})">Ignorar</button>
+                            </div>
+                        </div>
+                    `);
+                }
+            });
+            
+            updateAlertsMetrics();
+        } else {
+            // Nenhum alerta ativo
+            state.active = 0;
+            state.critical = 0;
+            updateAlertsMetrics();
+            
+            const activeList = $('#active-alerts-list');
+            if (activeList) {
+                activeList.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <i class="fas fa-check-circle" style="font-size: 48px; color: #27ae60; margin-bottom: 16px;"></i>
+                        <p style="font-size: 18px; font-weight: 500;">Nenhum alerta ativo</p>
+                        <p style="font-size: 14px; margin-top: 8px;">Sistema funcionando normalmente</p>
+                    </div>
+                `;
+            }
+        }
     };
 
     // Filtros
@@ -539,8 +773,8 @@ async function initAlertsPage() {
     $('#filter-area')?.addEventListener('change', filterAlerts);
 
     const filterAlerts = () => {
-        const typeFilter = $('#filter-type').value;
-        const areaFilter = $('#filter-area').value;
+        const typeFilter = $('#filter-type')?.value;
+        const areaFilter = $('#filter-area')?.value;
         
         $$('#active-alerts-list .alert-item').forEach(alert => {
             const typeMatch = typeFilter === 'all' || alert.dataset.type === typeFilter;
@@ -549,41 +783,11 @@ async function initAlertsPage() {
         });
     };
 
-    // Simulação de novos alertas
-    setInterval(() => {
-        if (Math.random() < 0.3) {
-            state.active++;
-            state.critical++;
-            updateAlertsMetrics();
-            
-            const alerts = [
-                { type: 'critical', icon: 'exclamation-circle', area: 'sensors', title: 'Novo sensor com falha' },
-                { type: 'warning', icon: 'thermometer-half', area: 'piscina', title: 'Temperatura da água elevada' },
-                { type: 'info', icon: 'info-circle', area: 'system', title: 'Atualização disponível' }
-            ];
-            
-            const randomAlert = alerts[Math.floor(Math.random() * alerts.length)];
-            const id = Date.now();
-            
-            $('#active-alerts-list').insertAdjacentHTML('afterbegin', `
-                <div class="alert-item" data-id="${id}" data-type="${randomAlert.type}" data-area="${randomAlert.area}">
-                    <div class="alert-icon ${randomAlert.type}">
-                        <i class="fas fa-${randomAlert.icon}"></i>
-                    </div>
-                    <div class="alert-content">
-                        <h4>${randomAlert.title}</h4>
-                        <p class="alert-desc">Alerta gerado automaticamente pelo sistema</p>
-                        <div class="alert-meta">
-                            <span class="alert-time">Agora</span>
-                            <span class="alert-area">${randomAlert.area}</span>
-                            <span class="alert-priority">${randomAlert.type === 'critical' ? 'Crítico' : randomAlert.type === 'warning' ? 'Aviso' : 'Informativo'}</span>
-                        </div>
-                    </div>
-                    <div class="alert-actions">
-                        <button class="btn btn-resolve" onclick="resolveAlert(${id})">Resolver</button>
-                        <button class="btn btn-ignore" onclick="ignoreAlert(${id})">Ignorar</button>
-                    </div>
-                </div>
+    // Carregar alertas inicialmente e atualizar a cada 30 segundos
+    await loadAlerts();
+    setInterval(loadAlerts, 30000);
+
+    updateAlertsMetrics();
             `);
         }
     }, 30000);
@@ -676,16 +880,22 @@ async function initPoolPage() {
             status.textContent = 'Dentro do ideal';
             status.className = 'metric-status status-normal';
             card.classList.remove('warning', 'danger');
+            
+            if (trend) trend.textContent = 'Valor dentro da faixa segura';
         } else {
             status.textContent = 'Fora do ideal';
             status.className = 'metric-status status-danger';
             card.classList.remove('warning');
             card.classList.add('danger');
+            
+            if (trend) {
+                if (value < min) {
+                    trend.textContent = 'Valor abaixo do recomendado';
+                } else {
+                    trend.textContent = 'Valor acima do recomendado';
+                }
+            }
         }
-
-        // Simular tendência
-        const trends = ['Estável', 'Leve aumento', 'Leve redução'];
-        trend.textContent = trends[Math.floor(Math.random() * trends.length)];
     };
 
     // Atualizar a cada 30 segundos

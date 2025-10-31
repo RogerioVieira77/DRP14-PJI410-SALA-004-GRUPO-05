@@ -1,47 +1,45 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste CSS Inline</title>
-    <style>
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .test-box {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 10px;
-        }
-    </style>
+    <title>Teste Dashboard</title>
 </head>
 <body>
-    <div class="test-box">
-        <h1>Teste de Estilo INLINE</h1>
-        <p>Se você vê este box azul com texto branco, os estilos CSS estão funcionando!</p>
+    <h1>Teste API Dashboard</h1>
+    <div>
+        <strong>Pessoas no CEU:</strong> <span id="current-people">Carregando...</span>
     </div>
     <div>
-        <h2>Teste com CSS Externo</h2>
-        <p>Agora vamos testar o CSS externo abaixo:</p>
+        <strong>Entradas Hoje:</strong> <span id="entries-today">Carregando...</span>
     </div>
-    <link rel="stylesheet" href="/smartceu/dashboard/styles.css?v=3">
-    <div class="dashboard">
-        <div class="sidebar">
-            <div class="logo">
-                <h1>Painel Teste</h1>
-            </div>
-            <ul class="nav-menu">
-                <li class="active"><a href="#">Menu Item</a></li>
-            </ul>
-        </div>
-        <div class="main-content">
-            <h2>Conteúdo Principal</h2>
-            <p>Se você vê o menu lateral azul, o CSS externo está funcionando!</p>
-        </div>
+    <div>
+        <strong>Console:</strong> <div id="console-log"></div>
     </div>
+
+    <script>
+        const API_BASE = '/smartceu/api/v1/dashboard';
+        const log = document.getElementById('console-log');
+        
+        async function test() {
+            log.innerHTML += '<p>🔄 Iniciando teste...</p>';
+            
+            try {
+                log.innerHTML += '<p>📡 Fazendo requisição para: ' + API_BASE + '/current-stats</p>';
+                const response = await fetch(`${API_BASE}/current-stats`);
+                log.innerHTML += '<p>✅ Response status: ' + response.status + '</p>';
+                
+                const data = await response.json();
+                log.innerHTML += '<p>📊 Dados recebidos: ' + JSON.stringify(data) + '</p>';
+                
+                document.getElementById('current-people').textContent = data.current_people;
+                document.getElementById('entries-today').textContent = data.entries_today;
+                
+                log.innerHTML += '<p>✅ Página atualizada com sucesso!</p>';
+            } catch (error) {
+                log.innerHTML += '<p>❌ ERRO: ' + error.message + '</p>';
+            }
+        }
+        
+        test();
+    </script>
 </body>
 </html>

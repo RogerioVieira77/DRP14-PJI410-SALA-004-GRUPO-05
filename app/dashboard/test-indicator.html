@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Indicador de Atualização</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .indicator-test {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log div {
+            margin-bottom: 5px;
+        }
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste do Indicador de Última Atualização</h1>
+        
+        <div class="indicator-test">
+            <strong>Indicador:</strong>
+            <span id="last-update-indicator" style="margin-left: 20px; font-size: 1.1em;">
+                <i class="fas fa-sync-alt"></i> Carregando...
+            </span>
+        </div>
+
+        <div>
+            <button onclick="testNow()">Testar: Agora</button>
+            <button onclick="test5Min()">Testar: 5 min atrás</button>
+            <button onclick="test30Min()">Testar: 30 min atrás</button>
+            <button onclick="test60Min()">Testar: 1 hora atrás</button>
+            <button onclick="testAPI()">Testar: API Real</button>
+        </div>
+
+        <h3 style="margin-top: 30px;">Console de Debug:</h3>
+        <div class="log" id="console-log"></div>
+    </div>
+
+    <script>
+        const $ = (selector) => document.querySelector(selector);
+        const logEl = $('#console-log');
+        
+        function log(msg, data = '') {
+            const div = document.createElement('div');
+            div.textContent = `${new Date().toLocaleTimeString()} - ${msg} ${data}`;
+            logEl.insertBefore(div, logEl.firstChild);
+            console.log(msg, data);
+        }
+
+        const updateLastUpdateIndicator = (lastReading) => {
+            const indicator = $('#last-update-indicator');
+            log('🔄 updateLastUpdateIndicator chamado', lastReading);
+            
+            if (!indicator) {
+                log('❌ Elemento não encontrado!');
+                return;
+            }
+            
+            if (lastReading) {
+                const date = new Date(lastReading);
+                const now = new Date();
+                const diff = Math.floor((now - date) / 1000 / 60);
+                
+                log('⏰ Diferença:', `${diff} minutos`);
+                
+                let text, color;
+                if (diff < 5) {
+                    text = `<i class="fas fa-check-circle"></i> Atualizado agora`;
+                    color = '#4CAF50';
+                } else if (diff < 30) {
+                    text = `<i class="fas fa-clock"></i> Atualizado há ${diff} min`;
+                    color = '#FFC107';
+                } else {
+                    text = `<i class="fas fa-exclamation-triangle"></i> Atualizado há ${diff} min`;
+                    color = '#F44336';
+                }
+                
+                indicator.innerHTML = text;
+                indicator.style.color = color;
+                log('✅ Indicador atualizado:', text);
+            } else {
+                indicator.innerHTML = '<i class="fas fa-sync-alt"></i> Sem dados';
+                indicator.style.color = '#888';
+                log('⚠️ Sem last_reading');
+            }
+        };
+
+        function testNow() {
+            const now = new Date().toISOString();
+            log('📌 Testando com data atual');
+            updateLastUpdateIndicator(now);
+        }
+
+        function test5Min() {
+            const past = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+            log('📌 Testando com 5 min atrás');
+            updateLastUpdateIndicator(past);
+        }
+
+        function test30Min() {
+            const past = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+            log('📌 Testando com 30 min atrás');
+            updateLastUpdateIndicator(past);
+        }
+
+        function test60Min() {
+            const past = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+            log('📌 Testando com 1 hora atrás');
+            updateLastUpdateIndicator(past);
+        }
+
+        async function testAPI() {
+            log('📡 Buscando dados da API...');
+            try {
+                const response = await fetch('/smartceu/api/v1/dashboard/current-stats');
+                const data = await response.json();
+                log('✅ API retornou:', JSON.stringify(data.last_reading));
+                updateLastUpdateIndicator(data.last_reading);
+            } catch (error) {
+                log('❌ Erro na API:', error.message);
+            }
+        }
+
+        // Testar automaticamente ao carregar
+        log('🚀 Página carregada');
+        testAPI();
+    </script>
+</body>
+</html>

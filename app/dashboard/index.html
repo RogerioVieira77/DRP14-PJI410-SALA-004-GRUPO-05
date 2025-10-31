@@ -44,11 +44,11 @@
                         <div class="metric-title">Pessoas no CEU</div>
                     </div>
                     <div class="metric-value" id="current-people">...</div>
-                    <div class="metric-subvalue">Capacidade: --</div>
-                    <span class="metric-status status-normal">Carregando...</span>
-                    <div class="metric-trend">
-                        <i class="fas fa-arrow-up trend-up"></i>
-                        <span>+12% em relação à hora anterior</span>
+                    <div class="metric-subvalue" id="capacity-info">Capacidade: --</div>
+                    <span class="metric-status status-normal" id="capacity-status">Carregando...</span>
+                    <div class="metric-trend" id="people-trend">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Calculando tendência...</span>
                     </div>
                 </div>
 
@@ -58,25 +58,25 @@
                         <div class="metric-title">Entradas Hoje</div>
                     </div>
                     <div class="metric-value" id="entries-today">...</div>
-                    <div class="metric-subvalue">Média: 420/dia</div>
-                    <span class="metric-status status-normal">Normal</span>
-                    <div class="metric-trend">
-                        <i class="fas fa-arrow-down trend-down"></i>
-                        <span>-8% em relação ao mesmo dia na semana passada</span>
+                    <div class="metric-subvalue" id="daily-average">Média: --/dia</div>
+                    <span class="metric-status status-normal" id="entries-status">Normal</span>
+                    <div class="metric-trend" id="entries-trend">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Calculando tendência...</span>
                     </div>
                 </div>
 
                 <!-- Horário de Pico -->
                 <div class="metric-card warning">
                     <div class="metric-header">
-                        <div class="metric-title">Possivel Horário de Pico</div>
+                        <div class="metric-title">Possível Horário de Pico</div>
                     </div>
-                    <div class="metric-value" id="next-peak">16:30</div>
-                    <div class="metric-subvalue">Previsão: 85% de capacidade</div>
-                    <span class="metric-status status-warning">Alerta moderado</span>
-                    <div class="metric-trend">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>Preparar equipe de apoio</span>
+                    <div class="metric-value" id="next-peak">--:--</div>
+                    <div class="metric-subvalue" id="peak-prediction">Calculando previsão...</div>
+                    <span class="metric-status status-normal" id="peak-status">Analisando dados...</span>
+                    <div class="metric-trend" id="peak-trend">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Aguarde...</span>
                     </div>
                 </div>
 
@@ -86,11 +86,11 @@
                         <div class="metric-title">Alertas Ativos</div>
                     </div>
                     <div class="metric-value" id="active-alerts">...</div>
-                    <div class="metric-subvalue">2 críticos, 1 aviso</div>
-                    <span class="metric-status status-danger">Atenção necessária</span>
-                    <div class="metric-trend">
-                        <i class="fas fa-arrow-up trend-up"></i>
-                        <span>+1 desde a última hora</span>
+                    <div class="metric-subvalue" id="alerts-breakdown">-- críticos, -- avisos</div>
+                    <span class="metric-status status-normal" id="alerts-status">Verificando...</span>
+                    <div class="metric-trend" id="alerts-trend">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Carregando alertas...</span>
                     </div>
                 </div>
             </div>
@@ -155,6 +155,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="/smartceu/dashboard/script.js?v=10"></script>
+    <script src="/smartceu/dashboard/script.js?v=11"></script>
 </body>
 </html>
