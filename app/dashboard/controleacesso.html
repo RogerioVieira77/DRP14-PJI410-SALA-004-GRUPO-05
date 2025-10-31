@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CEU Monitor - Controle de Acesso</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/smartceu/dashboard/styles.css?v=2">
 </head>
 <body>
@@ -14,8 +15,8 @@
                 <h1>Painel</h1>
             </div>
             <ul class="nav-menu">
-                <li class="active"><a href="/smartceu/dashboard">Painel Principal</a></li>
-                <li><a href="/smartceu/dashboard/controleacesso.html">Controle de Acesso</a></li>
+                <li><a href="/smartceu/dashboard">Painel Principal</a></li>
+                <li class="active"><a href="/smartceu/dashboard/controleacesso.html">Controle de Acesso</a></li>
                 <li><a href="/smartceu/dashboard/areas.html">Áreas</a></li>
                 <li><a href="/smartceu/dashboard/alertas.html">Alertas</a></li>
                 <li><a href="/smartceu/dashboard/piscina.html">Piscina</a></li>
@@ -39,57 +40,57 @@
 
             <!-- Metricas -->
             <div class="metrics-grid">
-                <!-- Pessoas no CEU -->
+                <!-- Card 1: Pessoas no CEU -->
                 <div class="metric-card">
                     <div class="metric-header">
                         <div class="metric-title">Pessoas no CEU</div>
                     </div>
-                    <div class="metric-value" id="current-people">...</div>
-                    <div class="metric-subvalue" id="capacity-info">Capacidade: --</div>
-                    <span class="metric-status status-normal" id="capacity-status">Carregando...</span>
-                    <div class="metric-trend" id="people-trend">
+                    <div class="metric-value" id="ca-current-people">...</div>
+                    <div class="metric-subvalue" id="ca-capacity-info">Capacidade: --</div>
+                    <span class="metric-status status-normal" id="ca-capacity-status">Carregando...</span>
+                    <div class="metric-trend" id="ca-people-trend">
                         <i class="fas fa-sync-alt"></i>
                         <span>Calculando tendência...</span>
                     </div>
                 </div>
 
-                <!-- Entradas Hoje -->
+                <!-- Card 2: Entradas Hoje -->
                 <div class="metric-card info">
                     <div class="metric-header">
                         <div class="metric-title">Entradas Hoje</div>
                     </div>
-                    <div class="metric-value" id="entries-today">...</div>
-                    <div class="metric-subvalue" id="daily-average">Média: --/dia</div>
-                    <span class="metric-status status-normal" id="entries-status">Normal</span>
-                    <div class="metric-trend" id="entries-trend">
+                    <div class="metric-value" id="ca-entries-today">...</div>
+                    <div class="metric-subvalue" id="ca-daily-average">Média: --/dia</div>
+                    <span class="metric-status status-normal" id="ca-entries-status">Normal</span>
+                    <div class="metric-trend" id="ca-entries-trend">
                         <i class="fas fa-sync-alt"></i>
                         <span>Calculando tendência...</span>
                     </div>
                 </div>
 
-                <!-- Horário de Pico -->
+                <!-- Card 3: Horário de Pico -->
                 <div class="metric-card warning">
                     <div class="metric-header">
                         <div class="metric-title">Possível Horário de Pico</div>
                     </div>
-                    <div class="metric-value" id="next-peak">--:--</div>
-                    <div class="metric-subvalue" id="peak-prediction">Calculando previsão...</div>
-                    <span class="metric-status status-normal" id="peak-status">Analisando dados...</span>
-                    <div class="metric-trend" id="peak-trend">
+                    <div class="metric-value" id="ca-next-peak">--:--</div>
+                    <div class="metric-subvalue" id="ca-peak-prediction">Calculando previsão...</div>
+                    <span class="metric-status status-normal" id="ca-peak-status">Analisando dados...</span>
+                    <div class="metric-trend" id="ca-peak-trend">
                         <i class="fas fa-sync-alt"></i>
                         <span>Aguarde...</span>
                     </div>
                 </div>
 
-                <!-- Alertas Ativos -->
+                <!-- Card 4: Alertas Ativos -->
                 <div class="metric-card danger">
                     <div class="metric-header">
                         <div class="metric-title">Alertas Ativos</div>
                     </div>
-                    <div class="metric-value" id="active-alerts">...</div>
-                    <div class="metric-subvalue" id="alerts-breakdown">-- críticos, -- avisos</div>
-                    <span class="metric-status status-normal" id="alerts-status">Verificando...</span>
-                    <div class="metric-trend" id="alerts-trend">
+                    <div class="metric-value" id="ca-active-alerts">...</div>
+                    <div class="metric-subvalue" id="ca-alerts-breakdown">-- críticos, -- avisos</div>
+                    <span class="metric-status status-normal" id="ca-alerts-status">Verificando...</span>
+                    <div class="metric-trend" id="ca-alerts-trend">
                         <i class="fas fa-sync-alt"></i>
                         <span>Carregando alertas...</span>
                     </div>
@@ -98,56 +99,30 @@
 
             <!-- Gráficos -->
             <div class="charts-container">
+                <!-- Gráfico: Fluxo de Pessoas -->
                 <div class="chart-card">
                     <div class="chart-header">
                         <div class="chart-title">Fluxo de Pessoas - Últimas 24h</div>
                         <div class="chart-actions">
-                            <select id="time-range">
+                            <select id="ca-time-range">
                                 <option>Últimas 24h</option>
                             </select>
                         </div>
                     </div>
-                    <div class="chart-placeholder">
-                        Gráfico de Fluxo de Pessoas
-                    </div>
                     <div class="chart-container">
-                        <canvas id="peopleFlowChart"></canvas>
+                        <canvas id="ca-peopleFlowChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Alertas -->
+                <!-- Alertas Recentes -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <div class="chart-title">Alertas do Sistema</div>
+                        <div class="chart-title">Alertas Recentes</div>
                     </div>
-                    <div class="alerts-container">
-                        <div class="alert-item">
-                            <div class="alert-content">
-                                <h4>Sensor RFID 03 com falha</h4>
-                                <p>Portão principal - necessidade de verificação urgente</p>
-                                <div class="alert-time">Há 25 minutos</div>
-                            </div>
-                        </div>
-                        <div class="alert-item">
-                            <div class="alert-content">
-                                <h4>Queda de conexão IoT</h4>
-                                <p>Setor Oeste - 5 sensores offline</p>
-                                <div class="alert-time">Há 40 minutos</div>
-                            </div>
-                        </div>
-                        <div class="alert-item">
-                            <div class="alert-content">
-                                <h4>Pico previsto para 16:30</h4>
-                                <p>Previsão de 85% de ocupação</p>
-                                <div class="alert-time">Há 1 hora</div>
-                            </div>
-                        </div>
-                        <div class="alert-item">
-                            <div class="alert-content">
-                                <h4>Manutenção preventiva concluída</h4>
-                                <p>Todos os sensores operando normalmente</p>
-                                <div class="alert-time">Hoje às 08:15</div>
-                            </div>
+                    <div class="alerts-container" id="ca-alerts-list">
+                        <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 16px;"></i>
+                            <p>Carregando alertas...</p>
                         </div>
                     </div>
                 </div>
