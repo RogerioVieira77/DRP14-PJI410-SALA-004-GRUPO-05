@@ -347,30 +347,39 @@ async function initMainPage() {
     
     const updateLastUpdateIndicator = (lastReading) => {
         const indicator = $('#last-update-indicator');
-        if (!indicator) return;
+        console.log('🔄 updateLastUpdateIndicator chamado', { lastReading, indicator });
+        
+        if (!indicator) {
+            console.error('❌ Elemento #last-update-indicator não encontrado!');
+            return;
+        }
         
         if (lastReading) {
             const date = new Date(lastReading);
             const now = new Date();
             const diff = Math.floor((now - date) / 1000 / 60); // minutos
             
-            let text, color;
+            console.log('⏰ Diferença de tempo:', diff, 'minutos');
+            
+            let text, textColor;
             if (diff < 5) {
                 text = `<i class="fas fa-check-circle"></i> Atualizado agora`;
-                color = '#4CAF50';
+                textColor = '#5efc82'; // Verde claro brilhante
             } else if (diff < 30) {
                 text = `<i class="fas fa-clock"></i> Atualizado há ${diff} min`;
-                color = '#FFC107';
+                textColor = '#ffd54f'; // Amarelo claro
             } else {
                 text = `<i class="fas fa-exclamation-triangle"></i> Atualizado há ${diff} min`;
-                color = '#F44336';
+                textColor = '#ff8a80'; // Vermelho claro
             }
             
             indicator.innerHTML = text;
-            indicator.style.color = color;
+            indicator.style.color = textColor;
+            console.log('✅ Indicador atualizado:', text, textColor);
         } else {
             indicator.innerHTML = '<i class="fas fa-sync-alt"></i> Carregando...';
-            indicator.style.color = '#888';
+            indicator.style.color = '#b0bec5'; // Cinza claro
+            console.log('⚠️ Sem last_reading, mostrando "Carregando..."');
         }
     };
     
