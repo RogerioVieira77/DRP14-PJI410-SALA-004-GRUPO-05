@@ -1,7 +1,7 @@
 // script.js - CEU Monitor (Versão com API Real)
 
 // ========== CONFIGURAÇÃO DA API ==========
-const API_BASE = '/api/v1/dashboard';
+const API_BASE = '/smartceu/api/v1/dashboard';
 
 // ========== FUNÇÕES DE API ==========
 async function fetchCurrentStats() {
