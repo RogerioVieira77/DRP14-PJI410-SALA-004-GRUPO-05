@@ -13,6 +13,10 @@ from app.models.alert import Alert
 from app.models.pool_reading import PoolReading
 from datetime import datetime, timedelta
 from sqlalchemy import func, and_
+import pytz
+
+# Timezone de Brasília
+BRASILIA_TZ = pytz.timezone('America/Sao_Paulo')
 
 bp = Blueprint('dashboard', __name__)
 
@@ -67,7 +71,14 @@ def get_current_stats():
         
         # Buscar última leitura registrada (independente do dia)
         last_reading_obj = Reading.query.order_by(Reading.timestamp.desc()).first()
-        last_reading = last_reading_obj.timestamp.isoformat() if last_reading_obj else None
+        
+        # Converter para horário de Brasília se houver leitura
+        last_reading = None
+        if last_reading_obj:
+            # Timestamp do banco é UTC, converter para Brasília
+            utc_time = last_reading_obj.timestamp.replace(tzinfo=pytz.UTC)
+            brasilia_time = utc_time.astimezone(BRASILIA_TZ)
+            last_reading = brasilia_time.isoformat()
         
         # Calcular percentual da capacidade
         capacity_percentage = round((current_people / MAX_CAPACITY) * 100, 1)
@@ -192,9 +203,13 @@ def get_areas_occupation():
                 'status': 'critical' if percentage > 80 else 'warning' if percentage > 60 else 'normal'
             })
         
-        # Buscar última leitura geral
+        # Buscar última leitura geral e converter para Brasília
         last_reading_obj = Reading.query.order_by(Reading.timestamp.desc()).first()
-        last_reading = last_reading_obj.timestamp.isoformat() if last_reading_obj else None
+        last_reading = None
+        if last_reading_obj:
+            utc_time = last_reading_obj.timestamp.replace(tzinfo=pytz.UTC)
+            brasilia_time = utc_time.astimezone(BRASILIA_TZ)
+            last_reading = brasilia_time.isoformat()
         
         return jsonify({
             'areas': areas,
@@ -266,12 +281,18 @@ def get_pool_current():
             
             if water_temp:
                 water_temperature = float(water_temp.temperature) if water_temp.temperature else None
-                last_reading = datetime.combine(water_temp.reading_date, water_temp.reading_time).isoformat()
+                # Converter para Brasília
+                dt_naive = datetime.combine(water_temp.reading_date, water_temp.reading_time)
+                dt_brasilia = BRASILIA_TZ.localize(dt_naive)
+                last_reading = dt_brasilia.isoformat()
             
             if ambient_temp:
                 ambient_temperature = float(ambient_temp.temperature) if ambient_temp.temperature else None
                 if not last_reading and ambient_temp:
-                    last_reading = datetime.combine(ambient_temp.reading_date, ambient_temp.reading_time).isoformat()
+                    # Converter para Brasília
+                    dt_naive = datetime.combine(ambient_temp.reading_date, ambient_temp.reading_time)
+                    dt_brasilia = BRASILIA_TZ.localize(dt_naive)
+                    last_reading = dt_brasilia.isoformat()
         
         return jsonify({
             'occupancy_percentage': occupancy_percentage,
