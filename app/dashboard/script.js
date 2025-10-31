@@ -3,6 +3,15 @@
 // ========== CONFIGURAÇÃO DA API ==========
 const API_BASE = '/smartceu/api/v1/dashboard';
 
+// ========== FUNÇÕES UTILITÁRIAS ==========
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => document.querySelectorAll(selector);
+const randomBetweenFloat = (min, max) => {
+    const value = Math.random() * (max - min) + min;
+    return Number(value.toFixed(2));
+};
+const randomBetween = (min, max) => Math.floor(Math.random() * (max - min) + min);
+
 // ========== FUNÇÕES DE API ==========
 async function fetchCurrentStats() {
     try {
@@ -353,15 +362,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
-// ========== FUNÇÕES UTILITÁRIAS ==========
-const randomBetweenFloat = (min, max) => {
-    const value = Math.random() * (max - min) + min;
-    return Number(value.toFixed(2));
-};
-const randomBetween = (min, max) => Math.floor(Math.random() * (max - min) + min);
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => document.querySelectorAll(selector);
 
 // ========== PÁGINA PRINCIPAL ==========
 async function initMainPage() {
