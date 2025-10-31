@@ -361,17 +361,27 @@ async function initMainPage() {
             
             console.log('⏰ Diferença de tempo:', diff, 'minutos');
             
-            let text, textColor;
+            // Formatar data e hora: 31/10/2025 - 17:50
+            const dia = String(date.getDate()).padStart(2, '0');
+            const mes = String(date.getMonth() + 1).padStart(2, '0');
+            const ano = date.getFullYear();
+            const hora = String(date.getHours()).padStart(2, '0');
+            const minuto = String(date.getMinutes()).padStart(2, '0');
+            const dataFormatada = `${dia}/${mes}/${ano} - ${hora}:${minuto}`;
+            
+            let icon, textColor;
             if (diff < 5) {
-                text = `<i class="fas fa-check-circle"></i> Atualizado agora`;
+                icon = '<i class="fas fa-check-circle"></i>';
                 textColor = '#5efc82'; // Verde claro brilhante
             } else if (diff < 30) {
-                text = `<i class="fas fa-clock"></i> Atualizado há ${diff} min`;
+                icon = '<i class="fas fa-clock"></i>';
                 textColor = '#ffd54f'; // Amarelo claro
             } else {
-                text = `<i class="fas fa-exclamation-triangle"></i> Atualizado há ${diff} min`;
+                icon = '<i class="fas fa-exclamation-triangle"></i>';
                 textColor = '#ff8a80'; // Vermelho claro
             }
+            
+            const text = `${icon} Atualizado: ${dataFormatada}`;
             
             indicator.innerHTML = text;
             indicator.style.color = textColor;
