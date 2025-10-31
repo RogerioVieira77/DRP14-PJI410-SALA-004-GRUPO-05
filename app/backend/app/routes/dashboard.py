@@ -10,6 +10,7 @@ from app import db
 from app.models.reading import Reading
 from app.models.sensor import Sensor
 from app.models.alert import Alert
+from app.models.pool_reading import PoolReading
 from datetime import datetime, timedelta
 from sqlalchemy import func, and_
 
@@ -228,8 +229,26 @@ def get_pool_current():
         - last_reading: Data/hora da última leitura
     """
     try:
-        # Nota: Como pool_readings pode estar vazia, retornamos valores zerados
-        # mas mantemos a estrutura para quando houver dados reais
+        # Buscar dados reais da piscina
+        today = datetime.now().date()
+        
+        print(f"[DEBUG] Buscando pool data para: {today}")
+        
+        # Buscar última temperatura da água
+        water_temp = db.session.query(PoolReading).filter(
+            PoolReading.sensor_type == 'water_temp',
+            PoolReading.reading_date == today
+        ).order_by(PoolReading.reading_time.desc()).first()
+        
+        print(f"[DEBUG] water_temp encontrado: {water_temp}")
+        
+        # Buscar última temperatura ambiente
+        ambient_temp = db.session.query(PoolReading).filter(
+            PoolReading.sensor_type == 'ambient_temp',
+            PoolReading.reading_date == today
+        ).order_by(PoolReading.reading_time.desc()).first()
+        
+        print(f"[DEBUG] ambient_temp encontrado: {ambient_temp}")
         
         # Valores padrão (sem dados)
         occupancy_percentage = 0
@@ -239,10 +258,20 @@ def get_pool_current():
         ambient_temperature = None
         status = 'normal'
         last_reading = None
+        has_data = False
         
-        # TODO: Quando houver dados em pool_readings, buscar aqui
-        # Exemplo de query futura:
-        # latest_temp = PoolReading.query.filter_by(sensor_type='water_temp').order_by(PoolReading.timestamp.desc()).first()
+        # Se temos dados, popular
+        if water_temp or ambient_temp:
+            has_data = True
+            
+            if water_temp:
+                water_temperature = float(water_temp.temperature) if water_temp.temperature else None
+                last_reading = datetime.combine(water_temp.reading_date, water_temp.reading_time).isoformat()
+            
+            if ambient_temp:
+                ambient_temperature = float(ambient_temp.temperature) if ambient_temp.temperature else None
+                if not last_reading and ambient_temp:
+                    last_reading = datetime.combine(ambient_temp.reading_date, ambient_temp.reading_time).isoformat()
         
         return jsonify({
             'occupancy_percentage': occupancy_percentage,
@@ -253,7 +282,7 @@ def get_pool_current():
             'ambient_temperature': ambient_temperature,
             'status': status,
             'last_reading': last_reading,
-            'has_data': False,
+            'has_data': has_data,
             'timestamp': datetime.utcnow().isoformat()
         }), 200
         

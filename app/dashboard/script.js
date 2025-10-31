@@ -345,6 +345,35 @@ const $$ = (selector) => document.querySelectorAll(selector);
 async function initMainPage() {
     if (!$('#current-people')) return;
     
+    const updateLastUpdateIndicator = (lastReading) => {
+        const indicator = $('#last-update-indicator');
+        if (!indicator) return;
+        
+        if (lastReading) {
+            const date = new Date(lastReading);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000 / 60); // minutos
+            
+            let text, color;
+            if (diff < 5) {
+                text = `<i class="fas fa-check-circle"></i> Atualizado agora`;
+                color = '#4CAF50';
+            } else if (diff < 30) {
+                text = `<i class="fas fa-clock"></i> Atualizado há ${diff} min`;
+                color = '#FFC107';
+            } else {
+                text = `<i class="fas fa-exclamation-triangle"></i> Atualizado há ${diff} min`;
+                color = '#F44336';
+            }
+            
+            indicator.innerHTML = text;
+            indicator.style.color = color;
+        } else {
+            indicator.innerHTML = '<i class="fas fa-sync-alt"></i> Carregando...';
+            indicator.style.color = '#888';
+        }
+    };
+    
     const updateMetrics = async () => {
         // Buscar dados reais da API
         const stats = await fetchCurrentStats();
@@ -357,6 +386,9 @@ async function initMainPage() {
             console.log('✅ Atualizando current_people para:', stats.current_people);
             $('#current-people').textContent = stats.current_people;
             $('#entries-today').textContent = stats.entries_today;
+            
+            // Atualizar indicador de última atualização
+            updateLastUpdateIndicator(stats.last_reading);
             
             // Atualizar capacidade
             const capacityPercent = stats.capacity_percentage;
