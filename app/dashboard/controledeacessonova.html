@@ -71,6 +71,20 @@
                         <span>Calculando tendência...</span>
                     </div>
                 </div>
+
+                <!-- Card 3: Horário de Pico -->
+                <div class="metric-card warning">
+                    <div class="metric-header">
+                        <div class="metric-title">
+                            <i class="fas fa-chart-line"></i> Horário de Pico
+                        </div>
+                    </div>
+                    <div class="metric-value" id="nova-peak-hour">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <div class="metric-subvalue" id="nova-peak-info">Calculando...</div>
+                    <span class="metric-status" id="nova-peak-status">Analisando dados...</span>
+                </div>
             </div>
 
             <!-- Debug Info -->
@@ -124,6 +138,26 @@
                 return data;
             } catch (error) {
                 console.error('❌ Erro ao buscar advanced stats:', error);
+                return null;
+            }
+        }
+        
+        // Função para buscar previsão de pico
+        async function fetchPeakPrediction() {
+            try {
+                console.log('🔄 Buscando peak-prediction de:', `${API_BASE}/peak-prediction`);
+                const response = await fetch(`${API_BASE}/peak-prediction`);
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ Peak prediction recebido:', data);
+                return data;
+            } catch (error) {
+                console.error('❌ Erro ao buscar peak prediction:', error);
                 return null;
             }
         }
@@ -214,6 +248,64 @@
             console.log('✅ Card 2 atualizado com sucesso!');
         }
         
+        // Função para atualizar o Card 3
+        function updateCard3(peak) {
+            if (!peak) {
+                console.error('❌ Peak prediction é null ou undefined');
+                return;
+            }
+            
+            console.log('🎨 Atualizando Card 3 com:', peak);
+            
+            // Atualizar horário de pico
+            const peakHourEl = $('#nova-peak-hour');
+            peakHourEl.textContent = peak.peak_hour || '--:--';
+            
+            // Atualizar informações do pico
+            const peakInfoEl = $('#nova-peak-info');
+            peakInfoEl.textContent = `${peak.peak_count || 0} pessoas (${(peak.capacity_prediction || 0).toFixed(1)}% capacidade)`;
+            
+            // Calcular tempo até o pico
+            const statusEl = $('#nova-peak-status');
+            
+            try {
+                const now = new Date();
+                const [hours, minutes] = (peak.peak_hour || '00:00').split(':');
+                const peakDate = new Date();
+                peakDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                
+                const diffMinutes = Math.floor((peakDate - now) / 1000 / 60);
+                
+                if (diffMinutes < -60) {
+                    statusEl.textContent = 'Pico já passou';
+                    statusEl.className = 'metric-status status-success';
+                } else if (diffMinutes < 0) {
+                    statusEl.textContent = 'Acontecendo agora';
+                    statusEl.className = 'metric-status status-danger';
+                } else if (diffMinutes < 30) {
+                    statusEl.textContent = `Em ${diffMinutes} minutos`;
+                    statusEl.className = 'metric-status status-warning';
+                } else if (diffMinutes < 120) {
+                    const hours = Math.floor(diffMinutes / 60);
+                    const mins = diffMinutes % 60;
+                    statusEl.textContent = `Em ${hours}h${mins > 0 ? mins + 'min' : ''}`;
+                    statusEl.className = 'metric-status status-success';
+                } else {
+                    const hours = Math.floor(diffMinutes / 60);
+                    statusEl.textContent = `Em ${hours}h`;
+                    statusEl.className = 'metric-status status-success';
+                }
+                
+                console.log(`⏰ Tempo até o pico: ${diffMinutes} minutos`);
+            } catch (error) {
+                console.error('❌ Erro ao calcular tempo até o pico:', error);
+                statusEl.textContent = 'Erro no cálculo';
+                statusEl.className = 'metric-status status-warning';
+            }
+            
+            console.log('✅ Card 3 atualizado com sucesso!');
+        }
+        
         // Função para atualizar indicador de última atualização
         function updateLastUpdate(lastReading) {
             const indicator = $('#nova-last-update');
@@ -268,13 +360,15 @@
             // Buscar dados das APIs
             const stats = await fetchCurrentStats();
             const advanced = await fetchAdvancedStats();
+            const peak = await fetchPeakPrediction();
             
             // Atualizar cards
             updateCard1(stats);
             updateCard2(advanced);
+            updateCard3(peak);
             
             // Atualizar debug info
-            if (stats || advanced) {
+            if (stats || advanced || peak) {
                 let debugHTML = '<strong>Dados das APIs:</strong><br><br>';
                 
                 if (stats) {
@@ -293,7 +387,16 @@
                     debugHTML += `- Entradas ontem: ${advanced.entries_yesterday}<br>`;
                     debugHTML += `- Média diária: ${advanced.daily_average}<br>`;
                     debugHTML += `- Tendência: ${advanced.trend_direction} (${advanced.trend_percentage}%)<br>`;
-                    debugHTML += `- Previsão hoje: ${advanced.today_prediction}<br>`;
+                    debugHTML += `- Previsão hoje: ${advanced.today_prediction}<br><br>`;
+                }
+                
+                if (peak) {
+                    debugHTML += '<strong>Peak Prediction:</strong><br>';
+                    debugHTML += `- Horário: ${peak.peak_hour}<br>`;
+                    debugHTML += `- Pessoas no pico: ${peak.peak_count}<br>`;
+                    debugHTML += `- Capacidade prevista: ${peak.capacity_prediction}%<br>`;
+                    debugHTML += `- Confiança: ${peak.confidence}%<br>`;
+                    debugHTML += `- Total de leituras: ${peak.total_readings}<br>`;
                 }
                 
                 $('#debug-info').innerHTML = debugHTML;
