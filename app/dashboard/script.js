@@ -347,22 +347,6 @@ function initAlertsByTypeChart() {
     });
 }
 
-// ========== INICIALIZAÇÃO ==========
-document.addEventListener('DOMContentLoaded', () => {
-    if ($('#current-people')) initMainPage();
-    else if ($('.areas-grid')) initAreasPage();
-    else if ($('#active-alerts-list')) initAlertsPage();
-    else if ($('#pool-occupancy')) initPoolPage();
-    
-    // Inicializar gráficos em todas as páginas
-    initCharts();
-});
-
-
-
-
-
-
 // ========== PÁGINA PRINCIPAL ==========
 async function initMainPage() {
     if (!$('#current-people')) return;
@@ -1163,4 +1147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     else if ($('.areas-grid')) initAreasPage();
     else if ($('#active-alerts-list')) initAlertsPage();
     else if ($('#pool-occupancy')) initPoolPage();
+    
+    // Inicializar gráficos em todas as páginas
+    initCharts();
 });
