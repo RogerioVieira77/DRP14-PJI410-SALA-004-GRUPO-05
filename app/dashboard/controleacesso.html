@@ -32,7 +32,7 @@
                 <h2>Controle de Acesso</h2>
                 <div class="user-info">
                     <span>Administrador</span>
-                    <span id="last-update-indicator" style="margin-left: 20px; font-size: 0.85em; color: #fff; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); padding: 6px 12px; border-radius: 6px; display: inline-block; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                    <span id="ca-last-update-indicator" style="margin-left: 20px; font-size: 0.85em; color: #fff; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); padding: 6px 12px; border-radius: 6px; display: inline-block; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                         <i class="fas fa-sync-alt"></i> Atualizando...
                     </span>
                 </div>
@@ -63,7 +63,7 @@
                     <div class="metric-subvalue" id="ca-daily-average">Média: --/dia</div>
                     <span class="metric-status status-normal" id="ca-entries-status">Normal</span>
                     <div class="metric-trend" id="ca-entries-trend">
-                        <i class="fas fa-sync-alt"></i>
+                        <i class="fas fa-sync-alt" id="ca-trend-icon"></i>
                         <span>Calculando tendência...</span>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                         <div class="metric-title">Possível Horário de Pico</div>
                     </div>
                     <div class="metric-value" id="ca-next-peak">--:--</div>
-                    <div class="metric-subvalue" id="ca-peak-prediction">Calculando previsão...</div>
+                    <div class="metric-subvalue" id="ca-peak-occupancy">Calculando previsão...</div>
                     <span class="metric-status status-normal" id="ca-peak-status">Analisando dados...</span>
                     <div class="metric-trend" id="ca-peak-trend">
                         <i class="fas fa-sync-alt"></i>
@@ -89,7 +89,7 @@
                     </div>
                     <div class="metric-value" id="ca-active-alerts">...</div>
                     <div class="metric-subvalue" id="ca-alerts-breakdown">-- críticos, -- avisos</div>
-                    <span class="metric-status status-normal" id="ca-alerts-status">Verificando...</span>
+                    <span class="metric-status status-normal" id="ca-alert-status">Verificando...</span>
                     <div class="metric-trend" id="ca-alerts-trend">
                         <i class="fas fa-sync-alt"></i>
                         <span>Carregando alertas...</span>
@@ -131,6 +131,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="/smartceu/dashboard/script.js?v=16"></script>
+    <script src="/smartceu/dashboard/script.js?v=18"></script>
 </body>
 </html>
