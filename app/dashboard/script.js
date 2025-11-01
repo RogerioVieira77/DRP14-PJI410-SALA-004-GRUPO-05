@@ -973,20 +973,31 @@ async function initControleAcessoPage() {
         
         // ========== CARD 2: ENTRADAS HOJE ==========
         if (advanced) {
-            $('#ca-entries-today').textContent = advanced.total_entries_today || 0;
+            $('#ca-entries-today').textContent = advanced.entries_today || 0;
             
             const trendPercent = advanced.trend_percentage || 0;
+            const trendDirection = advanced.trend_direction || 'stable';
             const trendEl = $('#ca-entries-trend');
-            const trendIcon = $('#ca-trend-icon');
             
-            if (trendPercent > 0) {
-                trendEl.textContent = `+${trendPercent.toFixed(1)}%`;
-                trendEl.className = 'metric-trend trend-up';
-                if (trendIcon) trendIcon.className = 'fas fa-arrow-up';
-            } else {
-                trendEl.textContent = `${trendPercent.toFixed(1)}%`;
-                trendEl.className = 'metric-trend trend-down';
-                if (trendIcon) trendIcon.className = 'fas fa-arrow-down';
+            let trendIcon = 'fa-minus';
+            let trendClass = '';
+            let trendText = 'Estável em relação a ontem';
+            
+            if (trendDirection === 'up') {
+                trendIcon = 'fa-arrow-up';
+                trendClass = 'trend-up';
+                trendText = `+${Math.abs(trendPercent).toFixed(1)}% em relação a ontem`;
+            } else if (trendDirection === 'down') {
+                trendIcon = 'fa-arrow-down';
+                trendClass = 'trend-down';
+                trendText = `${trendPercent.toFixed(1)}% em relação a ontem`;
+            }
+            
+            if (trendEl) {
+                trendEl.innerHTML = `
+                    <i class="fas ${trendIcon} ${trendClass}"></i>
+                    <span>${trendText}</span>
+                `;
             }
         }
         
@@ -1070,12 +1081,13 @@ async function initControleAcessoPage() {
         }
         
         // ========== GRÁFICO DE FLUXO ==========
-        if (advanced && advanced.hourly_flow) {
-            updateCAFlowChart(advanced.hourly_flow);
+        const flowData = await fetchPeopleFlow();
+        if (flowData) {
+            updateCAFlowChart(flowData);
         }
     };
     
-    const updateCAFlowChart = (hourlyFlow) => {
+    const updateCAFlowChart = (flowData) => {
         const canvas = $('#ca-peopleFlowChart');
         if (!canvas) return;
         
@@ -1085,8 +1097,8 @@ async function initControleAcessoPage() {
         }
         
         const ctx = canvas.getContext('2d');
-        const labels = hourlyFlow.map(item => item.hour);
-        const data = hourlyFlow.map(item => item.count);
+        const labels = flowData.labels || [];
+        const data = flowData.data || [];
         
         window.caFlowChart = new Chart(ctx, {
             type: 'line',
