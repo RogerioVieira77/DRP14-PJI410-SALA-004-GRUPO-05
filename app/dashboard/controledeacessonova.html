@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEU Monitor - Controle de Acesso - Nova</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/smartceu/dashboard/styles.css?v=2">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Menu Lateral -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>Painel</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/smartceu/dashboard">Painel Principal</a></li>
+                <li><a href="/smartceu/dashboard/controleacesso.html">Controle de Acesso</a></li>
+                <li class="active"><a href="/smartceu/dashboard/controledeacessonova.html">Controle de Acesso - Nova</a></li>
+                <li><a href="/smartceu/dashboard/areas.html">Áreas</a></li>
+                <li><a href="/smartceu/dashboard/alertas.html">Alertas</a></li>
+                <li><a href="/smartceu/dashboard/piscina.html">Piscina</a></li>
+                <li style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
+                    <a href="/smartceu">← Voltar ao SmartCEU</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Corpo -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Controle de Acesso - Nova</h2>
+                <div class="user-info">
+                    <span>Administrador</span>
+                    <span id="nova-last-update" style="margin-left: 20px; font-size: 0.85em; color: #b0bec5;">
+                        <i class="fas fa-sync-alt fa-spin"></i> Carregando...
+                    </span>
+                </div>
+            </div>
+
+            <!-- Card 1: Pessoas no CEU -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">
+                            <i class="fas fa-users"></i> Pessoas no CEU
+                        </div>
+                    </div>
+                    <div class="metric-value" id="nova-current-people">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <div class="metric-subvalue" id="nova-capacity-info">Carregando...</div>
+                    <span class="metric-status" id="nova-capacity-status">Aguarde...</span>
+                </div>
+            </div>
+
+            <!-- Debug Info -->
+            <div style="margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 8px; font-family: monospace; font-size: 12px;">
+                <h3 style="margin-top: 0; color: #4fc3f7;">Debug Info</h3>
+                <div id="debug-info">Carregando dados...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração da API
+        const API_BASE = '/smartceu/api/v1/dashboard';
+        
+        // Função auxiliar para selecionar elementos
+        const $ = (selector) => document.querySelector(selector);
+        
+        // Função para buscar estatísticas atuais
+        async function fetchCurrentStats() {
+            try {
+                console.log('🔄 Buscando stats de:', `${API_BASE}/current-stats`);
+                const response = await fetch(`${API_BASE}/current-stats`);
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ Dados recebidos:', data);
+                return data;
+            } catch (error) {
+                console.error('❌ Erro ao buscar stats:', error);
+                return null;
+            }
+        }
+        
+        // Função para atualizar o Card 1
+        function updateCard1(stats) {
+            if (!stats) {
+                console.error('❌ Stats é null ou undefined');
+                $('#debug-info').innerHTML = '<span style="color: #ff8a80;">Erro: Dados não recebidos da API</span>';
+                return;
+            }
+            
+            console.log('🎨 Atualizando Card 1 com:', stats);
+            
+            // Atualizar número de pessoas
+            const peopleEl = $('#nova-current-people');
+            peopleEl.textContent = stats.current_people || 0;
+            
+            // Atualizar capacidade
+            const capacityEl = $('#nova-capacity-info');
+            capacityEl.textContent = `${stats.current_people || 0} / ${stats.max_capacity || 300} pessoas`;
+            
+            // Calcular porcentagem
+            const percentage = stats.capacity_percentage || 0;
+            
+            // Atualizar status com cor
+            const statusEl = $('#nova-capacity-status');
+            if (percentage >= 80) {
+                statusEl.textContent = `Capacidade Crítica (${percentage.toFixed(1)}%)`;
+                statusEl.className = 'metric-status status-danger';
+            } else if (percentage >= 60) {
+                statusEl.textContent = `Capacidade Alta (${percentage.toFixed(1)}%)`;
+                statusEl.className = 'metric-status status-warning';
+            } else {
+                statusEl.textContent = `Capacidade Normal (${percentage.toFixed(1)}%)`;
+                statusEl.className = 'metric-status status-success';
+            }
+            
+            // Atualizar indicador de última atualização
+            updateLastUpdate(stats.last_reading);
+            
+            // Debug info
+            $('#debug-info').innerHTML = `
+                <strong>Dados da API:</strong><br>
+                - Pessoas: ${stats.current_people}<br>
+                - Capacidade: ${stats.max_capacity}<br>
+                - Porcentagem: ${percentage.toFixed(1)}%<br>
+                - Entradas hoje: ${stats.entries_today}<br>
+                - Saídas hoje: ${stats.exits_today}<br>
+                - Última leitura: ${stats.last_reading}<br>
+                - Timestamp: ${stats.timestamp}
+            `;
+            
+            console.log('✅ Card 1 atualizado com sucesso!');
+        }
+        
+        // Função para atualizar indicador de última atualização
+        function updateLastUpdate(lastReading) {
+            const indicator = $('#nova-last-update');
+            if (!indicator) return;
+            
+            if (!lastReading) {
+                indicator.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Sem dados';
+                indicator.style.color = '#ff8a80';
+                return;
+            }
+            
+            try {
+                const date = new Date(lastReading);
+                const now = new Date();
+                const diffMinutes = Math.floor((now - date) / 1000 / 60);
+                
+                // Formatar data
+                const dia = String(date.getDate()).padStart(2, '0');
+                const mes = String(date.getMonth() + 1).padStart(2, '0');
+                const ano = date.getFullYear();
+                const hora = String(date.getHours()).padStart(2, '0');
+                const minuto = String(date.getMinutes()).padStart(2, '0');
+                const dataFormatada = `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+                
+                let icon, color;
+                if (diffMinutes < 5) {
+                    icon = 'fa-check-circle';
+                    color = '#5efc82';
+                } else if (diffMinutes < 30) {
+                    icon = 'fa-clock';
+                    color = '#ffd54f';
+                } else {
+                    icon = 'fa-exclamation-triangle';
+                    color = '#ff8a80';
+                }
+                
+                indicator.innerHTML = `<i class="fas ${icon}"></i> ${dataFormatada}`;
+                indicator.style.color = color;
+                
+                console.log(`⏰ Última atualização: ${dataFormatada} (${diffMinutes}min atrás)`);
+            } catch (error) {
+                console.error('❌ Erro ao formatar data:', error);
+                indicator.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erro na data';
+                indicator.style.color = '#ff8a80';
+            }
+        }
+        
+        // Função principal de atualização
+        async function atualizarDados() {
+            console.log('🚀 Iniciando atualização...');
+            const stats = await fetchCurrentStats();
+            updateCard1(stats);
+        }
+        
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 Página carregada, iniciando...');
+            atualizarDados();
+            
+            // Atualizar a cada 30 segundos
+            setInterval(atualizarDados, 30000);
+        });
+    </script>
+</body>
+</html>
