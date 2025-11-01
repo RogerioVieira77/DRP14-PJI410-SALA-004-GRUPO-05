@@ -903,9 +903,263 @@ async function initPoolPage() {
     await updatePoolMetrics();
 }
 
+// ========== PÁGINA CONTROLE DE ACESSO ==========
+async function initControleAcessoPage() {
+    if (!$('#ca-current-people')) return;
+    
+    console.log('🚀 Inicializando página Controle de Acesso...');
+    
+    const updateCALastUpdateIndicator = (lastReading) => {
+        const indicator = $('#ca-last-update-indicator');
+        
+        if (!indicator) return;
+        
+        if (lastReading) {
+            const date = new Date(lastReading);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000 / 60); // minutos
+            
+            // Formatar data e hora: 31/10/2025 - 17:50
+            const dia = String(date.getDate()).padStart(2, '0');
+            const mes = String(date.getMonth() + 1).padStart(2, '0');
+            const ano = date.getFullYear();
+            const hora = String(date.getHours()).padStart(2, '0');
+            const minuto = String(date.getMinutes()).padStart(2, '0');
+            const dataFormatada = `${dia}/${mes}/${ano} - ${hora}:${minuto}`;
+            
+            let icon, textColor;
+            if (diff < 5) {
+                icon = '<i class="fas fa-check-circle"></i>';
+                textColor = '#5efc82';
+            } else if (diff < 30) {
+                icon = '<i class="fas fa-clock"></i>';
+                textColor = '#ffd54f';
+            } else {
+                icon = '<i class="fas fa-exclamation-triangle"></i>';
+                textColor = '#ff8a80';
+            }
+            
+            const text = `${icon} Atualizado: ${dataFormatada}`;
+            indicator.innerHTML = text;
+            indicator.style.color = textColor;
+        } else {
+            indicator.innerHTML = '<i class="fas fa-sync-alt"></i> Carregando...';
+            indicator.style.color = '#b0bec5';
+        }
+    };
+    
+    const updateCAMetrics = async () => {
+        console.log('📊 Atualizando métricas de Controle de Acesso...');
+        
+        // Buscar dados das APIs
+        const stats = await fetchCurrentStats();
+        const alerts = await fetchActiveAlerts();
+        const peak = await fetchPeakPrediction();
+        const advanced = await fetchAdvancedStats();
+        
+        console.log('📊 Stats CA:', stats);
+        console.log('🔔 Alertas CA:', alerts);
+        console.log('📈 Pico CA:', peak);
+        console.log('📉 Avançadas CA:', advanced);
+        
+        // ========== CARD 1: PESSOAS NO CEU ==========
+        if (stats) {
+            $('#ca-current-people').textContent = stats.current_people;
+            $('#ca-capacity-info').textContent = `${stats.current_people}/${stats.max_capacity} pessoas`;
+            updateCALastUpdateIndicator(stats.last_reading);
+            
+            const capacityPercent = stats.capacity_percentage;
+            const statusEl = $('#ca-capacity-status');
+            const card1 = $('.metric-card:nth-child(1)');
+            
+            if (capacityPercent >= 80) {
+                statusEl.textContent = 'Capacidade crítica';
+                statusEl.className = 'metric-status status-danger';
+                if (card1) card1.classList.add('danger');
+            } else if (capacityPercent >= 60) {
+                statusEl.textContent = 'Capacidade alta';
+                statusEl.className = 'metric-status status-warning';
+                if (card1) card1.classList.remove('danger');
+            } else {
+                statusEl.textContent = 'Capacidade normal';
+                statusEl.className = 'metric-status status-success';
+                if (card1) card1.classList.remove('danger');
+            }
+        }
+        
+        // ========== CARD 2: ENTRADAS HOJE ==========
+        if (advanced) {
+            $('#ca-entries-today').textContent = advanced.total_entries_today || 0;
+            
+            const trendPercent = advanced.trend_percentage || 0;
+            const trendEl = $('#ca-entries-trend');
+            const trendIcon = $('#ca-trend-icon');
+            
+            if (trendPercent > 0) {
+                trendEl.textContent = `+${trendPercent.toFixed(1)}%`;
+                trendEl.className = 'metric-trend trend-up';
+                if (trendIcon) trendIcon.className = 'fas fa-arrow-up';
+            } else {
+                trendEl.textContent = `${trendPercent.toFixed(1)}%`;
+                trendEl.className = 'metric-trend trend-down';
+                if (trendIcon) trendIcon.className = 'fas fa-arrow-down';
+            }
+        }
+        
+        // ========== CARD 3: PRÓXIMO HORÁRIO DE PICO ==========
+        if (peak) {
+            $('#ca-next-peak').textContent = peak.peak_time || '--:--';
+            $('#ca-peak-occupancy').textContent = `${peak.predicted_occupancy || 0} pessoas`;
+            
+            const peakDate = new Date();
+            const [hours, minutes] = (peak.peak_time || '00:00').split(':');
+            peakDate.setHours(parseInt(hours), parseInt(minutes), 0);
+            
+            const now = new Date();
+            const diffMinutes = Math.floor((peakDate - now) / 1000 / 60);
+            
+            const peakStatus = $('#ca-peak-status');
+            if (diffMinutes < 30 && diffMinutes > 0) {
+                peakStatus.textContent = `Em ${diffMinutes} minutos`;
+                peakStatus.className = 'metric-status status-warning';
+            } else if (diffMinutes <= 0 && diffMinutes > -60) {
+                peakStatus.textContent = 'Acontecendo agora';
+                peakStatus.className = 'metric-status status-danger';
+            } else {
+                peakStatus.textContent = `Em ${Math.abs(Math.floor(diffMinutes / 60))}h`;
+                peakStatus.className = 'metric-status status-success';
+            }
+        }
+        
+        // ========== CARD 4: ALERTAS ATIVOS ==========
+        if (alerts) {
+            const activeCount = Array.isArray(alerts) ? alerts.length : 0;
+            $('#ca-active-alerts').textContent = activeCount;
+            
+            const alertStatus = $('#ca-alert-status');
+            const card4 = $('.metric-card:nth-child(4)');
+            
+            if (activeCount === 0) {
+                alertStatus.textContent = 'Nenhum alerta';
+                alertStatus.className = 'metric-status status-success';
+                if (card4) card4.classList.remove('warning');
+            } else if (activeCount <= 2) {
+                alertStatus.textContent = `${activeCount} pendente${activeCount > 1 ? 's' : ''}`;
+                alertStatus.className = 'metric-status status-warning';
+                if (card4) card4.classList.add('warning');
+            } else {
+                alertStatus.textContent = `${activeCount} críticos`;
+                alertStatus.className = 'metric-status status-danger';
+                if (card4) card4.classList.add('warning');
+            }
+            
+            // Atualizar lista de alertas
+            const alertsList = $('#ca-alerts-list');
+            if (alertsList) {
+                if (activeCount === 0) {
+                    alertsList.innerHTML = `
+                        <div class="alert-item alert-info">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Nenhum alerta ativo no momento.</span>
+                        </div>
+                    `;
+                } else {
+                    alertsList.innerHTML = alerts.map(alert => {
+                        const severityClass = alert.severity === 'high' ? 'alert-danger' : 
+                                             alert.severity === 'medium' ? 'alert-warning' : 'alert-info';
+                        const icon = alert.severity === 'high' ? 'fa-exclamation-circle' : 
+                                    alert.severity === 'medium' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+                        
+                        return `
+                            <div class="alert-item ${severityClass}">
+                                <i class="fas ${icon}"></i>
+                                <div class="alert-content">
+                                    <strong>${alert.area}</strong>
+                                    <p>${alert.message}</p>
+                                    <span class="alert-time">${new Date(alert.timestamp).toLocaleTimeString('pt-BR')}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+        }
+        
+        // ========== GRÁFICO DE FLUXO ==========
+        if (advanced && advanced.hourly_flow) {
+            updateCAFlowChart(advanced.hourly_flow);
+        }
+    };
+    
+    const updateCAFlowChart = (hourlyFlow) => {
+        const canvas = $('#ca-peopleFlowChart');
+        if (!canvas) return;
+        
+        // Destruir gráfico existente se houver
+        if (window.caFlowChart) {
+            window.caFlowChart.destroy();
+        }
+        
+        const ctx = canvas.getContext('2d');
+        const labels = hourlyFlow.map(item => item.hour);
+        const data = hourlyFlow.map(item => item.count);
+        
+        window.caFlowChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Pessoas',
+                    data: data,
+                    borderColor: '#4fc3f7',
+                    backgroundColor: 'rgba(79, 195, 247, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#b0bec5'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#b0bec5'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                }
+            }
+        });
+    };
+    
+    // Atualizar métricas imediatamente e depois a cada 30 segundos
+    await updateCAMetrics();
+    setInterval(updateCAMetrics, 30000);
+    
+    console.log('✅ Página Controle de Acesso inicializada com sucesso!');
+}
+
 // ========== INICIALIZAÇÃO ==========
 document.addEventListener('DOMContentLoaded', () => {
     if ($('#current-people')) initMainPage();
+    else if ($('#ca-current-people')) initControleAcessoPage();
     else if ($('.areas-grid')) initAreasPage();
     else if ($('#active-alerts-list')) initAlertsPage();
     else if ($('#pool-occupancy')) initPoolPage();
