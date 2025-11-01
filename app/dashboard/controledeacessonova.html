@@ -85,6 +85,20 @@
                     <div class="metric-subvalue" id="nova-peak-info">Calculando...</div>
                     <span class="metric-status" id="nova-peak-status">Analisando dados...</span>
                 </div>
+
+                <!-- Card 4: Alertas Ativos -->
+                <div class="metric-card danger">
+                    <div class="metric-header">
+                        <div class="metric-title">
+                            <i class="fas fa-bell"></i> Alertas Ativos
+                        </div>
+                    </div>
+                    <div class="metric-value" id="nova-alerts-count">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <div class="metric-subvalue" id="nova-alerts-info">Verificando...</div>
+                    <span class="metric-status" id="nova-alerts-status">Carregando...</span>
+                </div>
             </div>
 
             <!-- Debug Info -->
@@ -158,6 +172,26 @@
                 return data;
             } catch (error) {
                 console.error('❌ Erro ao buscar peak prediction:', error);
+                return null;
+            }
+        }
+        
+        // Função para buscar alertas ativos
+        async function fetchActiveAlerts() {
+            try {
+                console.log('🔄 Buscando alertas de:', `${API_BASE}/alerts/active`);
+                const response = await fetch(`${API_BASE}/alerts/active`);
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ Alertas recebidos:', data);
+                return data;
+            } catch (error) {
+                console.error('❌ Erro ao buscar alertas:', error);
                 return null;
             }
         }
@@ -306,6 +340,67 @@
             console.log('✅ Card 3 atualizado com sucesso!');
         }
         
+        // Função para atualizar o Card 4
+        function updateCard4(alertsData) {
+            if (!alertsData) {
+                console.error('❌ Alertas data é null ou undefined');
+                return;
+            }
+            
+            console.log('🎨 Atualizando Card 4 com:', alertsData);
+            
+            const alertCount = alertsData.total || 0;
+            const alerts = alertsData.alerts || [];
+            
+            // Atualizar contador de alertas
+            const countEl = $('#nova-alerts-count');
+            countEl.textContent = alertCount;
+            
+            // Atualizar informações dos alertas
+            const infoEl = $('#nova-alerts-info');
+            const statusEl = $('#nova-alerts-status');
+            
+            if (alertCount === 0) {
+                infoEl.textContent = 'Nenhum alerta no momento';
+                statusEl.textContent = 'Sistema funcionando normalmente';
+                statusEl.className = 'metric-status status-success';
+            } else {
+                // Contar por severidade
+                let critical = 0, warning = 0, info = 0;
+                alerts.forEach(alert => {
+                    if (alert.severity === 'high' || alert.severity === 'critical') {
+                        critical++;
+                    } else if (alert.severity === 'medium' || alert.severity === 'warning') {
+                        warning++;
+                    } else {
+                        info++;
+                    }
+                });
+                
+                // Montar texto informativo
+                let parts = [];
+                if (critical > 0) parts.push(`${critical} crítico${critical > 1 ? 's' : ''}`);
+                if (warning > 0) parts.push(`${warning} aviso${warning > 1 ? 's' : ''}`);
+                if (info > 0) parts.push(`${info} info${info > 1 ? 's' : ''}`);
+                
+                infoEl.textContent = parts.join(', ') || 'Detalhes não disponíveis';
+                
+                // Status baseado na severidade
+                if (critical > 0) {
+                    statusEl.textContent = 'Atenção necessária!';
+                    statusEl.className = 'metric-status status-danger';
+                } else if (warning > 0) {
+                    statusEl.textContent = 'Requer atenção';
+                    statusEl.className = 'metric-status status-warning';
+                } else {
+                    statusEl.textContent = 'Alertas informativos';
+                    statusEl.className = 'metric-status status-success';
+                }
+            }
+            
+            console.log('✅ Card 4 atualizado com sucesso!');
+        }
+        
         // Função para atualizar indicador de última atualização
         function updateLastUpdate(lastReading) {
             const indicator = $('#nova-last-update');
@@ -361,14 +456,16 @@
             const stats = await fetchCurrentStats();
             const advanced = await fetchAdvancedStats();
             const peak = await fetchPeakPrediction();
+            const alerts = await fetchActiveAlerts();
             
             // Atualizar cards
             updateCard1(stats);
             updateCard2(advanced);
             updateCard3(peak);
+            updateCard4(alerts);
             
             // Atualizar debug info
-            if (stats || advanced || peak) {
+            if (stats || advanced || peak || alerts) {
                 let debugHTML = '<strong>Dados das APIs:</strong><br><br>';
                 
                 if (stats) {
@@ -396,7 +493,20 @@
                     debugHTML += `- Pessoas no pico: ${peak.peak_count}<br>`;
                     debugHTML += `- Capacidade prevista: ${peak.capacity_prediction}%<br>`;
                     debugHTML += `- Confiança: ${peak.confidence}%<br>`;
-                    debugHTML += `- Total de leituras: ${peak.total_readings}<br>`;
+                    debugHTML += `- Total de leituras: ${peak.total_readings}<br><br>`;
+                }
+                
+                if (alerts) {
+                    debugHTML += '<strong>Active Alerts:</strong><br>';
+                    debugHTML += `- Total: ${alerts.total}<br>`;
+                    if (alerts.alerts && alerts.alerts.length > 0) {
+                        debugHTML += `- Alertas:<br>`;
+                        alerts.alerts.forEach((alert, idx) => {
+                            debugHTML += `  ${idx + 1}. [${alert.severity}] ${alert.message || alert.type}<br>`;
+                        });
+                    } else {
+                        debugHTML += `- Nenhum alerta ativo<br>`;
+                    }
                 }
                 
                 $('#debug-info').innerHTML = debugHTML;
