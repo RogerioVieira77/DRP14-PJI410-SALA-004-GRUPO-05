@@ -101,6 +101,20 @@
                 </div>
             </div>
 
+            <!-- Gráfico: Fluxo de Pessoas -->
+            <div style="margin-top: 20px;">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <i class="fas fa-chart-area"></i> Fluxo de Pessoas - Últimas 24h
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height: 300px; padding: 20px;">
+                        <canvas id="peopleFlowChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <!-- Debug Info -->
             <div style="margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 8px; font-family: monospace; font-size: 12px;">
                 <h3 style="margin-top: 0; color: #4fc3f7;">Debug Info</h3>
@@ -192,6 +206,26 @@
                 return data;
             } catch (error) {
                 console.error('❌ Erro ao buscar alertas:', error);
+                return null;
+            }
+        }
+        
+        // Função para buscar fluxo de pessoas
+        async function fetchPeopleFlow() {
+            try {
+                console.log('🔄 Buscando people-flow de:', `${API_BASE}/people-flow`);
+                const response = await fetch(`${API_BASE}/people-flow`);
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ People flow recebido:', data);
+                return data;
+            } catch (error) {
+                console.error('❌ Erro ao buscar people flow:', error);
                 return null;
             }
         }
@@ -401,6 +435,122 @@
             console.log('✅ Card 4 atualizado com sucesso!');
         }
         
+        // Variável global para o gráfico
+        let peopleFlowChartInstance = null;
+        
+        // Função para criar/atualizar o gráfico de fluxo
+        function updatePeopleFlowChart(flowData) {
+            if (!flowData) {
+                console.error('❌ Flow data é null ou undefined');
+                return;
+            }
+            
+            console.log('📊 Atualizando gráfico com:', flowData);
+            
+            const canvas = $('#peopleFlowChart');
+            if (!canvas) {
+                console.error('❌ Canvas #peopleFlowChart não encontrado');
+                return;
+            }
+            
+            // Destruir gráfico anterior se existir
+            if (peopleFlowChartInstance) {
+                console.log('🗑️ Destruindo gráfico anterior');
+                peopleFlowChartInstance.destroy();
+            }
+            
+            const ctx = canvas.getContext('2d');
+            const labels = flowData.labels || [];
+            const data = flowData.data || [];
+            
+            console.log('📈 Criando gráfico com', labels.length, 'pontos');
+            
+            peopleFlowChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pessoas no CEU',
+                        data: data,
+                        borderColor: '#4fc3f7',
+                        backgroundColor: 'rgba(79, 195, 247, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#4fc3f7',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: '#b0bec5',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#4fc3f7',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#b0bec5',
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Número de Pessoas',
+                                color: '#b0bec5'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#b0bec5',
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+            
+            console.log('✅ Gráfico criado com sucesso!');
+        }
+        
         // Função para atualizar indicador de última atualização
         function updateLastUpdate(lastReading) {
             const indicator = $('#nova-last-update');
@@ -457,6 +607,7 @@
             const advanced = await fetchAdvancedStats();
             const peak = await fetchPeakPrediction();
             const alerts = await fetchActiveAlerts();
+            const flow = await fetchPeopleFlow();
             
             // Atualizar cards
             updateCard1(stats);
@@ -464,8 +615,11 @@
             updateCard3(peak);
             updateCard4(alerts);
             
+            // Atualizar gráfico
+            updatePeopleFlowChart(flow);
+            
             // Atualizar debug info
-            if (stats || advanced || peak || alerts) {
+            if (stats || advanced || peak || alerts || flow) {
                 let debugHTML = '<strong>Dados das APIs:</strong><br><br>';
                 
                 if (stats) {
@@ -505,8 +659,15 @@
                             debugHTML += `  ${idx + 1}. [${alert.severity}] ${alert.message || alert.type}<br>`;
                         });
                     } else {
-                        debugHTML += `- Nenhum alerta ativo<br>`;
+                        debugHTML += `- Nenhum alerta ativo<br><br>`;
                     }
+                }
+                
+                if (flow) {
+                    debugHTML += '<strong>People Flow:</strong><br>';
+                    debugHTML += `- Período: ${flow.period}<br>`;
+                    debugHTML += `- Total de leituras: ${flow.total_readings}<br>`;
+                    debugHTML += `- Pontos de dados: ${flow.labels?.length || 0}<br>`;
                 }
                 
                 $('#debug-info').innerHTML = debugHTML;
