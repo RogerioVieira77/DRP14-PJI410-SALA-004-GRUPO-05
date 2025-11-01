@@ -39,8 +39,9 @@
                 </div>
             </div>
 
-            <!-- Card 1: Pessoas no CEU -->
+            <!-- Cards -->
             <div class="metrics-grid">
+                <!-- Card 1: Pessoas no CEU -->
                 <div class="metric-card">
                     <div class="metric-header">
                         <div class="metric-title">
@@ -52,6 +53,23 @@
                     </div>
                     <div class="metric-subvalue" id="nova-capacity-info">Carregando...</div>
                     <span class="metric-status" id="nova-capacity-status">Aguarde...</span>
+                </div>
+
+                <!-- Card 2: Entradas Hoje -->
+                <div class="metric-card info">
+                    <div class="metric-header">
+                        <div class="metric-title">
+                            <i class="fas fa-sign-in-alt"></i> Entradas Hoje
+                        </div>
+                    </div>
+                    <div class="metric-value" id="nova-entries-today">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <div class="metric-subvalue" id="nova-entries-average">Média: --/dia</div>
+                    <div class="metric-trend" id="nova-entries-trend">
+                        <i class="fas fa-sync-alt fa-spin"></i>
+                        <span>Calculando tendência...</span>
+                    </div>
                 </div>
             </div>
 
@@ -86,6 +104,26 @@
                 return data;
             } catch (error) {
                 console.error('❌ Erro ao buscar stats:', error);
+                return null;
+            }
+        }
+        
+        // Função para buscar estatísticas avançadas
+        async function fetchAdvancedStats() {
+            try {
+                console.log('🔄 Buscando advanced-stats de:', `${API_BASE}/advanced-stats`);
+                const response = await fetch(`${API_BASE}/advanced-stats`);
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ Advanced stats recebidos:', data);
+                return data;
+            } catch (error) {
+                console.error('❌ Erro ao buscar advanced stats:', error);
                 return null;
             }
         }
@@ -127,19 +165,53 @@
             // Atualizar indicador de última atualização
             updateLastUpdate(stats.last_reading);
             
-            // Debug info
-            $('#debug-info').innerHTML = `
-                <strong>Dados da API:</strong><br>
-                - Pessoas: ${stats.current_people}<br>
-                - Capacidade: ${stats.max_capacity}<br>
-                - Porcentagem: ${percentage.toFixed(1)}%<br>
-                - Entradas hoje: ${stats.entries_today}<br>
-                - Saídas hoje: ${stats.exits_today}<br>
-                - Última leitura: ${stats.last_reading}<br>
-                - Timestamp: ${stats.timestamp}
+            console.log('✅ Card 1 atualizado com sucesso!');
+        }
+        
+        // Função para atualizar o Card 2
+        function updateCard2(advanced) {
+            if (!advanced) {
+                console.error('❌ Advanced stats é null ou undefined');
+                return;
+            }
+            
+            console.log('🎨 Atualizando Card 2 com:', advanced);
+            
+            // Atualizar número de entradas
+            const entriesEl = $('#nova-entries-today');
+            entriesEl.textContent = advanced.entries_today || 0;
+            
+            // Atualizar média diária
+            const avgEl = $('#nova-entries-average');
+            avgEl.textContent = `Média: ${advanced.daily_average || 0}/dia`;
+            
+            // Atualizar tendência
+            const trendEl = $('#nova-entries-trend');
+            const trendPercent = advanced.trend_percentage || 0;
+            const trendDirection = advanced.trend_direction || 'stable';
+            
+            let icon, cssClass, text;
+            
+            if (trendDirection === 'up') {
+                icon = 'fa-arrow-up';
+                cssClass = 'trend-up';
+                text = `+${Math.abs(trendPercent).toFixed(1)}% em relação a ontem`;
+            } else if (trendDirection === 'down') {
+                icon = 'fa-arrow-down';
+                cssClass = 'trend-down';
+                text = `${trendPercent.toFixed(1)}% em relação a ontem`;
+            } else {
+                icon = 'fa-minus';
+                cssClass = '';
+                text = 'Estável em relação a ontem';
+            }
+            
+            trendEl.innerHTML = `
+                <i class="fas ${icon} ${cssClass}"></i>
+                <span>${text}</span>
             `;
             
-            console.log('✅ Card 1 atualizado com sucesso!');
+            console.log('✅ Card 2 atualizado com sucesso!');
         }
         
         // Função para atualizar indicador de última atualização
@@ -192,8 +264,40 @@
         // Função principal de atualização
         async function atualizarDados() {
             console.log('🚀 Iniciando atualização...');
+            
+            // Buscar dados das APIs
             const stats = await fetchCurrentStats();
+            const advanced = await fetchAdvancedStats();
+            
+            // Atualizar cards
             updateCard1(stats);
+            updateCard2(advanced);
+            
+            // Atualizar debug info
+            if (stats || advanced) {
+                let debugHTML = '<strong>Dados das APIs:</strong><br><br>';
+                
+                if (stats) {
+                    debugHTML += '<strong>Current Stats:</strong><br>';
+                    debugHTML += `- Pessoas: ${stats.current_people}<br>`;
+                    debugHTML += `- Capacidade: ${stats.max_capacity}<br>`;
+                    debugHTML += `- Porcentagem: ${stats.capacity_percentage?.toFixed(1)}%<br>`;
+                    debugHTML += `- Entradas hoje: ${stats.entries_today}<br>`;
+                    debugHTML += `- Saídas hoje: ${stats.exits_today}<br>`;
+                    debugHTML += `- Última leitura: ${stats.last_reading}<br><br>`;
+                }
+                
+                if (advanced) {
+                    debugHTML += '<strong>Advanced Stats:</strong><br>';
+                    debugHTML += `- Entradas hoje: ${advanced.entries_today}<br>`;
+                    debugHTML += `- Entradas ontem: ${advanced.entries_yesterday}<br>`;
+                    debugHTML += `- Média diária: ${advanced.daily_average}<br>`;
+                    debugHTML += `- Tendência: ${advanced.trend_direction} (${advanced.trend_percentage}%)<br>`;
+                    debugHTML += `- Previsão hoje: ${advanced.today_prediction}<br>`;
+                }
+                
+                $('#debug-info').innerHTML = debugHTML;
+            }
         }
         
         // Inicializar quando a página carregar
