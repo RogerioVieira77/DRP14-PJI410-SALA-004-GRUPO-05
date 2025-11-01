@@ -1,0 +1,891 @@
+{% extends "base.html" %}
+
+{% block title %}CEU Monitor - Resumo de Sensores{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ========== Página de Resumo de Sensores - Design Moderno ========== */
+
+/* Header da Página */
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h2 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.page-header p {
+    color: #7f8c8d;
+    font-size: 15px;
+}
+
+/* Cards de Resumo Geral */
+.sensors-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.overview-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.overview-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.overview-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    opacity: 0.1;
+    transform: translate(30%, -30%);
+}
+
+.overview-card.total::before {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.overview-card.active::before {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+}
+
+.overview-card.readings::before {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+}
+
+.overview-card.protocols::before {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+}
+
+.overview-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.overview-icon.total {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.overview-icon.active {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+}
+
+.overview-icon.readings {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+}
+
+.overview-icon.protocols {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+.overview-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.overview-label {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.overview-detail {
+    font-size: 12px;
+    color: #95a5a6;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-badge-sensor {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #d4edda;
+    color: #155724;
+    margin-top: 8px;
+}
+
+/* Tabela de Sensores */
+.sensors-table-section {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+}
+
+.section-header-sensors {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.section-title-sensors {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sensors-table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow-x: auto;
+    display: block;
+}
+
+.sensors-table thead {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+}
+
+.sensors-table th {
+    padding: 15px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sensors-table tbody {
+    display: table;
+    width: 100%;
+}
+
+.sensors-table tr {
+    border-bottom: 1px solid #ecf0f1;
+    transition: all 0.3s ease;
+}
+
+.sensors-table tbody tr:hover {
+    background: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.sensors-table td {
+    padding: 15px;
+    font-size: 13px;
+    color: #2c3e50;
+}
+
+.sensor-id-cell {
+    font-weight: 700;
+    color: #3498db;
+}
+
+.protocol-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+}
+
+.protocol-badge.lora {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+}
+
+.protocol-badge.zigbee {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+}
+
+.protocol-badge.sigfox {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+}
+
+.protocol-badge.rfid {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.battery-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.battery-bar {
+    width: 60px;
+    height: 8px;
+    background: #ecf0f1;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.battery-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.battery-fill.excellent {
+    background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.battery-fill.good {
+    background: linear-gradient(90deg, #f39c12 0%, #f1c40f 100%);
+}
+
+.battery-fill.low {
+    background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.signal-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.signal-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 16px;
+}
+
+.signal-bar {
+    width: 3px;
+    background: #bdc3c7;
+    border-radius: 2px;
+}
+
+.signal-bar.active {
+    background: linear-gradient(180deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.signal-bar:nth-child(1) { height: 25%; }
+.signal-bar:nth-child(2) { height: 50%; }
+.signal-bar:nth-child(3) { height: 75%; }
+.signal-bar:nth-child(4) { height: 100%; }
+
+/* Estatísticas em Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stats-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.stats-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.stats-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+}
+
+.stats-icon.protocols {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+}
+
+.stats-icon.battery {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+}
+
+.stats-icon.signal {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.stats-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stats-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.stats-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.stats-list-item:last-child {
+    border-bottom: none;
+}
+
+.stats-item-label {
+    font-size: 14px;
+    color: #7f8c8d;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stats-item-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stats-item-percentage {
+    font-size: 12px;
+    color: #95a5a6;
+    margin-left: 5px;
+}
+
+.stats-checkmark {
+    color: #27ae60;
+    font-size: 16px;
+}
+
+/* Alerta de Status */
+.system-status-alert {
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.1) 0%, rgba(46, 204, 113, 0.05) 100%);
+    border: 2px solid #27ae60;
+    border-radius: 16px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.status-alert-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: white;
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.status-alert-content {
+    flex: 1;
+}
+
+.status-alert-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #27ae60;
+    margin-bottom: 5px;
+}
+
+.status-alert-message {
+    font-size: 14px;
+    color: #229954;
+}
+
+/* Gráfico de Distribuição */
+.distribution-chart {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+}
+
+.chart-header-distribution {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.chart-title-distribution {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chart-container-distribution {
+    height: 300px;
+    position: relative;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header da Página -->
+<div class="page-header">
+    <h2>
+        <i class="fas fa-broadcast-tower"></i>
+        Resumo de Sensores
+    </h2>
+    <p>Visão completa e detalhada de todos os sensores ativos no sistema SmartCEU</p>
+</div>
+
+<!-- Alerta de Status do Sistema -->
+<div class="system-status-alert">
+    <div class="status-alert-icon">
+        <i class="fas fa-check-circle"></i>
+    </div>
+    <div class="status-alert-content">
+        <div class="status-alert-title">✅ Sistema Operando Perfeitamente</div>
+        <div class="status-alert-message">Todos os sensores estão funcionando normalmente. Nenhum alerta crítico detectado.</div>
+    </div>
+</div>
+
+<!-- Cards de Resumo Geral -->
+<div class="sensors-overview">
+    <!-- Total de Sensores -->
+    <div class="overview-card total">
+        <div class="overview-icon total">
+            <i class="fas fa-microchip"></i>
+        </div>
+        <div class="overview-label">Total de Sensores</div>
+        <div class="overview-value" id="total-sensors">6</div>
+        <div class="overview-detail">
+            <i class="fas fa-network-wired"></i>
+            <span>Sistema SmartCEU</span>
+        </div>
+        <span class="status-badge-sensor">100% Operacional</span>
+    </div>
+
+    <!-- Sensores Ativos -->
+    <div class="overview-card active">
+        <div class="overview-icon active">
+            <i class="fas fa-check-double"></i>
+        </div>
+        <div class="overview-label">Sensores Ativos</div>
+        <div class="overview-value" id="active-sensors">6</div>
+        <div class="overview-detail">
+            <i class="fas fa-signal"></i>
+            <span>100% de disponibilidade</span>
+        </div>
+        <span class="status-badge-sensor">Todos Online</span>
+    </div>
+
+    <!-- Total de Leituras -->
+    <div class="overview-card readings">
+        <div class="overview-icon readings">
+            <i class="fas fa-database"></i>
+        </div>
+        <div class="overview-label">Total de Leituras</div>
+        <div class="overview-value" id="total-readings">22.076</div>
+        <div class="overview-detail">
+            <i class="fas fa-chart-line"></i>
+            <span>Dados coletados</span>
+        </div>
+    </div>
+
+    <!-- Protocolos -->
+    <div class="overview-card protocols">
+        <div class="overview-icon protocols">
+            <i class="fas fa-project-diagram"></i>
+        </div>
+        <div class="overview-label">Protocolos Ativos</div>
+        <div class="overview-value" id="total-protocols">4</div>
+        <div class="overview-detail">
+            <i class="fas fa-wifi"></i>
+            <span>LoRa, Zigbee, Sigfox, RFID</span>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela de Sensores -->
+<div class="sensors-table-section">
+    <div class="section-header-sensors">
+        <h3 class="section-title-sensors">
+            <i class="fas fa-list"></i>
+            Lista Completa de Sensores
+        </h3>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="sensors-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Serial</th>
+                    <th>Protocolo</th>
+                    <th>Localização</th>
+                    <th>Bateria</th>
+                    <th>Sinal</th>
+                    <th>Leituras</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sensor 1 - LoRa -->
+                <tr>
+                    <td class="sensor-id-cell">1</td>
+                    <td><strong>LORA-A1B2C3D4</strong></td>
+                    <td><span class="protocol-badge lora">LoRa</span></td>
+                    <td><i class="fas fa-door-open"></i> Entrada Principal</td>
+                    <td>
+                        <div class="battery-indicator">
+                            <div class="battery-bar">
+                                <div class="battery-fill excellent" style="width: 100%;"></div>
+                            </div>
+                            <span>100%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="signal-indicator">
+                            <div class="signal-bars">
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                            </div>
+                            <span>-60 dBm</span>
+                        </div>
+                    </td>
+                    <td><strong>3.619</strong></td>
+                </tr>
+
+                <!-- Sensor 2 - Zigbee -->
+                <tr>
+                    <td class="sensor-id-cell">2</td>
+                    <td><strong>ZIGB-E5F6G7H8</strong></td>
+                    <td><span class="protocol-badge zigbee">Zigbee</span></td>
+                    <td><i class="fas fa-basketball-ball"></i> Quadra Esportiva</td>
+                    <td>
+                        <div class="battery-indicator">
+                            <div class="battery-bar">
+                                <div class="battery-fill excellent" style="width: 95%;"></div>
+                            </div>
+                            <span>95%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="signal-indicator">
+                            <div class="signal-bars">
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                            </div>
+                            <span>-55 dBm</span>
+                        </div>
+                    </td>
+                    <td><strong>3.703</strong></td>
+                </tr>
+
+                <!-- Sensor 3 - Sigfox -->
+                <tr>
+                    <td class="sensor-id-cell">3</td>
+                    <td><strong>SIGF-I9J0K1L2</strong></td>
+                    <td><span class="protocol-badge sigfox">Sigfox</span></td>
+                    <td><i class="fas fa-child"></i> Playground</td>
+                    <td>
+                        <div class="battery-indicator">
+                            <div class="battery-bar">
+                                <div class="battery-fill good" style="width: 88%;"></div>
+                            </div>
+                            <span>88%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="signal-indicator">
+                            <div class="signal-bars">
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar"></div>
+                            </div>
+                            <span>-70 dBm</span>
+                        </div>
+                    </td>
+                    <td><strong>4.036</strong></td>
+                </tr>
+
+                <!-- Sensor 4 - RFID -->
+                <tr>
+                    <td class="sensor-id-cell">4</td>
+                    <td><strong>RFID-M3N4O5P6</strong></td>
+                    <td><span class="protocol-badge rfid">RFID</span></td>
+                    <td><i class="fas fa-book"></i> Biblioteca</td>
+                    <td>
+                        <div class="battery-indicator">
+                            <span style="color: #95a5a6;">N/A</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="signal-indicator">
+                            <span style="color: #95a5a6;">N/A</span>
+                        </div>
+                    </td>
+                    <td><strong>3.528</strong></td>
+                </tr>
+
+                <!-- Sensor 5 - LoRa -->
+                <tr>
+                    <td class="sensor-id-cell">5</td>
+                    <td><strong>LORA-Q7R8S9T0</strong></td>
+                    <td><span class="protocol-badge lora">LoRa</span></td>
+                    <td><i class="fas fa-swimming-pool"></i> Área da Piscina</td>
+                    <td>
+                        <div class="battery-indicator">
+                            <div class="battery-bar">
+                                <div class="battery-fill excellent" style="width: 92%;"></div>
+                            </div>
+                            <span>92%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="signal-indicator">
+                            <div class="signal-bars">
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                            </div>
+                            <span>-65 dBm</span>
+                        </div>
+                    </td>
+                    <td><strong>3.428</strong></td>
+                </tr>
+
+                <!-- Sensor 6 - Zigbee -->
+                <tr>
+                    <td class="sensor-id-cell">6</td>
+                    <td><strong>ZIGB-U1V2W3X4</strong></td>
+                    <td><span class="protocol-badge zigbee">Zigbee</span></td>
+                    <td><i class="fas fa-sign-out-alt"></i> Saída Lateral</td>
+                    <td>
+                        <div class="battery-indicator">
+                            <div class="battery-bar">
+                                <div class="battery-fill excellent" style="width: 90%;"></div>
+                            </div>
+                            <span>90%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="signal-indicator">
+                            <div class="signal-bars">
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                                <div class="signal-bar active"></div>
+                            </div>
+                            <span>-58 dBm</span>
+                        </div>
+                    </td>
+                    <td><strong>3.762</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Estatísticas Detalhadas -->
+<div class="stats-grid">
+    <!-- Distribuição por Protocolo -->
+    <div class="stats-card">
+        <div class="stats-card-header">
+            <div class="stats-icon protocols">
+                <i class="fas fa-sitemap"></i>
+            </div>
+            <div class="stats-title">Distribuição por Protocolo</div>
+        </div>
+        <ul class="stats-list">
+            <li class="stats-list-item">
+                <span class="stats-item-label">
+                    <span class="protocol-badge lora" style="padding: 3px 8px; font-size: 9px;">LoRa</span>
+                    LoRa
+                </span>
+                <span class="stats-item-value">
+                    2 sensores
+                    <span class="stats-item-percentage">(33.3%)</span>
+                </span>
+            </li>
+            <li class="stats-list-item">
+                <span class="stats-item-label">
+                    <span class="protocol-badge zigbee" style="padding: 3px 8px; font-size: 9px;">Zigbee</span>
+                    Zigbee
+                </span>
+                <span class="stats-item-value">
+                    2 sensores
+                    <span class="stats-item-percentage">(33.3%)</span>
+                </span>
+            </li>
+            <li class="stats-list-item">
+                <span class="stats-item-label">
+                    <span class="protocol-badge sigfox" style="padding: 3px 8px; font-size: 9px;">Sigfox</span>
+                    Sigfox
+                </span>
+                <span class="stats-item-value">
+                    1 sensor
+                    <span class="stats-item-percentage">(16.7%)</span>
+                </span>
+            </li>
+            <li class="stats-list-item">
+                <span class="stats-item-label">
+                    <span class="protocol-badge rfid" style="padding: 3px 8px; font-size: 9px;">RFID</span>
+                    RFID
+                </span>
+                <span class="stats-item-value">
+                    1 sensor
+                    <span class="stats-item-percentage">(16.7%)</span>
+                </span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Status de Bateria -->
+    <div class="stats-card">
+        <div class="stats-card-header">
+            <div class="stats-icon battery">
+                <i class="fas fa-battery-full"></i>
+            </div>
+            <div class="stats-title">Status de Bateria</div>
+        </div>
+        <ul class="stats-list">
+            <li class="stats-list-item">
+                <span class="stats-item-label">
+                    <i class="fas fa-battery-full" style="color: #27ae60;"></i>
+                    Excelente (90-100%)
+                </span>
+                <span class="stats-item-value">
+                    5 sensores
+                    <i class="fas fa-check-circle stats-checkmark"></i>
+                </span>
+            </li>
+            <li class="stats-list-item">
+                <span class="stats-item-label">
+                    <i class="fas fa-battery-three-quarters" style="color: #f39c12;"></i>
+                    Bom (70-89%)
+                </span>
+                <span class="stats-item-value">
+                    1 sensor
+                    <i class="fas fa-check-circle stats-checkmark"></i>
+                </span>
+            </li>
+            <li class="stats-list-item">
+                <span class="stats-item-label">
+                    <i class="fas fa-battery-quarter" style="color: #e74c3c;"></i>
+                    Crítico (&lt;50%)
+                </span>
+                <span class="stats-item-value">
+                    0 sensores
+                    <i class="fas fa-check-circle stats-checkmark"></i>
+                </span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Qualidade do Sinal -->
+    <div class="stats-card">
+        <div class="stats-card-header">
+            <div class="stats-icon signal">
+                <i class="fas fa-signal"></i>
+            </div>
+            <div class="stats-title">Qualidade do Sinal</div>
+        </div>
+        <ul class="stats-list">
+            <li class="stats-list-item">
+                <span class="stats-item-label">
+                    <i class="fas fa-wifi" style="color: #27ae60;"></i>
+                    Ótimo (-40 a -60 dBm)
+                </span>
+                <span class="stats-item-value">
+                    3 sensores
+                    <i class="fas fa-check-circle stats-checkmark"></i>
+                </span>
+            </li>
+            <li class="stats-list-item">
+                <span class="stats-item-label">
+                    <i class="fas fa-wifi" style="color: #f39c12;"></i>
+                    Bom (-61 a -70 dBm)
+                </span>
+                <span class="stats-item-value">
+                    2 sensores
+                    <i class="fas fa-check-circle stats-checkmark"></i>
+                </span>
+            </li>
+            <li class="stats-list-item">
+                <span class="stats-item-label">
+                    <i class="fas fa-wifi" style="color: #e74c3c;"></i>
+                    Fraco (&lt; -70 dBm)
+                </span>
+                <span class="stats-item-value">
+                    0 sensores
+                    <i class="fas fa-check-circle stats-checkmark"></i>
+                </span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Gráfico de Distribuição -->
+<div class="distribution-chart">
+    <div class="chart-header-distribution">
+        <h3 class="chart-title-distribution">
+            <i class="fas fa-chart-pie"></i>
+            Distribuição de Leituras por Sensor
+        </h3>
+    </div>
+    <div class="chart-container-distribution">
+        <canvas id="sensorsDistributionChart"></canvas>
+    </div>
+</div>
+{% endblock %}

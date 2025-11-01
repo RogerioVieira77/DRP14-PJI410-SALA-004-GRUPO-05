@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CEU Monitor{% endblock %}</title>
+    
+    <!-- Font Awesome -->
+    {% if use_fontawesome %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% endif %}
+    
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="/smartceu/dashboard/styles.css?v=2">
+    
+    <!-- CSS Adicional -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Menu Lateral -->
+        {% include 'includes/sidebar.html' %}
+
+        <!-- Corpo -->
+        <div class="main-content">
+            <!-- Header -->
+            {% include 'includes/header.html' %}
+
+            <!-- Conteúdo da Página -->
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- JavaScript Modular (ES6) -->
+    <script type="module" src="/smartceu/dashboard/js/main.js"></script>
+    
+    <!-- Indicador Última Leitura (não-ES6, standalone) -->
+    <script src="/smartceu/dashboard/js/indicators.js"></script>
+    
+    <!-- JavaScript da Página -->
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Inicializar Indicador -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initLastReadingIndicator();
+            {% block page_init %}{% endblock %}
+        });
+    </script>
+    
+    <!-- Fallback para navegadores antigos -->
+    <script nomodule>
+        console.warn('Seu navegador não suporta ES6 modules. Carregando versão legada...');
+        const script = document.createElement('script');
+        script.src = '/smartceu/dashboard/script.js?v=20';
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>

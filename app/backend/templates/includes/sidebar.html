@@ -1,0 +1,25 @@
+<div class="sidebar">
+    <div class="logo">
+        <h1>Painel</h1>
+    </div>
+    <ul class="nav-menu">
+        <li {% if active_page == 'index' %}class="active"{% endif %}>
+            <a href="/smartceu/dashboard">Painel Principal</a>
+        </li>
+        <li {% if active_page == 'areas' %}class="active"{% endif %}>
+            <a href="/smartceu/dashboard/areas.html">Áreas</a>
+        </li>
+        <li {% if active_page == 'alertas' %}class="active"{% endif %}>
+            <a href="/smartceu/dashboard/alertas.html">Alertas</a>
+        </li>
+        <li {% if active_page == 'piscina' %}class="active"{% endif %}>
+            <a href="/smartceu/dashboard/piscina.html">Piscina</a>
+        </li>
+        <li {% if active_page == 'resumo-sensores' %}class="active"{% endif %}>
+            <a href="/smartceu/dashboard/resumo-sensores.html">Resumo de Sensores</a>
+        </li>
+        <li style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
+            <a href="/smartceu">← Voltar ao SmartCEU</a>
+        </li>
+    </ul>
+</div>

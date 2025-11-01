@@ -1,0 +1,9 @@
+<div class="header">
+    <h2>{% block page_title %}{{ page_title|default('Dashboard') }}{% endblock %}</h2>
+    <div class="user-info">
+        <span>{{ user_name|default('Administrador') }}</span>
+        <span id="last-update-indicator" class="last-reading-indicator">
+            <i class="fas fa-check-circle"></i> Carregando...
+        </span>
+    </div>
+</div>

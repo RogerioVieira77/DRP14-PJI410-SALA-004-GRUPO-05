@@ -1,0 +1,654 @@
+{% extends "base.html" %}
+
+{% block title %}CEU Monitor - Painel Principal{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ========== Painel Principal Reformulado ========== */
+.dashboard-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.overview-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 25px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.overview-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+.overview-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.3; }
+}
+
+.overview-card.success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.overview-card.info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.overview-card.warning { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.overview-card.danger { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+
+.overview-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+.overview-label {
+    font-size: 14px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.overview-value {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.overview-subtitle {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* ========== Grid de 3 Colunas ========== */
+.main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* ========== Cards de Estatísticas ========== */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+    border-left: 4px solid #667eea;
+}
+
+.stat-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    transform: translateX(5px);
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+}
+
+.stat-icon.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.stat-icon.success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.stat-icon.warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.stat-icon.info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+.stat-content h3 {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.stat-content .value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.stat-trend.up { color: #38ef7d; }
+.stat-trend.down { color: #f5576c; }
+
+/* ========== Sensores Status ========== */
+.sensors-status {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.sensors-status h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sensor-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sensor-item:last-child {
+    border-bottom: none;
+}
+
+.sensor-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sensor-protocol {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+}
+
+.sensor-protocol.lora { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.sensor-protocol.zigbee { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.sensor-protocol.sigfox { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.sensor-protocol.rfid { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+.sensor-details h4 {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 3px;
+}
+
+.sensor-details p {
+    font-size: 12px;
+    color: #888;
+}
+
+.sensor-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.battery-indicator {
+    font-size: 11px;
+    color: #666;
+}
+
+/* ========== Gráfico Principal ========== */
+.chart-main {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+}
+
+.chart-main h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chart-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.chart-controls select {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* ========== Alertas Rápidos ========== */
+.quick-alerts {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.quick-alerts h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.alert-quick {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all 0.3s;
+}
+
+.alert-quick:hover {
+    transform: translateX(5px);
+}
+
+.alert-quick.critical {
+    background: #fff5f5;
+    border-left: 4px solid #f5576c;
+}
+
+.alert-quick.warning {
+    background: #fffbf0;
+    border-left: 4px solid #fee140;
+}
+
+.alert-quick.info {
+    background: #f0f9ff;
+    border-left: 4px solid #4facfe;
+}
+
+.alert-quick-icon {
+    font-size: 20px;
+    margin-top: 2px;
+}
+
+.alert-quick-content h4 {
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.alert-quick-content p {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.alert-quick-time {
+    font-size: 11px;
+    color: #999;
+}
+
+/* ========== Ações Rápidas ========== */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.action-btn {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: #333;
+    display: block;
+}
+
+.action-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+}
+
+.action-btn i {
+    font-size: 32px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.action-btn span {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Cards de Visão Geral -->
+<div class="dashboard-overview">
+    <div class="overview-card success">
+        <div class="overview-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="overview-label">Pessoas no CEU</div>
+        <div class="overview-value" id="current-people">--</div>
+        <div class="overview-subtitle" id="capacity-info">Capacidade: --</div>
+    </div>
+
+    <div class="overview-card info">
+        <div class="overview-icon">
+            <i class="fas fa-door-open"></i>
+        </div>
+        <div class="overview-label">Entradas Hoje</div>
+        <div class="overview-value" id="entries-today">--</div>
+        <div class="overview-subtitle" id="daily-average">Média: --/dia</div>
+    </div>
+
+    <div class="overview-card warning">
+        <div class="overview-icon">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="overview-label">Horário de Pico</div>
+        <div class="overview-value" id="next-peak">--:--</div>
+        <div class="overview-subtitle" id="peak-prediction">Calculando...</div>
+    </div>
+
+    <div class="overview-card danger">
+        <div class="overview-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="overview-label">Alertas Ativos</div>
+        <div class="overview-value" id="active-alerts">--</div>
+        <div class="overview-subtitle" id="alerts-breakdown">-- críticos, -- avisos</div>
+    </div>
+</div>
+
+<!-- Grid Principal -->
+<div class="main-grid">
+    <!-- Coluna Esquerda: Gráfico + Estatísticas -->
+    <div>
+        <!-- Gráfico de Fluxo -->
+        <div class="chart-main">
+            <h3>
+                <span><i class="fas fa-chart-area"></i> Fluxo de Pessoas - Últimas 24h</span>
+                <div class="chart-controls">
+                    <select id="time-range">
+                        <option value="24h">Últimas 24h</option>
+                        <option value="7d">Últimos 7 dias</option>
+                        <option value="30d">Últimos 30 dias</option>
+                    </select>
+                </div>
+            </h3>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="peopleFlowChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Estatísticas Detalhadas -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-content">
+                        <h3>Taxa de Ocupação</h3>
+                        <div class="value" id="occupation-rate">--</div>
+                    </div>
+                    <div class="stat-icon primary">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                </div>
+                <div class="stat-trend up" id="occupation-trend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+5.2% vs ontem</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-content">
+                        <h3>Tempo Médio</h3>
+                        <div class="value" id="avg-time">--</div>
+                    </div>
+                    <div class="stat-icon success">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-trend down" id="time-trend">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>-12min vs ontem</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-content">
+                        <h3>Pico Hoje</h3>
+                        <div class="value" id="today-peak">--</div>
+                    </div>
+                    <div class="stat-icon warning">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                </div>
+                <div class="stat-trend up" id="peak-trend-stat">
+                    <i class="fas fa-info-circle"></i>
+                    <span>às 16:30</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-content">
+                        <h3>Sensores Ativos</h3>
+                        <div class="value" id="active-sensors">6</div>
+                    </div>
+                    <div class="stat-icon info">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                </div>
+                <div class="stat-trend up">
+                    <i class="fas fa-check-circle"></i>
+                    <span>100% operacional</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coluna Direita: Status e Alertas -->
+    <div>
+        <!-- Status dos Sensores -->
+        <div class="sensors-status">
+            <h3>
+                <i class="fas fa-broadcast-tower"></i> Status dos Sensores
+            </h3>
+            <div id="sensors-list">
+                <div class="sensor-item">
+                    <div class="sensor-info">
+                        <div class="sensor-protocol lora">LoRa</div>
+                        <div class="sensor-details">
+                            <h4>Entrada Principal</h4>
+                            <p>LORA-A1B2C3D4</p>
+                        </div>
+                    </div>
+                    <div class="sensor-status">
+                        <span class="status-badge active">Ativo</span>
+                        <span class="battery-indicator">🔋 100%</span>
+                    </div>
+                </div>
+
+                <div class="sensor-item">
+                    <div class="sensor-info">
+                        <div class="sensor-protocol zigbee">Zigbee</div>
+                        <div class="sensor-details">
+                            <h4>Quadra Esportiva</h4>
+                            <p>ZIGB-E5F6G7H8</p>
+                        </div>
+                    </div>
+                    <div class="sensor-status">
+                        <span class="status-badge active">Ativo</span>
+                        <span class="battery-indicator">🔋 95%</span>
+                    </div>
+                </div>
+
+                <div class="sensor-item">
+                    <div class="sensor-info">
+                        <div class="sensor-protocol sigfox">Sigfox</div>
+                        <div class="sensor-details">
+                            <h4>Playground</h4>
+                            <p>SIGF-I9J0K1L2</p>
+                        </div>
+                    </div>
+                    <div class="sensor-status">
+                        <span class="status-badge active">Ativo</span>
+                        <span class="battery-indicator">🔋 88%</span>
+                    </div>
+                </div>
+
+                <div class="sensor-item">
+                    <div class="sensor-info">
+                        <div class="sensor-protocol rfid">RFID</div>
+                        <div class="sensor-details">
+                            <h4>Biblioteca</h4>
+                            <p>RFID-M3N4O5P6</p>
+                        </div>
+                    </div>
+                    <div class="sensor-status">
+                        <span class="status-badge active">Ativo</span>
+                        <span class="battery-indicator">⚡ AC</span>
+                    </div>
+                </div>
+
+                <div class="sensor-item">
+                    <div class="sensor-info">
+                        <div class="sensor-protocol lora">LoRa</div>
+                        <div class="sensor-details">
+                            <h4>Área da Piscina</h4>
+                            <p>LORA-Q7R8S9T0</p>
+                        </div>
+                    </div>
+                    <div class="sensor-status">
+                        <span class="status-badge active">Ativo</span>
+                        <span class="battery-indicator">🔋 92%</span>
+                    </div>
+                </div>
+
+                <div class="sensor-item">
+                    <div class="sensor-info">
+                        <div class="sensor-protocol zigbee">Zigbee</div>
+                        <div class="sensor-details">
+                            <h4>Saída Lateral</h4>
+                            <p>ZIGB-U1V2W3X4</p>
+                        </div>
+                    </div>
+                    <div class="sensor-status">
+                        <span class="status-badge active">Ativo</span>
+                        <span class="battery-indicator">🔋 90%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas Rápidos -->
+        <div class="quick-alerts" style="margin-top: 20px;">
+            <h3><i class="fas fa-bell"></i> Alertas Recentes</h3>
+            <div id="alerts-list">
+                <div class="alert-quick info">
+                    <div class="alert-quick-icon">
+                        <i class="fas fa-info-circle" style="color: #4facfe;"></i>
+                    </div>
+                    <div class="alert-quick-content">
+                        <h4>Sistema Operacional</h4>
+                        <p>Todos os sensores funcionando normalmente</p>
+                        <div class="alert-quick-time">Atualizado agora</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ações Rápidas -->
+<div style="margin-top: 30px;">
+    <h3 style="margin-bottom: 20px; color: #333;">
+        <i class="fas fa-bolt"></i> Ações Rápidas
+    </h3>
+    <div class="quick-actions">
+        <a href="/smartceu/dashboard/areas" class="action-btn">
+            <i class="fas fa-map-marked-alt"></i>
+            <span>Ver Áreas</span>
+        </a>
+        <a href="/smartceu/dashboard/alertas" class="action-btn">
+            <i class="fas fa-bell"></i>
+            <span>Gerenciar Alertas</span>
+        </a>
+        <a href="/smartceu/dashboard/piscina" class="action-btn">
+            <i class="fas fa-swimming-pool"></i>
+            <span>Monitorar Piscina</span>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    console.log('🎯 Template index.html carregado');
+    console.log('📍 Elementos principais:', {
+        currentPeople: document.getElementById('current-people'),
+        entriesToday: document.getElementById('entries-today'),
+        nextPeak: document.getElementById('next-peak'),
+        activeAlerts: document.getElementById('active-alerts')
+    });
+</script>
+{% endblock %}

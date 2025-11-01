@@ -15,8 +15,7 @@
             </div>
             <ul class="nav-menu">
                 <li class="active"><a href="/smartceu/dashboard">Painel Principal</a></li>
-                <li><a href="/smartceu/dashboard/controleacesso.html">Controle de Acesso</a></li>
-                <li><a href="/smartceu/dashboard/controledeacessonova.html">Controle de Acesso - Nova</a></li>
+                <li><a href="/smartceu/dashboard/controle-acesso.html">Controle de Acesso</a></li>
                 <li><a href="/smartceu/dashboard/areas.html">Áreas</a></li>
                 <li><a href="/smartceu/dashboard/alertas.html">Alertas</a></li>
                 <li><a href="/smartceu/dashboard/piscina.html">Piscina</a></li>
@@ -32,8 +31,8 @@
                 <h2>Controle de Acesso</h2>
                 <div class="user-info">
                     <span>Administrador</span>
-                    <span id="last-update-indicator" style="margin-left: 20px; font-size: 0.85em; color: #fff; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); padding: 6px 12px; border-radius: 6px; display: inline-block; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-                        <i class="fas fa-sync-alt"></i> Atualizando...
+                    <span id="last-update-indicator" class="last-reading-indicator">
+                        <i class="fas fa-check-circle"></i> Carregando...
                     </span>
                 </div>
             </div>
@@ -158,5 +157,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="/smartceu/dashboard/script.js?v=20"></script>
+    <script src="/smartceu/dashboard/js/indicators.js"></script>
+    <script>
+        // Inicializar indicador de última leitura
+        document.addEventListener('DOMContentLoaded', () => {
+            initLastReadingIndicator();
+        });
+    </script>
 </body>
 </html>

@@ -33,7 +33,16 @@ def create_app(config_name='development'):
     Returns:
         Flask app configurada
     """
-    app = Flask(__name__)
+    # Configurar template_folder relativo ao diretório backend
+    template_folder = os.path.join(os.path.dirname(__file__), '..', 'templates')
+    static_folder = os.path.join(os.path.dirname(__file__), '..', '..', 'dashboard')
+    
+    app = Flask(
+        __name__,
+        template_folder=template_folder,
+        static_folder=static_folder,
+        static_url_path='/smartceu/dashboard'
+    )
     
     # Carregar configurações
     from app.config import config
@@ -121,7 +130,7 @@ def setup_logging(app):
 
 def register_blueprints(app):
     """Registra blueprints da aplicação"""
-    from app.routes import sensors, readings, statistics, auth, health, pool, dashboard
+    from app.routes import sensors, readings, statistics, auth, health, pool, dashboard, dashboard_views
     from flask import send_from_directory
     import os
     
@@ -142,7 +151,8 @@ def register_blueprints(app):
     app.register_blueprint(readings.bp, url_prefix=f'{api_prefix}/readings')
     app.register_blueprint(statistics.bp, url_prefix=f'{api_prefix}/statistics')
     app.register_blueprint(pool.pool_bp)  # Pool já tem o prefix definido
-    app.register_blueprint(dashboard.bp, url_prefix=f'{api_prefix}/dashboard')  # Dashboard público
+    app.register_blueprint(dashboard.bp, url_prefix=f'{api_prefix}/dashboard')  # Dashboard API
+    app.register_blueprint(dashboard_views.views_bp)  # Dashboard Views (templates)
     
     app.logger.info(f"Blueprints registrados com prefixo: {api_prefix}")
 
