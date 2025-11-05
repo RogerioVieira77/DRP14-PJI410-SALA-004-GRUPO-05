@@ -81,3 +81,31 @@ def resumo_sensores():
         active_page='resumo-sensores',
         user_name='Administrador'
     )
+
+
+@views_bp.route('/documentacao')
+@views_bp.route('/documentacao.html')
+def documentacao():
+    """
+    Página de documentação técnica
+    """
+    return render_template(
+        'dashboard/documentacao.html',
+        page_title='Documentação Técnica',
+        active_page='documentacao',
+        user_name='Administrador'
+    )
+
+
+@views_bp.route('/mapeamento-dados')
+@views_bp.route('/mapeamento-dados.html')
+def mapeamento_dados():
+    """
+    Página de mapeamento de dados dos sensores
+    """
+    return render_template(
+        'dashboard/mapeamento-dados.html',
+        page_title='Mapeamento de Dados',
+        active_page='documentacao',
+        user_name='Administrador'
+    )

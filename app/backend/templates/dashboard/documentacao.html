@@ -1,0 +1,545 @@
+{% extends "base.html" %}
+
+{% block title %}Documentação Técnica - SmartCEU{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+        .doc-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .doc-hero h1 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .doc-hero .lead {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .doc-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .doc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .doc-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 1rem;
+        }
+
+        .doc-icon.purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .doc-icon.blue {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .doc-icon.green {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .doc-icon.orange {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .doc-icon.red {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .doc-icon.purple {
+            background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
+            color: white;
+        }
+
+        .doc-icon.teal {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .doc-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .doc-description {
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .doc-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .doc-link:hover {
+            color: #764ba2;
+            transform: translateX(5px);
+        }
+
+        .doc-link i {
+            margin-left: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .doc-link:hover i {
+            transform: translateX(3px);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid #667eea;
+            display: inline-block;
+        }
+
+        .stats-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tech-badge {
+            padding: 0.4rem 0.8rem;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .quick-access {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .quick-access-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .quick-access-title i {
+            margin-right: 0.75rem;
+            color: #667eea;
+        }
+
+        .quick-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .quick-link:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+
+        .quick-link i {
+            margin-right: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .version-info {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        .version-info strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .doc-hero {
+                padding: 2rem 0;
+            }
+
+            .section-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- Hero Section -->
+    <div class="doc-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <h1 class="mb-3">
+                        <i class="fas fa-book-open me-3"></i>
+                        Documentação Técnica
+                            </h1>
+                            <p class="lead mb-0">
+                                Documentação completa do sistema SmartCEU, incluindo arquitetura, 
+                                fluxo de dados, APIs e guias de desenvolvimento.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Documentation Cards -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="section-title">
+                        <i class="fas fa-folder-open me-2"></i>
+                        Documentação Principal
+                    </h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Mapeamento de Dados -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="doc-card">
+                        <div class="doc-icon purple">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h3 class="doc-title">Mapeamento de Dados dos Sensores</h3>
+                        <p class="doc-description">
+                            Documentação completa do fluxo de dados desde os sensores IoT até o dashboard, 
+                            incluindo estrutura do banco de dados, APIs e mapeamento de campos.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-badge">
+                                <i class="fas fa-table me-1"></i>3 Tabelas
+                            </span>
+                            <span class="tech-badge">
+                                <i class="fas fa-code me-1"></i>10+ APIs
+                            </span>
+                            <span class="tech-badge">
+                                <i class="fas fa-chart-line me-1"></i>907 Linhas
+                            </span>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{{ url_for('dashboard_views.mapeamento_dados') }}" class="doc-link">
+                                Acessar Documentação
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arquitetura do Sistema -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="doc-card">
+                        <div class="doc-icon blue">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <h3 class="doc-title">Arquitetura do Sistema</h3>
+                        <p class="doc-description">
+                            Visão geral da arquitetura do SmartCEU, incluindo componentes, 
+                            tecnologias utilizadas e diagrama de infraestrutura.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-badge">Flask 3.1.3</span>
+                            <span class="tech-badge">MySQL</span>
+                            <span class="tech-badge">Nginx</span>
+                            <span class="tech-badge">MQTT</span>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{{ url_for('static', filename='docs/doc_arq.html') }}" class="doc-link">
+                                Ver Arquitetura
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Reference -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="doc-card">
+                        <div class="doc-icon green">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 class="doc-title">Referência da API REST</h3>
+                        <p class="doc-description">
+                            Documentação completa dos endpoints da API REST, incluindo parâmetros, 
+                            exemplos de requisições e respostas.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-badge">REST API</span>
+                            <span class="tech-badge">JSON</span>
+                            <span class="tech-badge">SQLAlchemy</span>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-muted small">
+                                <i class="fas fa-clock me-1"></i>Em breve
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guia de Deploy -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="doc-card">
+                        <div class="doc-icon orange">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h3 class="doc-title">Guia de Deploy</h3>
+                        <p class="doc-description">
+                            Instruções passo a passo para instalação e configuração do sistema 
+                            SmartCEU em ambiente de produção.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-badge">Ubuntu 22.04</span>
+                            <span class="tech-badge">Systemd</span>
+                            <span class="tech-badge">SSL/TLS</span>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-muted small">
+                                <i class="fas fa-clock me-1"></i>Em breve
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Protocolos IoT -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="doc-card">
+                        <div class="doc-icon red">
+                            <i class="fas fa-broadcast-tower"></i>
+                        </div>
+                        <h3 class="doc-title">Protocolos IoT</h3>
+                        <p class="doc-description">
+                            Documentação dos protocolos de comunicação IoT utilizados: 
+                            LoRa, Zigbee, Sigfox e RFID.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-badge">🟣 LoRa</span>
+                            <span class="tech-badge">🟢 Zigbee</span>
+                            <span class="tech-badge">🟠 Sigfox</span>
+                            <span class="tech-badge">🔵 RFID</span>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-muted small">
+                                <i class="fas fa-clock me-1"></i>Em breve
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Frontend -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="doc-card">
+                        <div class="doc-icon teal">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h3 class="doc-title">Guia do Frontend</h3>
+                        <p class="doc-description">
+                            Documentação do frontend do dashboard, incluindo componentes, 
+                            estilos e padrões de desenvolvimento.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-badge">Bootstrap 5</span>
+                            <span class="tech-badge">Chart.js</span>
+                            <span class="tech-badge">ES6 Modules</span>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-muted small">
+                                <i class="fas fa-clock me-1"></i>Em breve
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banco de Dados -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="doc-card">
+                        <div class="doc-icon purple">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3 class="doc-title">Banco de Dados</h3>
+                        <p class="doc-description">
+                            Documentação do schema do banco de dados, relacionamentos, 
+                            índices e procedures utilizados no sistema.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-badge">MySQL 8.0</span>
+                            <span class="tech-badge">SQLAlchemy</span>
+                            <span class="tech-badge">Migrations</span>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-muted small">
+                                <i class="fas fa-clock me-1"></i>Em breve
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testes -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="doc-card">
+                        <div class="doc-icon green">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <h3 class="doc-title">Testes e Qualidade</h3>
+                        <p class="doc-description">
+                            Documentação sobre testes unitários, testes de integração 
+                            e boas práticas de qualidade de código.
+                        </p>
+                        <div class="tech-stack">
+                            <span class="tech-badge">Pytest</span>
+                            <span class="tech-badge">Coverage</span>
+                            <span class="tech-badge">CI/CD</span>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-muted small">
+                                <i class="fas fa-clock me-1"></i>Em breve
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Access Section -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="quick-access">
+                        <h3 class="quick-access-title">
+                            <i class="fas fa-bolt"></i>
+                            Acesso Rápido
+                        </h3>
+                        <a href="{{ url_for('dashboard_views.index') }}" class="quick-link">
+                            <i class="fas fa-home"></i>
+                            <span>Painel Principal</span>
+                        </a>
+                        <a href="{{ url_for('dashboard_views.resumo_sensores') }}" class="quick-link">
+                            <i class="fas fa-microchip"></i>
+                            <span>Resumo de Sensores</span>
+                        </a>
+                        <a href="{{ url_for('dashboard_views.areas') }}" class="quick-link">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <span>Monitoramento de Áreas</span>
+                        </a>
+                        <a href="{{ url_for('dashboard_views.piscina') }}" class="quick-link">
+                            <i class="fas fa-swimming-pool"></i>
+                            <span>Monitoramento da Piscina</span>
+                        </a>
+                        <a href="{{ url_for('dashboard_views.alertas') }}" class="quick-link">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Sistema de Alertas</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="quick-access">
+                        <h3 class="quick-access-title">
+                            <i class="fas fa-link"></i>
+                            Links Úteis
+                        </h3>
+                        <a href="https://github.com/RogerioVieira77/DRP14-PJI410-SALA-004-GRUPO-05" target="_blank" class="quick-link">
+                            <i class="fab fa-github"></i>
+                            <span>Repositório no GitHub</span>
+                        </a>
+                        <a href="#" class="quick-link">
+                            <i class="fas fa-question-circle"></i>
+                            <span>FAQ - Perguntas Frequentes</span>
+                        </a>
+                        <a href="#" class="quick-link">
+                            <i class="fas fa-bug"></i>
+                            <span>Reportar Problema</span>
+                        </a>
+                        <a href="#" class="quick-link">
+                            <i class="fas fa-life-ring"></i>
+                            <span>Suporte Técnico</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Version Info -->
+            <div class="version-info">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <p class="mb-0">
+                            <strong>Versão do Sistema:</strong> 1.0.0 | 
+                            <strong>Última Atualização:</strong> 01/11/2025 | 
+                            <strong>Python:</strong> 3.12.3 | 
+                            <strong>Flask:</strong> 3.1.3
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i>
+                            Sistema Operacional
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock %}

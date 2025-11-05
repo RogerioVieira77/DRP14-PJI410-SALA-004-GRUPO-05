@@ -1,0 +1,501 @@
+{% extends "base.html" %}
+
+{% block title %}Mapeamento de Dados - SmartCEU{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+<style>
+    .markdown-content {
+        background: white;
+        border-radius: 15px;
+        padding: 3rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .markdown-content h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .markdown-content h2 {
+            color: #2c3e50;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0e0e0;
+            scroll-margin-top: 120px; /* Offset para compensar o header fixo */
+        }
+
+        .markdown-content h3 {
+            color: #34495e;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            scroll-margin-top: 120px; /* Offset para compensar o header fixo */
+        }
+
+        .markdown-content h4 {
+            color: #546e7a;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            scroll-margin-top: 120px; /* Offset para compensar o header fixo */
+        }
+
+        .markdown-content table {
+            width: 100%;
+            margin: 1.5rem 0;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .markdown-content table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .markdown-content table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #667eea;
+        }
+
+        .markdown-content table td {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+
+        .markdown-content table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .markdown-content table tbody tr:hover {
+            background-color: #e8eaf6;
+        }
+
+        .markdown-content pre {
+            background: #1e1e1e;
+            border-radius: 10px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .markdown-content code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e91e63;
+        }
+
+        .markdown-content pre code {
+            background: transparent;
+            padding: 0;
+            color: #f8f8f2;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: #546e7a;
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .markdown-content ul, .markdown-content ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .markdown-content li {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        .markdown-content strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .markdown-content em {
+            color: #546e7a;
+        }
+
+        .markdown-content hr {
+            margin: 3rem 0;
+            border: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+        }
+
+        .breadcrumb-doc {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .breadcrumb-doc a {
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .breadcrumb-doc a:hover {
+            color: #764ba2;
+        }
+
+        .doc-actions {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .action-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .toc-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .toc-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0;
+            color: #546e7a;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .toc-link:hover {
+            color: #667eea;
+            padding-left: 0.5rem;
+        }
+
+        .toc-link.level-2 {
+            padding-left: 0rem;
+            font-weight: 600;
+        }
+
+        .toc-link.level-3 {
+            padding-left: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .diagram-box {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .diagram-box pre {
+            background: transparent;
+            margin: 0;
+            box-shadow: none;
+        }
+
+        @media print {
+            .sidebar, .navbar, .doc-actions, .toc-container, .breadcrumb-doc {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .markdown-content {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .toc-container {
+                position: relative;
+                top: 0;
+                max-height: none;
+                margin-bottom: 2rem;
+            }
+
+            .doc-actions {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- Breadcrumb -->
+            <div class="breadcrumb-doc">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ url_for('dashboard_views.index') }}">
+                                <i class="fas fa-home me-1"></i>Início
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ url_for('dashboard_views.documentacao') }}">
+                                <i class="fas fa-book-open me-1"></i>Documentação
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Mapeamento de Dados
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="row">
+                <!-- Table of Contents -->
+                <div class="col-lg-3 d-none d-lg-block">
+                    <div class="toc-container">
+                        <h5 class="toc-title">
+                            <i class="fas fa-list me-2"></i>
+                            Índice
+                        </h5>
+                        <a href="#estrutura-tabelas" class="toc-link level-2">Estrutura das Tabelas</a>
+                        <a href="#tabela-sensors" class="toc-link level-3">• Tabela sensors</a>
+                        <a href="#tabela-readings" class="toc-link level-3">• Tabela readings</a>
+                        <a href="#tabela-pool-readings" class="toc-link level-3">• Tabela pool_readings</a>
+                        <a href="#sensores-cadastrados" class="toc-link level-2">Sensores Cadastrados</a>
+                        <a href="#fluxo-de-dados" class="toc-link level-2">Fluxo de Dados</a>
+                        <a href="#diagrama-detalhado" class="toc-link level-2">Diagrama Detalhado</a>
+                        <a href="#mapeamento-de-campos" class="toc-link level-2">Mapeamento de Campos</a>
+                        <a href="#paginas-do-dashboard" class="toc-link level-2">Páginas do Dashboard</a>
+                        <a href="#queries-sql" class="toc-link level-2">Queries SQL</a>
+                        <a href="#endpoints-api" class="toc-link level-2">Endpoints da API</a>
+                        <a href="#protocolos-cores" class="toc-link level-2">Protocolos e Cores</a>
+                        <a href="#configuracoes" class="toc-link level-2">Configurações</a>
+                        <a href="#seguranca" class="toc-link level-2">Segurança</a>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <div class="markdown-content" id="markdown-content">
+                        <!-- O conteúdo será carregado aqui via JavaScript -->
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Carregando...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Carregando documentação...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="doc-actions">
+        <button class="action-btn" onclick="window.print()" title="Imprimir">
+            <i class="fas fa-print"></i>
+        </button>
+        <button class="action-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Voltar ao topo">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        <a href="/smartceu/dashboard/static/docs/MAPEAMENTO_DADOS_SENSORES.md" download class="action-btn" title="Baixar Markdown">
+            <i class="fas fa-download"></i>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="{{ url_for('static', filename='js/modules/main.js') }}" type="module"></script>
+    <script>
+        // Carregar e renderizar o arquivo Markdown
+        async function loadMarkdown() {
+            try {
+                const response = await fetch('/smartceu/dashboard/static/docs/MAPEAMENTO_DADOS_SENSORES.md');
+                const markdown = await response.text();
+                
+                // Configurar marked
+                marked.setOptions({
+                    highlight: function(code, lang) {
+                        if (lang && hljs.getLanguage(lang)) {
+                            return hljs.highlight(code, { language: lang }).value;
+                        }
+                        return hljs.highlightAuto(code).value;
+                    },
+                    breaks: true,
+                    gfm: true
+                });
+                
+                // Renderizar markdown
+                const html = marked.parse(markdown);
+                document.getElementById('markdown-content').innerHTML = html;
+                
+                // Adicionar IDs aos headings para navegação
+                addHeadingIds();
+                
+                // Highlight code blocks
+                document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+                
+                // Envolver diagramas ASCII em caixas especiais
+                document.querySelectorAll('pre').forEach((pre) => {
+                    const code = pre.querySelector('code');
+                    if (code && code.textContent.includes('┌─') || code && code.textContent.includes('│')) {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'diagram-box';
+                        pre.parentNode.insertBefore(wrapper, pre);
+                        wrapper.appendChild(pre);
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Erro ao carregar documentação:', error);
+                document.getElementById('markdown-content').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Erro ao carregar a documentação. Por favor, tente novamente.
+                    </div>
+                `;
+            }
+        }
+        
+        function addHeadingIds() {
+            const headings = document.querySelectorAll('.markdown-content h2, .markdown-content h3, .markdown-content h4');
+            headings.forEach((heading, index) => {
+                if (!heading.id) {
+                    let originalText = heading.textContent;
+                    let text = originalText
+                        // Remove emojis e caracteres especiais
+                        .replace(/[\u{1F300}-\u{1F9FF}]/gu, '')
+                        .replace(/[🗄️📡📊🔄📋📍🔌💡🌡️💧⚡📱🔐🎨🔵🗺️🔔🏊📈📝📐🔀⚙️🔍0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣]/g, '')
+                        // Remove números soltos no início
+                        .replace(/^[\d\s.:]+/g, '')
+                        // Remove backticks
+                        .replace(/`/g, '')
+                        // Remove asteriscos
+                        .replace(/\*\*/g, '')
+                        // Remove parênteses e conteúdo
+                        .replace(/\([^)]*\)/g, '')
+                        // Remove dois pontos
+                        .replace(/:/g, '')
+                        // Substitui underscore por hífen
+                        .replace(/_/g, '-')
+                        // Limpa espaços extras
+                        .trim()
+                        // Converte para lowercase
+                        .toLowerCase()
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove acentos
+                        .replace(/[^\w\s-]/g, '')
+                        .replace(/\s+/g, '-')
+                        .replace(/-+/g, '-')
+                        .replace(/^-|-$/g, '');
+                    
+                    // Mapeamento específico baseado no conteúdo do Markdown
+                    const mapping = {
+                        // H2 - Seções principais
+                        'estrutura-das-tabelas-do-banco-de-dados': 'estrutura-tabelas',
+                        'sensores-cadastrados-no-sistema': 'sensores-cadastrados',
+                        'fluxo-de-dados-sensor-banco-dashboard': 'fluxo-de-dados',
+                        'diagrama-detalhado-do-fluxo-de-dados': 'diagrama-detalhado',
+                        'tabela-completa-de-mapeamento-de-campos': 'mapeamento-de-campos',
+                        'queries-principais-usadas-no-dashboard': 'queries-sql',
+                        'endpoints-da-api-rest': 'endpoints-api',
+                        'mapeamento-de-protocolos-cores-no-dashboard': 'protocolos-cores',
+                        'configuracoes-e-constantes': 'configuracoes',
+                        'seguranca-e-validacoes': 'seguranca',
+                        
+                        // H3 - Subseções (as tabelas têm formato "Tabela: nome")
+                        'tabela-sensors': 'tabela-sensors',
+                        'tabela-readings': 'tabela-readings',
+                        'tabela-pool-readings': 'tabela-pool-readings',
+                        'tabela-poolreadings': 'tabela-pool-readings',
+                        'exibicao-no-dashboard': 'paginas-do-dashboard',
+                        
+                        // H4 - Páginas específicas
+                        'painel-principal-indexhtml': 'paginas-do-dashboard',
+                        'pagina-de-areas-areashtml': 'paginas-do-dashboard',
+                        'pagina-de-alertas-alertashtml': 'paginas-do-dashboard',
+                        'pagina-de-piscina-piscinahtml': 'paginas-do-dashboard'
+                    };
+                    
+                    // Usa o mapeamento se existir, senão usa o texto processado
+                    heading.id = mapping[text] || text || `heading-${index}`;
+                }
+            });
+        }
+        
+        // Carregar ao iniciar a página
+        document.addEventListener('DOMContentLoaded', loadMarkdown);
+        
+        // Smooth scroll para links internos
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('a[href^="#"]')) {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href').substring(1);
+                const target = document.getElementById(targetId);
+                if (target) {
+                    const yOffset = -100; // Offset para compensar o header fixo
+                    const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                    
+                    // Destacar temporariamente o elemento alvo
+                    target.style.transition = 'background-color 0.5s ease';
+                    target.style.backgroundColor = '#fff3cd';
+                    setTimeout(() => {
+                        target.style.backgroundColor = '';
+                    }, 2000);
+                }
+            }
+        });
+    </script>
+{% endblock %}
